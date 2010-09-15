@@ -1,0 +1,3 @@
+As a software developer
+I want to quickly open text editor
+So that I could store and edit temporary data in IntelliJ editor
