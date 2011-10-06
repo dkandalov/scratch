@@ -14,6 +14,7 @@
 package ru.scratch;
 
 import org.jetbrains.annotations.NotNull;
+
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.vfs.VirtualFile;
 
@@ -22,13 +23,13 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class ScratchComponent implements ApplicationComponent {
 	private static final int DEFAULT_SCRATCH = 0;
-	private ScratchVirtualFile[] files;
+	private ScratchVirtualFile files[];
 
 	@Override
 	public void initComponent() {
-		String[] text = ScratchData.getInstance().getScratchText();
+		String text[] = ScratchData.getInstance().getScratchTextInternal();
 		files = new ScratchVirtualFile[text.length];
-		for (int i = DEFAULT_SCRATCH; i < text.length; i++) {
+		for (int i = 0; i < text.length; i++) {
 			files[i] = new ScratchVirtualFile(text[i], i);
 		}
 	}

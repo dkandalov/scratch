@@ -13,6 +13,8 @@
  */
 package ru.scratch;
 
+import java.util.Arrays;
+
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
@@ -22,34 +24,46 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 /**
  * @author Dmitry Kandalov
  */
+@SuppressWarnings({"UnusedDeclaration"})
 @State(
 		name = "ScratchData",
 		storages = {@Storage(id = "main", file = "$APP_CONFIG$/scratch.xml")}
 )
 public class ScratchData implements PersistentStateComponent<ScratchData> {
 	private static final int SIZE = 5;
-	private String[] text = new String[SIZE];
+	private String scratchTexts[];
 
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
 	}
 
 	public ScratchData() {
-		for (int i = 0; i < text.length; i++) {
-			text[i] = "";
-		}
+		scratchTexts = new String[SIZE];
+		for (int i = 0; i < scratchTexts.length; i++)
+			scratchTexts[i] = "";
+
 	}
 
 	public String[] getScratchText() {
-		return text;
+		String result[] = new String[SIZE];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = XmlUtil.escape(scratchTexts[i]);
+		}
+		return result;
 	}
 
 	public void setScratchText(String[] text) {
-		this.text = text;
+		for (int i = 0; i < text.length; i++) {
+			scratchTexts[i] = XmlUtil.unescape(text[i]);
+		}
+	}
+
+	String[] getScratchTextInternal() {
+		return scratchTexts;
 	}
 
 	public void setScratchText(int scratchIndex, String text) {
-		this.text[scratchIndex] = text;
+		scratchTexts[scratchIndex] = text;
 	}
 
 	@Override
@@ -61,4 +75,21 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	public void loadState(ScratchData scratchData) {
 		XmlSerializerUtil.copyBean(scratchData, this);
 	}
-} 
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		} else {
+			ScratchData that = (ScratchData) o;
+			return Arrays.equals(scratchTexts, that.scratchTexts);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
+	}
+}
