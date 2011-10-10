@@ -15,7 +15,7 @@ package ru.scratch;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -35,7 +35,7 @@ public class OpenScratchAction extends AnAction {
 	}
 
 	public static Project projectFor(AnActionEvent event) {
-		Project project = event.getData(DataKeys.PROJECT);
+		Project project = event.getData(PlatformDataKeys.PROJECT);
 		if (project == null) throw new IllegalStateException();
 		return project;
 	}

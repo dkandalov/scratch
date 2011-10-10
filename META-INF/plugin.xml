@@ -22,6 +22,7 @@
             <li>0.11 - fixed bug when control symbols like 0x11 couldn't be saved</li>
             <li>0.12 - bug fixing</li>
             <li>0.13 - should work in IntelliJ 11</li>
+            <li>0.14 - should work in PhpStorm EAP</li>
         </ul>
         </body></html>
         ]]>
