@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>0.14</version>
+	<version>0.15</version>
 	<vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/scratch">Dmitry Kandalov</vendor>
 	<idea-version since-build="8000"/>
 	<description>
@@ -23,6 +23,7 @@
             <li>0.12 - bug fixing</li>
             <li>0.13 - should work in IntelliJ 11</li>
             <li>0.14 - should work in PhpStorm EAP</li>
+            <li>0.15 - NPE if there are no open projects</li>
         </ul>
         </body></html>
         ]]>

@@ -13,9 +13,10 @@
  */
 package ru.scratch;
 
-import static ru.scratch.OpenScratchAction.*;
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.MNEMONICS;
+import static ru.scratch.OpenScratchAction.projectFor;
 
-import javax.swing.Icon;
+import javax.swing.*;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -24,7 +25,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.*;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
 
@@ -52,6 +52,11 @@ public class OpenScratchListAction extends AnAction {
 		JBPopupFactory factory = JBPopupFactory.getInstance();
 		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(), MNEMONICS, true);
 		listPopup.showCenteredInCurrentWindow(project);
+	}
+
+	@Override
+	public void update(AnActionEvent e) {
+		e.getPresentation().setEnabled(projectFor(e) != null);
 	}
 
 	private String addMnemonics(String scratchName) {

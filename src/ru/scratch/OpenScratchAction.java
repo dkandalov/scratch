@@ -25,6 +25,7 @@ import com.intellij.openapi.vfs.VirtualFile;
  * @author Dmitry Kandalov
  */
 public class OpenScratchAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);
 		ScratchComponent scratchComponent = ApplicationManager.getApplication().getComponent(ScratchComponent.class);
@@ -34,9 +35,12 @@ public class OpenScratchAction extends AnAction {
 		fileDescriptor.navigate(true);
 	}
 
+	@Override
+	public void update(AnActionEvent e) {
+		e.getPresentation().setEnabled(projectFor(e) != null);
+	}
+
 	public static Project projectFor(AnActionEvent event) {
-		Project project = event.getData(PlatformDataKeys.PROJECT);
-		if (project == null) throw new IllegalStateException();
-		return project;
+		return event.getData(PlatformDataKeys.PROJECT);
 	}
 }
