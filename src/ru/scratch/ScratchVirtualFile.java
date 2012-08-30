@@ -13,18 +13,16 @@
  */
 package ru.scratch;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.jetbrains.annotations.NotNull;
-
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypes;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileSystem;
-import com.intellij.testFramework.LightVirtualFile;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * @author Dmitry Kandalov
@@ -46,7 +44,7 @@ class ScratchVirtualFile extends DeprecatedVirtualFile {
 			@Override
 			public void close() throws IOException {
 				super.close();
-				ScratchData.getInstance().setScratchText(index, outputStream.toString());
+				ScratchData.getInstance().setScratchTextInternal(index, lightVirtualFile.getContent().toString());
 			}
 		};
 	}

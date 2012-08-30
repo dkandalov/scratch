@@ -6,32 +6,24 @@ import org.apache.commons.lang.StringEscapeUtils;
  * @author DKandalov
  */
 public class XmlUtil {
-	private static final int ESCAPED_CODE_MAX_SIZE = 5;
+	private static final int ESCAPED_CODE_MAX_SIZE = 10;
 
 	public static String escape(String text) {
-		return escapeControlCodes(StringEscapeUtils.escapeXml(text));
+		String escapedXml = StringEscapeUtils.escapeXml(text);
+		return escapeControlCodes(escapedXml);
 	}
 
 	public static String unescape(String text) {
-		return StringEscapeUtils.unescapeXml(unescapeControlCodes(text));
+		String unescapedControlCodes = unescapeControlCodes(text);
+		return StringEscapeUtils.unescapeXml(unescapedControlCodes);
 	}
 
-	public static String unescapeControlCodes(String text) {
+	private static String unescapeControlCodes(String text) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 			if (c == '&' && i + 1 < text.length() && text.charAt(i + 1) == '#') {
-				int semiColonIndex = -1;
-				int j = 1;
-				do {
-					if (j > ESCAPED_CODE_MAX_SIZE)
-						break;
-					if (text.charAt(i + j) == ';') {
-						semiColonIndex = i + j;
-						break;
-					}
-					j++;
-				} while (true);
+				int semiColonIndex = semiColonIndex(text, i);
 				if (semiColonIndex != -1) {
 					int value = Integer.valueOf(text.substring(i + 2, semiColonIndex));
 					builder.append((char) value);
@@ -41,11 +33,25 @@ public class XmlUtil {
 				builder.append(c);
 			}
 		}
-
 		return builder.toString();
 	}
 
-	public static String escapeControlCodes(String text) {
+	private static int semiColonIndex(String text, int fromPos) {
+		int semiColonIndex = -1;
+		int j = 1;
+		do {
+			if (j > ESCAPED_CODE_MAX_SIZE)
+				break;
+			if (text.charAt(fromPos + j) == ';') {
+				semiColonIndex = fromPos + j;
+				break;
+			}
+			j++;
+		} while (true);
+		return semiColonIndex;
+	}
+
+	private static String escapeControlCodes(String text) {
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
