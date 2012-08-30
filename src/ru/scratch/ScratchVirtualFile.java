@@ -23,6 +23,7 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 /**
  * @author Dmitry Kandalov
@@ -34,7 +35,7 @@ class ScratchVirtualFile extends DeprecatedVirtualFile {
 
 	public ScratchVirtualFile(String text, int index) {
 		this.index = index;
-		lightVirtualFile = new LightVirtualFile(getName(), FileTypes.PLAIN_TEXT, text);
+		this.lightVirtualFile = new LightVirtualFile(getName(), FileTypes.PLAIN_TEXT, text, Charset.forName("UTF-8"), 0L);
 	}
 
 	@NotNull
@@ -122,6 +123,14 @@ class ScratchVirtualFile extends DeprecatedVirtualFile {
 	@Override
 	public long getLength() {
 		return lightVirtualFile.getLength();
+	}
+
+	@Override public boolean isCharsetSet() {
+		return lightVirtualFile.isCharsetSet();
+	}
+
+	@Override public Charset getCharset() {
+		return lightVirtualFile.getCharset();
 	}
 
 	@Override
