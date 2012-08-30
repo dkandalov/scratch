@@ -240,7 +240,11 @@ public class LightVirtualFile extends VirtualFile {
 			public void close() {
 				myModStamp = newModificationStamp;
 				try {
-					setContent(toString("UTF-8")); // TODO this was the only reason to fork this class
+					if (LightVirtualFile.this.isCharsetSet()) {
+						setContent(toString(LightVirtualFile.this.getCharset().name())); // TODO this was the only reason to fork this class
+					} else {
+						setContent(toString());
+					}
 				} catch (UnsupportedEncodingException e) {
 					setContent(toString());
 				}
