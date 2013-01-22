@@ -46,11 +46,11 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 	public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
 		try {
 			String oldClipboard = null;
-			if (oldTransferable != null) {
+			if (oldTransferable != null && oldTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
 				oldClipboard = oldTransferable.getTransferData(DataFlavor.stringFlavor).toString();
 			}
 			String clipboard = null;
-			if (newTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
+			if (newTransferable != null && newTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
 				clipboard = newTransferable.getTransferData(DataFlavor.stringFlavor).toString();
 			}
 			if (clipboard != null && !StringUtils.equals(oldClipboard, clipboard)) {
