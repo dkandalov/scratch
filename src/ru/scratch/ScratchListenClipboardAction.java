@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import javax.swing.*;
 
-import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +14,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -67,31 +67,44 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override
 			public void run() {
-				ScratchComponent scratchComponent = ApplicationManager.getApplication().getComponent(
-						ScratchComponent.class);
-				VirtualFile file = scratchComponent.getDefaultScratch();
-				FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
-				Document document = fileDocumentManager.getDocument(file);
+				Document document = getScratchDocument();
 
-				Project project = IdeFocusManager.findInstance().getLastFocusedFrame().getProject();
-				FileEditorManager instance = FileEditorManager.getInstance(project);
-				Editor selectedTextEditor = instance.getSelectedTextEditor();
-				if (selectedTextEditor != null) {
-					if (selectedTextEditor.getDocument().equals(document)) {
-						return;
-					}
-				}
+				if (hasFocusInEditor(document))
+					return;
 
 				String text = document.getText();
 				if (text.endsWith("\n")) {
 					document.setText(text + clipboard);
 				} else {
 					document.setText(text + "\n" + clipboard);
-
 				}
-				fileDocumentManager.saveDocument(document);
+
+				FileDocumentManager.getInstance().saveDocument(document);
 			}
 		});
+	}
+
+	private boolean hasFocusInEditor(Document document) {
+		Editor selectedTextEditor = getSelectedEditor();
+		if (selectedTextEditor != null) {
+			if (selectedTextEditor.getDocument().equals(document)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Document getScratchDocument() {
+		ScratchComponent scratchComponent = ApplicationManager.getApplication().getComponent(ScratchComponent.class);
+		VirtualFile file = scratchComponent.getDefaultScratch();
+		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+		return fileDocumentManager.getDocument(file);
+	}
+
+	private Editor getSelectedEditor() {
+		Project project = IdeFocusManager.findInstance().getLastFocusedFrame().getProject();
+		FileEditorManager instance = FileEditorManager.getInstance(project);
+		return instance.getSelectedTextEditor();
 	}
 
 	@Override
