@@ -53,6 +53,10 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
+		<action id="ScratchListenClipboardAction" class="ru.scratch.ScratchListenClipboardAction"
+				text="Scratch - Listen to clipboard" description="Scratch - Listen to Clipboard">
+			<add-to-group group-id="MainToolBar" anchor="last"/>
+		</action>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
