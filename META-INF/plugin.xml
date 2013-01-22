@@ -54,8 +54,9 @@
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 		<action id="ScratchListenClipboardAction" class="ru.scratch.ScratchListenClipboardAction"
-				text="Scratch - Listen to clipboard" description="Scratch - Listen to Clipboard">
-			<add-to-group group-id="MainToolBar" anchor="last"/>
+				text="Listen to clipboard" description="Appends clipboard content to default scratch">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt l"/>
+			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 	</actions>
 

@@ -30,7 +30,9 @@ import java.util.Arrays;
 )
 public class ScratchData implements PersistentStateComponent<ScratchData> {
 	private static final int SIZE = 5;
+
 	private final String scratchTexts[];
+	private boolean appendContentFromClipboard;
 
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
@@ -51,6 +53,16 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setScratchText(String[] text) {
 		System.arraycopy(text, 0, scratchTexts, 0, text.length);
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public boolean isAppendContentFromClipboard() {
+		return appendContentFromClipboard;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setAppendContentFromClipboard(boolean appendContentFromClipboard) {
+		this.appendContentFromClipboard = appendContentFromClipboard;
 	}
 
 	String[] getScratchTextInternal() {

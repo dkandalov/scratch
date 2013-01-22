@@ -1,18 +1,9 @@
 package ru.scratch;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-
-import javax.swing.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.Nullable;
-
-import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
@@ -20,30 +11,44 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.ide.CopyPasteManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.openapi.wm.IdeFrame;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
-public class ScratchListenClipboardAction extends AnAction implements CopyPasteManager.ContentChangedListener {
+import javax.swing.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+
+public class ScratchListenClipboardAction extends ToggleAction implements CopyPasteManager.ContentChangedListener {
 	private static final Logger LOG = Logger.getInstance(ScratchListenClipboardAction.class.getName());
-	boolean enabled = false;
 
-	public static final Icon ICON = IconLoader.getIcon("/clipboardOff.gif");
-	public static final Icon ICON1 = IconLoader.getIcon("/clipboardOn.gif");
+	private static final Icon IS_ON_ICON = AllIcons.Actions.Menu_paste;
+	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(AllIcons.Actions.Menu_paste);
 
-	public void actionPerformed(AnActionEvent e) {
-		if (!enabled) {
-			CopyPasteManager.getInstance().addContentChangedListener(this);
-		} else {
-			CopyPasteManager.getInstance().removeContentChangedListener(this);
-		}
-		enabled = !enabled;
-		updateIcon(e.getPresentation());
+	public ScratchListenClipboardAction() {
+		CopyPasteManager.getInstance().addContentChangedListener(this);
+	}
+
+	@Override
+	public void setSelected(AnActionEvent event, boolean enabled) {
+		ScratchData.getInstance().setAppendContentFromClipboard(enabled);
+		updateIcon(event.getPresentation(), enabled);
+	}
+
+	@Override
+	public boolean isSelected(AnActionEvent event) {
+		return ScratchData.getInstance().isAppendContentFromClipboard();
 	}
 
 	@Override
 	public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
+		if (!ScratchData.getInstance().isAppendContentFromClipboard()) return;
+
 		try {
 			String oldClipboard = null;
 			if (oldTransferable != null && oldTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
@@ -54,7 +59,7 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 				clipboard = newTransferable.getTransferData(DataFlavor.stringFlavor).toString();
 			}
 			if (clipboard != null && !StringUtils.equals(oldClipboard, clipboard)) {
-				write(clipboard);
+				writeToScratch(clipboard);
 			}
 		} catch (UnsupportedFlavorException e) {
 			LOG.info(e);
@@ -63,7 +68,7 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 		}
 	}
 
-	private void write(final String clipboard) {
+	private static void writeToScratch(final String clipboard) {
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override
 			public void run() {
@@ -84,7 +89,7 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 		});
 	}
 
-	private boolean hasFocusInEditor(Document document) {
+	private static boolean hasFocusInEditor(Document document) {
 		Editor selectedTextEditor = getSelectedEditor();
 		if (selectedTextEditor != null) {
 			if (selectedTextEditor.getDocument().equals(document)) {
@@ -94,30 +99,32 @@ public class ScratchListenClipboardAction extends AnAction implements CopyPasteM
 		return false;
 	}
 
-	private Document getScratchDocument() {
+	private static Document getScratchDocument() {
 		ScratchComponent scratchComponent = ApplicationManager.getApplication().getComponent(ScratchComponent.class);
 		VirtualFile file = scratchComponent.getDefaultScratch();
 		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
 		return fileDocumentManager.getDocument(file);
 	}
 
-	private Editor getSelectedEditor() {
-		Project project = IdeFocusManager.findInstance().getLastFocusedFrame().getProject();
-		FileEditorManager instance = FileEditorManager.getInstance(project);
+	private static Editor getSelectedEditor() {
+		IdeFrame frame = IdeFocusManager.findInstance().getLastFocusedFrame();
+		if (frame == null) return null;
+
+		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
 		return instance.getSelectedTextEditor();
 	}
 
 	@Override
 	public void update(AnActionEvent e) {
 		super.update(e);
-		updateIcon(e.getPresentation());
+		updateIcon(e.getPresentation(), isSelected(e));
 	}
 
-	private void updateIcon(Presentation presentation) {
+	private void updateIcon(Presentation presentation, boolean enabled) {
 		if (enabled) {
-			presentation.setIcon(ICON1);
+			presentation.setIcon(IS_ON_ICON);
 		} else {
-			presentation.setIcon(ICON);
+			presentation.setIcon(IS_OFF_ICON);
 		}
 	}
 
