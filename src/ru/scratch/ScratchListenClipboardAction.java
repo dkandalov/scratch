@@ -121,11 +121,7 @@ public class ScratchListenClipboardAction extends ToggleAction implements CopyPa
 	}
 
 	private void updateIcon(Presentation presentation, boolean enabled) {
-		if (enabled) {
-			presentation.setIcon(IS_ON_ICON);
-		} else {
-			presentation.setIcon(IS_OFF_ICON);
-		}
+		presentation.setIcon(enabled ? IS_ON_ICON : IS_OFF_ICON);
 	}
 
 }
