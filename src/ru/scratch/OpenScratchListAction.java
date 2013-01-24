@@ -16,17 +16,17 @@ package ru.scratch;
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.MNEMONICS;
 import static ru.scratch.OpenScratchAction.projectFor;
 
-import javax.swing.*;
-
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VirtualFile;
+import java.util.Map;
+import javax.swing.*;
 
 /**
  * @author Dmitry Kandalov
@@ -40,17 +40,23 @@ public class OpenScratchListAction extends AnAction {
 		DefaultActionGroup actionGroup = new DefaultActionGroup();
 
 		final Project project = projectFor(event);
-		for (final ScratchVirtualFile scratchFile : scratchFiles()) {
-			actionGroup.add(new AnAction(addMnemonics(scratchFile.getName()), "Open " + scratchFile.getName(), ICON) {
+		for (final Map.Entry<String, String> scratchFile : ScratchComponent.nameToPathList()) {
+			// todo icon by type
+			actionGroup.add(new AnAction(addMnemonics(scratchFile.getKey()), "Open " + scratchFile.getKey(), ICON) {
 				@Override
 				public void actionPerformed(AnActionEvent e) {
-					new OpenFileDescriptor(project, scratchFile).navigate(true);
+					VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getValue());
+					if (virtualFile != null) {
+						new OpenFileDescriptor(project, virtualFile).navigate(true);
+						ScratchData.getInstance().setDefaultFileName(scratchFile.getKey());
+					}
 				}
 			});
 		}
 
 		JBPopupFactory factory = JBPopupFactory.getInstance();
-		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(), MNEMONICS, true);
+		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(),
+				MNEMONICS, true);
 		listPopup.showCenteredInCurrentWindow(project);
 	}
 
@@ -69,8 +75,4 @@ public class OpenScratchListAction extends AnAction {
 		}
 	}
 
-	private ScratchVirtualFile[] scratchFiles() {
-		ScratchComponent scratchComponent = ApplicationManager.getApplication().getComponent(ScratchComponent.class);
-		return scratchComponent.getScratchFiles();
-	}
 }
