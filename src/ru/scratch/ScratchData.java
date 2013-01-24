@@ -18,21 +18,19 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-
 import java.util.Arrays;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Dmitry Kandalov
  */
-@State(
-		name = "ScratchData",
-		storages = {@Storage(id = "main", file = "$APP_CONFIG$/scratch.xml")}
-)
+@State(name = "ScratchData", storages = {@Storage(id = "main", file = "$APP_CONFIG$/scratch.xml")})
 public class ScratchData implements PersistentStateComponent<ScratchData> {
 	private static final int SIZE = 5;
 
 	private final String scratchTexts[];
 	private boolean appendContentFromClipboard;
+	private String defaultFileName;
 
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
@@ -102,5 +100,14 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	@Override
 	public int hashCode() {
 		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
+	}
+
+	@Nullable
+	public String getDefaultFileName() {
+		return defaultFileName;
+	}
+
+	public void setDefaultFileName(String defaultFileName) {
+		this.defaultFileName = defaultFileName;
 	}
 }

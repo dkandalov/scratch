@@ -16,25 +16,37 @@ package ru.scratch;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.NonEmptyInputValidator;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.io.File;
 
 /**
- * @author Dmitry Kandalov
+ * @author Vojtech Krasa
  */
-public class OpenScratchAction extends AnAction {
+public class CreateScratchAction extends AnAction {
+	private static final Logger LOG = Logger.getInstance(CreateScratchAction.class);
+
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);
 
-		VirtualFile defaultScratch = ScratchComponent.getDefaultScratch();
-		if (defaultScratch != null) {
-			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, defaultScratch);
+		String fileName;
+		fileName = Messages.showInputDialog("File name:", "Create new scratch", Messages.getQuestionIcon(),
+				"scratch.xml", new NonEmptyInputValidator());
+		if (fileName != null) {
+			File file = new File(ScratchComponent.pluginsRootPath(), fileName);
+			FileUtil.createIfNotExists(file);
+			VirtualFile fileByUrl = Util.getVirtualFile(file.getAbsolutePath());
+			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, fileByUrl);
 			fileDescriptor.navigate(true);
-		} else {
-			new CreateScratchAction().actionPerformed(event);
+			ScratchData.getInstance().setDefaultFileName(fileName);
 		}
+
 	}
 
 	@Override

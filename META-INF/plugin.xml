@@ -16,8 +16,8 @@
 				</body></html>
 		]]>
 	</description>
-    <change-notes>
-        <![CDATA[<html><body>
+	<change-notes>
+		<![CDATA[<html><body>
         <ul>
             <li>0.11 - fixed bug when control symbols like 0x11 couldn't be saved</li>
             <li>0.12 - bug fixing</li>
@@ -29,9 +29,9 @@
         </ul>
         </body></html>
         ]]>
-    </change-notes>
+	</change-notes>
 
-    <depends>com.intellij.modules.platform</depends>
+	<depends>com.intellij.modules.platform</depends>
 
 	<application-components>
 		<component>
@@ -44,24 +44,29 @@
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</group>
 		<action id="Scratch.OpenScratch" class="ru.scratch.OpenScratchAction" text="Open scratch"
-		        description="Opens default scratch editor" icon="/fileTypes/text.png">
+				description="Opens default scratch editor" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
+		<action id="Scratch.CreateScratchAction" class="ru.scratch.CreateScratchAction" text="Create scratch"
+				description="Create new scratch" icon="/fileTypes/text.png">
+			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
+			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
+		</action>
 		<action id="Scratch.OpenScratchList" class="ru.scratch.OpenScratchListAction" text="Open scratch list"
-		        description="Opens list of all scratch editors" icon="/actions/copy.png">
+				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 		<action id="ScratchListenClipboardAction" class="ru.scratch.ScratchListenClipboardAction"
 				text="Listen to clipboard" description="Appends clipboard content to default scratch">
-            <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
+			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<applicationService serviceInterface="ru.scratch.ScratchData"
-		                    serviceImplementation="ru.scratch.ScratchData"/>
+							serviceImplementation="ru.scratch.ScratchData"/>
 	</extensions>
 </idea-plugin>
