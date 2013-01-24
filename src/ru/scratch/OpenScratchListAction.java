@@ -74,7 +74,7 @@ public class OpenScratchListAction extends AnAction {
 		} else {
 			icon = ICON;
 		}
-		if (icon.getIconHeight() == 0) {
+		if (icon==null || icon.getIconHeight() == 0) {
 			icon = ICON;
 		}
 		return icon;
