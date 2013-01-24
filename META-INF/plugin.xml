@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>0.17</version>
+	<version>0.18</version>
 	<vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/scratch">Dmitry Kandalov</vendor>
 	<idea-version since-build="112.0"/>
 	<description>
@@ -10,8 +10,10 @@
 				<br/><br/>
 				Usage:<br/>
 				<ul>
-					<li>Alt+C, Alt+C - opens default scratch;</li>
-					<li>Alt+C, Alt+S - opens list of all scratches.</li>
+					<li>Alt+C, Alt+A - creates new scratch file</li>
+					<li>Alt+C, Alt+C - opens default scratch</li>
+					<li>Alt+C, Alt+S - opens list of all scratches</li>
+					<li>Alt+C, Alt+V - appends clipboard content to default scratch</li>
 				</ul>
 				</body></html>
 		]]>
@@ -26,6 +28,7 @@
             <li>0.15 - NPE if there are no open projects</li>
             <li>0.16 - fixed reference to icon</li>
             <li>0.17 - fix for UTF-8</li>
+            <li>0.18 - uses physical files, new clipboard listener function</li>
         </ul>
         </body></html>
         ]]>

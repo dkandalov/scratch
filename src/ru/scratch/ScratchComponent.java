@@ -42,7 +42,7 @@ public class ScratchComponent implements ApplicationComponent {
 	@Override
 	public void initComponent() {
 		ScratchData instance = ScratchData.getInstance();
-		if (nameToPathList().isEmpty()) {
+		if (instance.isFirstRun()) {
 			String text[] = instance.getScratchTextInternal();
 			int i = 0;
 			for (String s : text) {
@@ -54,6 +54,7 @@ public class ScratchComponent implements ApplicationComponent {
 					LOG.error(e);
 				}
 			}
+			instance.setFirstRun(false);
 		}
 	}
 
@@ -69,7 +70,7 @@ public class ScratchComponent implements ApplicationComponent {
 
 	@Nullable
 	public static VirtualFile getDefaultScratch() {
-		String path = nameToPathMap().get(ScratchData.getInstance().getDefaultFileName());
+		String path = nameToPathMap().get(ScratchData.getInstance().getLastOpenedFileName());
 		if (path == null) {
 			List<Map.Entry<String, String>> entries = nameToPathList();
 			if (entries.isEmpty()) {
