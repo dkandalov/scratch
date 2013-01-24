@@ -30,8 +30,10 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 
 	private final String scratchTexts[];
 	private boolean appendContentFromClipboard;
-	private String defaultFileName;
-
+	@Nullable
+	private String lastOpenedFileName;
+	private boolean firstRun = true;
+	
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
 	}
@@ -71,10 +73,6 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 		return result;
 	}
 
-	void setScratchTextInternal(int scratchIndex, String text) {
-		scratchTexts[scratchIndex] = XmlUtil.escape(text);
-	}
-
 	@Override
 	public ScratchData getState() {
 		return this;
@@ -103,11 +101,19 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	}
 
 	@Nullable
-	public String getDefaultFileName() {
-		return defaultFileName;
+	public String getLastOpenedFileName() {
+		return lastOpenedFileName;
 	}
 
-	public void setDefaultFileName(String defaultFileName) {
-		this.defaultFileName = defaultFileName;
+	public void setLastOpenedFileName(@Nullable String lastOpenedFileName) {
+		this.lastOpenedFileName = lastOpenedFileName;
+	}
+
+	public boolean isFirstRun() {
+		return firstRun;
+	}
+
+	public void setFirstRun(boolean firstRun) {
+		this.firstRun = firstRun;
 	}
 }

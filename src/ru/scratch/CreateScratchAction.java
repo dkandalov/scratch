@@ -37,14 +37,14 @@ public class CreateScratchAction extends AnAction {
 
 		String fileName;
 		fileName = Messages.showInputDialog("File name:", "Create new scratch", Messages.getQuestionIcon(),
-				"scratch.xml", new NonEmptyInputValidator());
+				"scratch.txt", new NonEmptyInputValidator());
 		if (fileName != null) {
 			File file = new File(ScratchComponent.pluginsRootPath(), fileName);
 			FileUtil.createIfNotExists(file);
 			VirtualFile fileByUrl = Util.getVirtualFile(file.getAbsolutePath());
 			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, fileByUrl);
 			fileDescriptor.navigate(true);
-			ScratchData.getInstance().setDefaultFileName(fileName);
+			ScratchData.getInstance().setLastOpenedFileName(fileName);
 		}
 
 	}
