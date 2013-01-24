@@ -13,7 +13,7 @@
  */
 package ru.scratch;
 
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.MNEMONICS;
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
 import static ru.scratch.OpenScratchAction.projectFor;
 
 import com.intellij.openapi.actionSystem.AnAction;
@@ -41,14 +41,14 @@ public class OpenScratchListAction extends AnAction {
 
 		final Project project = projectFor(event);
 		for (final Map.Entry<String, String> scratchFile : ScratchComponent.nameToPathList()) {
-			// todo icon by type
-			actionGroup.add(new AnAction(addMnemonics(scratchFile.getKey()), "Open " + scratchFile.getKey(), ICON) {
+			final String scratchName = scratchFile.getKey();
+			actionGroup.add(new AnAction(scratchName, "Open " + scratchName, getIcon(scratchName)) {
 				@Override
 				public void actionPerformed(AnActionEvent e) {
 					VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getValue());
 					if (virtualFile != null) {
 						new OpenFileDescriptor(project, virtualFile).navigate(true);
-						ScratchData.getInstance().setDefaultFileName(scratchFile.getKey());
+						ScratchData.getInstance().setLastOpenedFileName(scratchName);
 					}
 				}
 			});
@@ -56,7 +56,7 @@ public class OpenScratchListAction extends AnAction {
 
 		JBPopupFactory factory = JBPopupFactory.getInstance();
 		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(),
-				MNEMONICS, true);
+				NUMBERING, true);
 		listPopup.showCenteredInCurrentWindow(project);
 	}
 
@@ -65,14 +65,19 @@ public class OpenScratchListAction extends AnAction {
 		e.getPresentation().setEnabled(projectFor(e) != null);
 	}
 
-	private String addMnemonics(String scratchName) {
-		// this is workaround to add mnemonic for "scratch.txt"
-		// other scratches are given mnemonics by IntelliJ according to their numbers (like "scratch&2.txt")
-		if (scratchName.equals("scratch.txt")) {
-			return "&scratch.txt";
+	private Icon getIcon(String scratchName) {
+		String[] split = scratchName.split("\\.");
+		Icon icon;
+		if (split.length > 1) {
+			String fileType = split[split.length - 1];
+			icon = IconLoader.getIcon("/fileTypes/" + fileType + ".png");
 		} else {
-			return scratchName;
+			icon = ICON;
 		}
+		if (icon.getIconHeight() == 0) {
+			icon = ICON;
+		}
+		return icon;
 	}
 
 }
