@@ -13,30 +13,52 @@
  */
 package ru.scratch;
 
-import org.jetbrains.annotations.NotNull;
+import static com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName;
 
+import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Dmitry Kandalov
  */
 public class ScratchComponent implements ApplicationComponent {
-	private static final int DEFAULT_SCRATCH = 0;
-	private ScratchVirtualFile files[];
+	private static final Logger LOG = Logger.getInstance(ScratchComponent.class);
 
 	@Override
 	public void initComponent() {
-		String text[] = ScratchData.getInstance().getScratchTextInternal();
-		files = new ScratchVirtualFile[text.length];
-		for (int i = 0; i < text.length; i++) {
-			files[i] = new ScratchVirtualFile(text[i], i);
+		ScratchData instance = ScratchData.getInstance();
+		if (nameToPathList().isEmpty()) {
+			String text[] = instance.getScratchTextInternal();
+			int i = 0;
+			for (String s : text) {
+				try {
+					if (!StringUtils.isBlank(s)) {
+						FileUtil.writeToFile(new File(pluginsRootPath() + "/" + "scratch" + ++i + ".txt"), s);
+					}
+				} catch (IOException e) {
+					LOG.error(e);
+				}
+			}
 		}
 	}
 
 	@Override
 	public void disposeComponent() {
-		files = null;
 	}
 
 	@NotNull
@@ -45,11 +67,50 @@ public class ScratchComponent implements ApplicationComponent {
 		return ScratchComponent.class.getSimpleName();
 	}
 
-	public VirtualFile getDefaultScratch() {
-		return files[DEFAULT_SCRATCH];
+	@Nullable
+	public static VirtualFile getDefaultScratch() {
+		String path = nameToPathMap().get(ScratchData.getInstance().getDefaultFileName());
+		if (path == null) {
+			List<Map.Entry<String, String>> entries = nameToPathList();
+			if (entries.isEmpty()) {
+				return null;
+			}
+			path = entries.get(0).getValue();
+		}
+		return Util.getVirtualFile(path);
 	}
 
-	public ScratchVirtualFile[] getScratchFiles() {
-		return files;
+	public static String pluginsRootPath() {
+		return toSystemIndependentName(PathManager.getPluginsPath() + "/scratch");
+	}
+
+	public static Map<String, String> nameToPathMap() {
+		File[] files = new File(pluginsRootPath()).listFiles(new FileFilter() {
+			@SuppressWarnings("SimplifiableIfStatement")
+			@Override
+			public boolean accept(File file) {
+				return !file.isDirectory();
+			}
+		});
+		if (files == null)
+			return new HashMap<String, String>();
+
+		HashMap<String, String> result = new HashMap<String, String>();
+		for (File file : files) {
+			result.put(file.getName(), file.getAbsolutePath());
+		}
+		return result;
+	}
+
+	public static List<Map.Entry<String, String>> nameToPathList() {
+		List<Map.Entry<String, String>> list = new ArrayList<Map.Entry<String, String>>();
+		list.addAll(ScratchComponent.nameToPathMap().entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<String, String>>() {
+			@Override
+			public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
+				return o1.getKey().compareTo(o2.getKey());
+			}
+		});
+		return list;
 	}
 }
