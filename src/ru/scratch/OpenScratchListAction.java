@@ -13,9 +13,6 @@
  */
 package ru.scratch;
 
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
-import static ru.scratch.OpenScratchAction.projectFor;
-
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -25,8 +22,12 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
-import java.util.Map;
+
 import javax.swing.*;
+import java.util.Map;
+
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
+import static ru.scratch.OpenScratchAction.projectFor;
 
 /**
  * @author Dmitry Kandalov
@@ -65,7 +66,7 @@ public class OpenScratchListAction extends AnAction {
 		e.getPresentation().setEnabled(projectFor(e) != null);
 	}
 
-	private Icon getIcon(String scratchName) {
+	private static Icon getIcon(String scratchName) {
 		String[] split = scratchName.split("\\.");
 		Icon icon;
 		if (split.length > 1) {
@@ -74,7 +75,7 @@ public class OpenScratchListAction extends AnAction {
 		} else {
 			icon = ICON;
 		}
-		if (icon==null || icon.getIconHeight() == 0) {
+		if (icon == null || icon.getIconHeight() == 0) {
 			icon = ICON;
 		}
 		return icon;

@@ -23,6 +23,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.NonEmptyInputValidator;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+
 import java.io.File;
 
 /**
@@ -36,17 +37,21 @@ public class CreateScratchAction extends AnAction {
 		Project project = projectFor(event);
 
 		String fileName;
-		fileName = Messages.showInputDialog("File name:", "Create new scratch", Messages.getQuestionIcon(),
+		fileName = Messages.showInputDialog("File name:", "Create New Scratch", Messages.getQuestionIcon(),
 				"scratch.txt", new NonEmptyInputValidator());
 		if (fileName != null) {
 			File file = new File(ScratchComponent.pluginsRootPath(), fileName);
 			FileUtil.createIfNotExists(file);
 			VirtualFile fileByUrl = Util.getVirtualFile(file.getAbsolutePath());
+			if (fileByUrl == null) {
+				LOG.warn("Failed to open scratch file: " + file.getAbsolutePath());
+				return;
+			}
+
 			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, fileByUrl);
 			fileDescriptor.navigate(true);
 			ScratchData.getInstance().setLastOpenedFileName(fileName);
 		}
-
 	}
 
 	@Override
@@ -54,7 +59,7 @@ public class CreateScratchAction extends AnAction {
 		e.getPresentation().setEnabled(projectFor(e) != null);
 	}
 
-	public static Project projectFor(AnActionEvent event) {
+	private static Project projectFor(AnActionEvent event) {
 		return event.getData(PlatformDataKeys.PROJECT);
 	}
 }

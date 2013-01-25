@@ -13,30 +13,26 @@
  */
 package ru.scratch;
 
-import static com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName;
-
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.*;
+
+import static com.intellij.openapi.util.io.FileUtilRt.toSystemIndependentName;
+
 /**
  * @author Dmitry Kandalov
  */
-public class ScratchComponent implements ApplicationComponent {
+public class ScratchComponent implements ApplicationComponent { // TODO make it DumbAware
 	private static final Logger LOG = Logger.getInstance(ScratchComponent.class);
 
 	@Override

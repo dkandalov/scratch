@@ -1,8 +1,8 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>0.18</version>
-	<vendor email="dmitry.kandalov [at] gmail.com" url="https://github.com/dkandalov/scratch">Dmitry Kandalov</vendor>
+	<version>1.0</version>
+	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 	<idea-version since-build="112.0"/>
 	<description>
 		<![CDATA[<html><body>
@@ -28,7 +28,7 @@
             <li>0.15 - NPE if there are no open projects</li>
             <li>0.16 - fixed reference to icon</li>
             <li>0.17 - fix for UTF-8</li>
-            <li>0.18 - uses physical files, new clipboard listener function</li>
+            <li>1.0 - uses physical files, new clipboard listener function</li>
         </ul>
         </body></html>
         ]]>
@@ -46,23 +46,25 @@
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</group>
-		<action id="Scratch.OpenScratch" class="ru.scratch.OpenScratchAction" text="Open scratch"
+		<action id="Scratch.OpenScratch" class="ru.scratch.OpenScratchAction" text="Open Scratch"
 				description="Opens default scratch editor" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="Scratch.CreateScratchAction" class="ru.scratch.CreateScratchAction" text="Create scratch"
+        <!-- TODO may be it should be called Add New Scratch to match alt-c,alt-a shortcut-->
+		<action id="Scratch.CreateScratchAction" class="ru.scratch.CreateScratchAction" text="Create Scratch"
 				description="Create new scratch" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="Scratch.OpenScratchList" class="ru.scratch.OpenScratchListAction" text="Open scratch list"
+        <!-- TODO delete scratch -->
+		<action id="Scratch.OpenScratchList" class="ru.scratch.OpenScratchListAction" text="Open Scratch List"
 				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 		<action id="ScratchListenClipboardAction" class="ru.scratch.ScratchListenClipboardAction"
-				text="Listen to clipboard" description="Appends clipboard content to default scratch">
+				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
