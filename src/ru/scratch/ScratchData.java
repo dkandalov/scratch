@@ -18,8 +18,11 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
-import java.util.Arrays;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Dmitry Kandalov
@@ -33,7 +36,8 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	@Nullable
 	private String lastOpenedFileName;
 	private boolean firstRun = true;
-	
+	protected List<String> createdFileNames = new ArrayList<String>();
+
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
 	}
@@ -115,5 +119,23 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 
 	public void setFirstRun(boolean firstRun) {
 		this.firstRun = firstRun;
+	}
+
+	public List<String> getCreatedFileNames() {
+		return createdFileNames;
+	}
+
+	public void setCreatedFileNames(List<String> createdFileNames) {
+		this.createdFileNames = createdFileNames;
+	}
+
+	public void addCreatedFile(String name) {
+		if (!createdFileNames.contains(name)) {
+			createdFileNames.add(name);
+		}
+	}
+
+	public void removeCreatedFileName(String createdFileName) {
+		createdFileNames.remove(createdFileName);
 	}
 }

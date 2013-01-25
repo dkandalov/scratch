@@ -16,45 +16,47 @@ package ru.scratch;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.VirtualFile;
 
 import javax.swing.*;
-import java.util.Map;
+import java.io.File;
 
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
-import static ru.scratch.OpenScratchAction.projectFor;
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.*;
+import static ru.scratch.OpenScratchAction.*;
 
 /**
  * @author Dmitry Kandalov
  */
-public class OpenScratchListAction extends AnAction {
+public class OpenScratchListAction extends DumbAwareAction {
 	private static final String POPUP_TITLE = "List of Scratches";
 	private static final Icon ICON = IconLoader.getIcon("/fileTypes/text.png");
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		DefaultActionGroup actionGroup = new DefaultActionGroup();
-
 		final Project project = projectFor(event);
-		for (final Map.Entry<String, String> scratchFile : ScratchComponent.nameToPathList()) {
-			final String scratchName = scratchFile.getKey();
+		DefaultActionGroup actionGroup = createActionGroup(project);
+		showListPopup(event, actionGroup, project);
+	}
+
+	private DefaultActionGroup createActionGroup(final Project project) {
+		DefaultActionGroup actionGroup = new DefaultActionGroup();
+		for (final File scratchFile : ScratchComponent.filesAsList()) {
+			final String scratchName = scratchFile.getName();
 			actionGroup.add(new AnAction(scratchName, "Open " + scratchName, getIcon(scratchName)) {
 				@Override
 				public void actionPerformed(AnActionEvent e) {
-					VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getValue());
-					if (virtualFile != null) {
-						new OpenFileDescriptor(project, virtualFile).navigate(true);
-						ScratchData.getInstance().setLastOpenedFileName(scratchName);
-					}
+					ScratchComponent.openInEditor(project, scratchFile);
 				}
 			});
 		}
+		return actionGroup;
+	}
 
+	private void showListPopup(AnActionEvent event, DefaultActionGroup actionGroup, Project project) {
 		JBPopupFactory factory = JBPopupFactory.getInstance();
 		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(),
 				NUMBERING, true);
@@ -71,7 +73,7 @@ public class OpenScratchListAction extends AnAction {
 		Icon icon;
 		if (split.length > 1) {
 			String fileType = split[split.length - 1];
-			icon = IconLoader.getIcon("/fileTypes/" + fileType + ".png");
+			icon = IconLoader.findIcon("/fileTypes/" + fileType + ".png");
 		} else {
 			icon = ICON;
 		}
