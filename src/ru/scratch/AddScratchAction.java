@@ -26,8 +26,8 @@ import java.io.File;
 /**
  * @author Vojtech Krasa
  */
-public class CreateScratchAction extends DumbAwareAction {
-	private static final Logger LOG = Logger.getInstance(CreateScratchAction.class);
+public class AddScratchAction extends DumbAwareAction {
+	private static final Logger LOG = Logger.getInstance(AddScratchAction.class);
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {

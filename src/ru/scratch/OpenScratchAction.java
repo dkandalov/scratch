@@ -33,7 +33,7 @@ public class OpenScratchAction extends DumbAwareAction {
 			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, defaultScratch);
 			fileDescriptor.navigate(true);
 		} else {
-			new CreateScratchAction().actionPerformed(event);
+			new AddScratchAction().actionPerformed(event);
 		}
 	}
 
