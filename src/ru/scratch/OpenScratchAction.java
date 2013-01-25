@@ -13,17 +13,17 @@
  */
 package ru.scratch;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 
 /**
  * @author Dmitry Kandalov
  */
-public class OpenScratchAction extends AnAction {
+public class OpenScratchAction extends DumbAwareAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);

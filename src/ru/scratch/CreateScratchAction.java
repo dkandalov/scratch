@@ -13,45 +13,48 @@
  */
 package ru.scratch;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.NonEmptyInputValidator;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 
 import java.io.File;
 
 /**
  * @author Vojtech Krasa
  */
-public class CreateScratchAction extends AnAction {
+public class CreateScratchAction extends DumbAwareAction {
 	private static final Logger LOG = Logger.getInstance(CreateScratchAction.class);
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);
 
-		String fileName;
-		fileName = Messages.showInputDialog("File name:", "Create New Scratch", Messages.getQuestionIcon(),
-				"scratch.txt", new NonEmptyInputValidator());
+		String fileName = showInputDialog();
 		if (fileName != null) {
-			File file = new File(ScratchComponent.pluginsRootPath(), fileName);
-			FileUtil.createIfNotExists(file);
-			VirtualFile fileByUrl = Util.getVirtualFile(file.getAbsolutePath());
-			if (fileByUrl == null) {
-				LOG.warn("Failed to open scratch file: " + file.getAbsolutePath());
-				return;
-			}
-
-			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, fileByUrl);
-			fileDescriptor.navigate(true);
-			ScratchData.getInstance().setLastOpenedFileName(fileName);
+			File file = ScratchComponent.createFile(fileName);
+			ScratchComponent.openInEditor(project, file);
 		}
+	}
+
+	private String showInputDialog() {
+		String fileName = Messages.showInputDialog("File name:", "Create New Scratch", Messages.getQuestionIcon(),
+				getDefaultName(), new NonEmptyInputValidator());
+		return fileName;
+	}
+
+	private String getDefaultName() {
+		String s = "scratch.txt";
+		File file = new File(ScratchComponent.pluginsRootPath(), s);
+		int i = 0;
+		while (file.exists()) {
+			s = "scratch" + ++i + ".txt";
+			file = new File(ScratchComponent.pluginsRootPath(), s);
+		}
+		return s;
 	}
 
 	@Override
