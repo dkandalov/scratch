@@ -13,7 +13,6 @@
  */
 package ru.scratch;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ToggleAction;
@@ -24,23 +23,25 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.IdeFrame;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import javax.swing.*;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
-public class ScratchListenClipboardAction extends ToggleAction implements CopyPasteManager.ContentChangedListener {
+public class ScratchListenClipboardAction extends ToggleAction implements DumbAware, CopyPasteManager.ContentChangedListener {
 	private static final Logger LOG = Logger.getInstance(ScratchListenClipboardAction.class.getName());
 
-	private static final Icon IS_ON_ICON = AllIcons.Actions.Menu_paste;
-	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(AllIcons.Actions.Menu_paste);
+	private static final Icon IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png");
+	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IconLoader.getIcon("/actions/menu-paste.png"));
 
 	public ScratchListenClipboardAction() {
 		CopyPasteManager.getInstance().addContentChangedListener(this);

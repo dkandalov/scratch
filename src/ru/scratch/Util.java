@@ -18,6 +18,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+
 public class Util {
 
 	@Nullable
@@ -26,5 +28,9 @@ public class Util {
 			absolutePath = "file://" + absolutePath;
 		}
 		return VirtualFileManager.getInstance().refreshAndFindFileByUrl(FileUtil.toSystemIndependentName(absolutePath));
+	}
+
+	public static VirtualFile getVirtualFile(File file) {
+		return getVirtualFile(file.getAbsolutePath());
 	}
 }

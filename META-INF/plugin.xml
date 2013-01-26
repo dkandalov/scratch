@@ -3,14 +3,14 @@
 	<name>Scratch</name>
 	<version>1.0</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
-	<idea-version since-build="112.0"/>
+	<idea-version since-build="107.0"/>
 	<description>
 		<![CDATA[<html><body>
 				Quickly opens temporary IntelliJ text editor tab. Data is stored on application level.
 				<br/><br/>
 				Usage:<br/>
 				<ul>
-					<li>Alt+C, Alt+A - creates new scratch file</li>
+					<li>Alt+C, Alt+A - add new scratch file</li>
 					<li>Alt+C, Alt+C - opens default scratch</li>
 					<li>Alt+C, Alt+S - opens list of all scratches</li>
 					<li>Alt+C, Alt+V - appends clipboard content to default scratch</li>
@@ -28,7 +28,7 @@
             <li>0.15 - NPE if there are no open projects</li>
             <li>0.16 - fixed reference to icon</li>
             <li>0.17 - fix for UTF-8</li>
-            <li>1.0 - uses physical files, new clipboard listener function</li>
+            <li>1.0 - uses physical files, new clipboard listener function, compatible from IJ 10.5</li>
         </ul>
         </body></html>
         ]]>
@@ -51,13 +51,12 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-        <!-- TODO may be it should be called Add New Scratch to match alt-c,alt-a shortcut-->
-		<action id="Scratch.CreateScratchAction" class="ru.scratch.CreateScratchAction" text="Create Scratch"
-				description="Create new scratch" icon="/fileTypes/text.png">
+		<action id="Scratch.CreateScratchAction" class="ru.scratch.AddScratchAction" text="Add New Scratch"
+				description="Add new scratch file" icon="/actions/new.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-        <!-- TODO delete scratch -->
+		<!-- TODO delete scratch -->
 		<action id="Scratch.OpenScratchList" class="ru.scratch.OpenScratchListAction" text="Open Scratch List"
 				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
