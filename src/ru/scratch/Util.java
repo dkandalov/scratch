@@ -30,6 +30,7 @@ public class Util {
 		return VirtualFileManager.getInstance().refreshAndFindFileByUrl(FileUtil.toSystemIndependentName(absolutePath));
 	}
 
+	@Nullable
 	public static VirtualFile getVirtualFile(File file) {
 		return getVirtualFile(file.getAbsolutePath());
 	}

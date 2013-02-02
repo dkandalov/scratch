@@ -58,8 +58,7 @@ public class OpenScratchListAction extends DumbAwareAction {
 
 	private void showListPopup(AnActionEvent event, DefaultActionGroup actionGroup, Project project) {
 		JBPopupFactory factory = JBPopupFactory.getInstance();
-		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(),
-				NUMBERING, true);
+		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(), NUMBERING, true);
 		listPopup.showCenteredInCurrentWindow(project);
 	}
 

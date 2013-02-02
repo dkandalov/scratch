@@ -40,19 +40,19 @@ public class AddScratchAction extends DumbAwareAction {
 		}
 	}
 
-	private String showInputDialog() {
-		String fileName = Messages.showInputDialog("File name:", "Create New Scratch", Messages.getQuestionIcon(),
-				getDefaultName(), new NonEmptyInputValidator());
-		return fileName;
+	private static String showInputDialog() {
+		return Messages.showInputDialog(
+				"File name:", "Create New Scratch", Messages.getQuestionIcon(),
+				defaultScratchName(), new NonEmptyInputValidator());
 	}
 
-	private String getDefaultName() {
+	private static String defaultScratchName() {
 		String s = "scratch.txt";
-		File file = new File(ScratchComponent.pluginsRootPath(), s);
+		File file = new File(ScratchComponent.scratchesRootPath(), s);
 		int i = 0;
 		while (file.exists()) {
 			s = "scratch" + ++i + ".txt";
-			file = new File(ScratchComponent.pluginsRootPath(), s);
+			file = new File(ScratchComponent.scratchesRootPath(), s);
 		}
 		return s;
 	}

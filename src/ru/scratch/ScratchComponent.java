@@ -20,20 +20,15 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static com.intellij.openapi.util.io.FileUtil.*;
+import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
 
 /**
  * @author Dmitry Kandalov
@@ -43,20 +38,10 @@ public class ScratchComponent implements ApplicationComponent {
 
 	@Override
 	public void initComponent() {
-		ScratchData instance = ScratchData.getInstance();
-		if (instance.isFirstRun()) {
-			String text[] = instance.getScratchTextInternal();
-			int i = 0;
-			for (String s : text) {
-				try {
-					if (!StringUtils.isBlank(s)) {
-						createFile("scratch" + ++i + ".txt", s);
-					}
-				} catch (IOException e) {
-					LOG.error(e);
-				}
-			}
-			instance.setFirstRun(false);
+		ScratchData scratchData = ScratchData.getInstance();
+		if (scratchData.isMigrateToPhysicalFiles()) {
+			createFilesFor(scratchData.getScratchTextInternal());
+			scratchData.setMigrateToPhysicalFiles(false);
 		}
 	}
 
@@ -68,13 +53,24 @@ public class ScratchComponent implements ApplicationComponent {
 		}
 	}
 
-	public static void createFile(String fileName, String content) throws IOException {
-		FileUtil.writeToFile(new File(pluginsRootPath(), fileName), content);
+	private static void createFilesFor(String[] scratchesText) {
+		for (int i = 0; i < scratchesText.length; i++) {
+			try {
+				String text = scratchesText[i];
+				createFile("scratch" + (i + 1) + ".txt", text);
+			} catch (IOException e) {
+				LOG.error(e);
+			}
+		}
+	}
+
+	private static void createFile(String fileName, String content) throws IOException {
+		FileUtil.writeToFile(new File(scratchesRootPath(), fileName), content);
 		ScratchData.getInstance().addCreatedFile(fileName);
 	}
 
 	public static File createFile(String fileName) {
-		File file = new File(pluginsRootPath(), fileName);
+		File file = new File(scratchesRootPath(), fileName);
 		FileUtil.createIfDoesntExist(file);
 		ScratchData.getInstance().addCreatedFile(fileName);
 		return file;
@@ -103,7 +99,7 @@ public class ScratchComponent implements ApplicationComponent {
 		return Util.getVirtualFile(file);
 	}
 
-	public static String pluginsRootPath() {
+	public static String scratchesRootPath() {
 		return toSystemIndependentName(PathManager.getPluginsPath() + "/scratch");
 	}
 
@@ -158,8 +154,8 @@ public class ScratchComponent implements ApplicationComponent {
 		}
 	}
 
-	protected static File[] getFiles() {
-		return new File(pluginsRootPath()).listFiles(new FileFilter() {
+	private static File[] getFiles() {
+		return new File(scratchesRootPath()).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
 				return !file.isDirectory();

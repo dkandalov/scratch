@@ -35,7 +35,7 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 	private boolean appendContentFromClipboard;
 	@Nullable
 	private String lastOpenedFileName;
-	private boolean firstRun = true;
+	private boolean migrateToPhysicalFiles = true;
 	protected List<String> createdFileNames = new ArrayList<String>();
 
 	public static ScratchData getInstance() {
@@ -113,12 +113,12 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 		this.lastOpenedFileName = lastOpenedFileName;
 	}
 
-	public boolean isFirstRun() {
-		return firstRun;
+	public boolean isMigrateToPhysicalFiles() {
+		return migrateToPhysicalFiles;
 	}
 
-	public void setFirstRun(boolean firstRun) {
-		this.firstRun = firstRun;
+	public void setMigrateToPhysicalFiles(boolean migrateToPhysicalFiles) {
+		this.migrateToPhysicalFiles = migrateToPhysicalFiles;
 	}
 
 	public List<String> getCreatedFileNames() {
