@@ -1,11 +1,11 @@
-package ru.scratch;
+package scratch;
 
 import org.junit.Test;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
-import static ru.scratch.XmlUtil.escape;
-import static ru.scratch.XmlUtil.unescape;
+import static scratch.XmlUtil.escape;
+import static scratch.XmlUtil.unescape;
 
 /**
  * User: dima
