@@ -141,6 +141,28 @@ public class ScratchTest {
 		verify(ide).openScratch(scratchInfo);
 	}
 
+	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
+
+		scratch.userWantsToOpenDefaultScratch();
+		verify(fileSystem).fileExists(eq("scratch.txt"));
+
+		verify(ide).failedToOpenDefaultScratch();
+	}
+
+	@Test public void openingDefaultScratch_when_scratchesListIsEmpty() {
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
+
+		scratch.userWantsToOpenDefaultScratch();
+
+		verify(ide).failedToOpenDefaultScratch();
+	}
+
+
+
 	private Scratch createScratchWith(ScratchConfig config) {
 		return new Scratch(ide, fileSystem, config);
 	}
@@ -246,15 +268,23 @@ public class ScratchTest {
 		}
 
 		public void userWantsToOpenScratch(ScratchInfo scratchInfo) {
-			boolean fileExists = fileSystem.fileExists(scratchInfo.name + "." + scratchInfo.extension);
-			if (fileExists)
+			if (fileSystem.fileExists(scratchInfo.asFileName()))
 				ide.openScratch(scratchInfo);
 			else
 				ide.failedToOpen(scratchInfo);
 		}
 
 		public void userWantsToOpenDefaultScratch() {
-			ide.openScratch(config.scratchInfos.get(0));
+			if (config.scratchInfos.isEmpty()) {
+				ide.failedToOpenDefaultScratch();
+			} else {
+				ScratchInfo scratchInfo = config.scratchInfos.get(0);
+				if (fileSystem.fileExists(scratchInfo.asFileName())) {
+					ide.openScratch(scratchInfo);
+				} else {
+					ide.failedToOpenDefaultScratch();
+				}
+			}
 		}
 	}
 
@@ -305,6 +335,11 @@ public class ScratchTest {
 			// TODO implement
 
 		}
+
+		public void failedToOpenDefaultScratch() {
+			// TODO implement
+
+		}
 	}
 
 	private static class ScratchInfo {
@@ -314,6 +349,10 @@ public class ScratchTest {
 		private ScratchInfo(String name, String extension) {
 			this.name = name;
 			this.extension = extension;
+		}
+
+		public String asFileName() {
+			return name + "." + extension;
 		}
 
 		@Override public String toString() {
