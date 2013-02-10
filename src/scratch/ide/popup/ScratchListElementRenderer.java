@@ -1,4 +1,4 @@
-package scratch.popup;
+package scratch.ide.popup;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.popup.ListItemDescriptor;

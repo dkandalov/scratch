@@ -1,4 +1,4 @@
-package scratch.popup;
+package scratch.ide.popup;
 
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.ui.popup.ListSeparator;

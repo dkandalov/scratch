@@ -1,4 +1,4 @@
-package scratch;
+package scratch.ide;
 
 import org.apache.commons.lang.StringEscapeUtils;
 

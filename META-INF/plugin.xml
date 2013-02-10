@@ -38,7 +38,7 @@
 
 	<application-components>
 		<component>
-			<implementation-class>scratch.ScratchComponent</implementation-class>
+			<implementation-class>scratch.ide.ScratchComponent</implementation-class>
 		</component>
 	</application-components>
 
@@ -46,23 +46,23 @@
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</group>
-		<action id="Scratch.OpenScratch" class="scratch.OpenScratchAction" text="Open Scratch"
+		<action id="Scratch.OpenScratch" class="scratch.ide.OpenScratchAction" text="Open Scratch"
 				description="Opens default scratch editor" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="Scratch.CreateScratchAction" class="scratch.AddScratchAction" text="Add New Scratch"
+		<action id="Scratch.CreateScratchAction" class="scratch.ide.AddScratchAction" text="Add New Scratch"
 				description="Add new scratch file" icon="/actions/new.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
 		<!-- TODO delete scratch -->
-		<action id="Scratch.OpenScratchList" class="scratch.OpenScratchListAction" text="Open Scratch List"
+		<action id="Scratch.OpenScratchList" class="scratch.ide.OpenScratchListAction" text="Open Scratch List"
 				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="ScratchListenClipboardAction" class="scratch.ScratchListenClipboardAction"
+		<action id="ScratchListenClipboardAction" class="scratch.ide.ScratchListenClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
@@ -70,7 +70,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<applicationService serviceInterface="scratch.ScratchData"
-							serviceImplementation="scratch.ScratchData"/>
+		<applicationService serviceInterface="scratch.ide.ScratchData"
+							serviceImplementation="scratch.ide.ScratchData"/>
 	</extensions>
 </idea-plugin>

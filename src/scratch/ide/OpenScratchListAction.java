@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scratch;
+package scratch.ide;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.io.File;
 
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
-import static scratch.OpenScratchAction.projectFor;
+import static scratch.ide.OpenScratchAction.projectFor;
 
 /**
  * @author Dmitry Kandalov

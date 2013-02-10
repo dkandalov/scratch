@@ -1,4 +1,4 @@
-package scratch.popup;
+package scratch.ide.popup;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
@@ -29,7 +29,7 @@ import java.util.Arrays;
 
 /**
  * Originally was a copy of {@link com.intellij.ui.popup.list.ListPopupImpl}.
- * The main reason for copying was to replace use {@link scratch.popup.ScratchPopupModel}
+ * The main reason for copying was to replace use {@link scratch.ide.popup.ScratchPopupModel}
  * instead of {@link com.intellij.ui.popup.list.ListPopupModel}.
  */
 public class ScratchListPopup extends WizardPopup implements ListPopup {

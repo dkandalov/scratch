@@ -11,47 +11,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scratch;
+package scratch.ide;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.NonEmptyInputValidator;
-
-import java.io.File;
+import com.intellij.openapi.vfs.VirtualFile;
 
 /**
- * @author Vojtech Krasa
+ * @author Dmitry Kandalov
  */
-public class AddScratchAction extends DumbAwareAction {
+public class OpenScratchAction extends DumbAwareAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);
 
-		String fileName = showInputDialog();
-		if (fileName != null) {
-			File file = ScratchComponent.createFile(fileName);
-			ScratchComponent.openInEditor(project, file);
+		VirtualFile defaultScratch = ScratchComponent.getDefaultScratch();
+		if (defaultScratch != null) {
+			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, defaultScratch);
+			fileDescriptor.navigate(true);
+		} else {
+			new AddScratchAction().actionPerformed(event);
 		}
-	}
-
-	private static String showInputDialog() {
-		return Messages.showInputDialog(
-				"File name:", "Create New Scratch", Messages.getQuestionIcon(),
-				defaultScratchName(), new NonEmptyInputValidator());
-	}
-
-	private static String defaultScratchName() {
-		String s = "scratch.txt";
-		File file = new File(ScratchComponent.scratchesRootPath(), s);
-		int i = 0;
-		while (file.exists()) {
-			s = "scratch" + ++i + ".txt";
-			file = new File(ScratchComponent.scratchesRootPath(), s);
-		}
-		return s;
 	}
 
 	@Override
@@ -59,7 +42,7 @@ public class AddScratchAction extends DumbAwareAction {
 		e.getPresentation().setEnabled(projectFor(e) != null);
 	}
 
-	private static Project projectFor(AnActionEvent event) {
+	public static Project projectFor(AnActionEvent event) {
 		return event.getData(PlatformDataKeys.PROJECT);
 	}
 }
