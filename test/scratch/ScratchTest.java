@@ -90,7 +90,7 @@ public class ScratchTest {
 		));
 	}
 
-	@Test public void displayingScratchesList_WhenConfigAndFiles_Match() {
+	@Test public void displayingScratchesList_when_configAndFiles_Match() {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
 				new ScratchInfo("scratch1", "txt"),
 				new ScratchInfo("scratch2", "java"),
@@ -107,6 +107,28 @@ public class ScratchTest {
 				new ScratchInfo("scratch3", "html")
 		)));
 		verifyNoMoreInteractions(fileSystem, ide);
+	}
+
+	@Test public void openingScratch_when_fileExists() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
+
+		scratch.userWantsToOpenScratch(scratchInfo);
+
+		verify(fileSystem).fileExists(eq("scratch.txt"));
+		verify(ide).openScratch(eq(scratchInfo));
+	}
+
+	@Test public void openingScratch_when_fileDoesNotExist() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
+
+		scratch.userWantsToOpenScratch(scratchInfo);
+
+		verify(fileSystem).fileExists(eq("scratch.txt"));
+		verify(ide).failedToOpen(eq(scratchInfo));
 	}
 
 	private Scratch createScratchWith(ScratchConfig config) {
@@ -210,6 +232,14 @@ public class ScratchTest {
 			}
 			ide.displayScratchesListPopup(scratchesInfo);
 		}
+
+		public void userWantsToOpenScratch(ScratchInfo scratchInfo) {
+			boolean fileExists = fileSystem.fileExists(scratchInfo.name + "." + scratchInfo.extension);
+			if (fileExists)
+				ide.openScratch(scratchInfo);
+			else
+				ide.failedToOpen(scratchInfo);
+		}
 	}
 
 	private static class FileSystem {
@@ -221,6 +251,11 @@ public class ScratchTest {
 		public List<String> listOfScratchFiles() {
 			// TODO implement
 			return null;
+		}
+
+		public boolean fileExists(String s) {
+			// TODO implement
+			return false;
 		}
 	}
 
@@ -241,6 +276,16 @@ public class ScratchTest {
 		}
 
 		public void updateConfig(ScratchConfig config) {
+			// TODO implement
+
+		}
+
+		public void openScratch(ScratchInfo scratchInfo) {
+			// TODO implement
+
+		}
+
+		public void failedToOpen(ScratchInfo scratchInfo) {
 			// TODO implement
 
 		}
