@@ -18,7 +18,7 @@ import com.intellij.openapi.project.DumbAwareAction;
 import scratch.ide.ScratchComponent;
 
 import static scratch.ide.Util.holdingTo;
-import static scratch.ide.actions.OpenScratchAction.projectFor;
+import static scratch.ide.actions.OpenDefaultScratchAction.projectFor;
 
 /**
  * @author Dmitry Kandalov

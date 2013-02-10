@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
-* User: dima
-* Date: 10/02/2013
-*/
+ * User: dima
+ * Date: 10/02/2013
+ */
 public class ScratchConfig {
 	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<ScratchInfo>emptyList(), false, true);
 
@@ -33,7 +33,7 @@ public class ScratchConfig {
 			@Override public ScratchInfo fun(ScratchInfo it) {
 				return it.equals(scratchInfo) ? newScratchInfo : it;
 			}
-		}),listenToClipboard, needMigration);
+		}), listenToClipboard, needMigration);
 	}
 
 	public ScratchConfig move(final ScratchInfo scratchInfo, int shift) {

@@ -83,7 +83,7 @@ public class Scratch {
 	}
 
 	public void userWantsToOpenScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
-		if (fileSystem.fileExists(scratchInfo.asFileName()))
+		if (fileSystem.scratchFileExists(scratchInfo.asFileName()))
 			ide.openScratch(scratchInfo, userDataHolder);
 		else
 			ide.failedToOpen(scratchInfo);
@@ -94,7 +94,7 @@ public class Scratch {
 			ide.failedToOpenDefaultScratch();
 		} else {
 			ScratchInfo scratchInfo = config.scratchInfos.get(0);
-			if (fileSystem.fileExists(scratchInfo.asFileName())) {
+			if (fileSystem.scratchFileExists(scratchInfo.asFileName())) {
 				ide.openScratch(scratchInfo, userDataHolder);
 			} else {
 				ide.failedToOpenDefaultScratch();

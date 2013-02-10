@@ -156,29 +156,29 @@ public class ScratchTest {
 	@Test public void openingScratch_when_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
-		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
+		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
 		scratch.userWantsToOpenScratch(scratchInfo, USER_DATA);
 
-		verify(fileSystem).fileExists(eq("scratch.txt"));
+		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 		verify(ide).openScratch(eq(scratchInfo), same(USER_DATA));
 	}
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
-		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
+		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
 
 		scratch.userWantsToOpenScratch(scratchInfo, USER_DATA);
 
-		verify(fileSystem).fileExists(eq("scratch.txt"));
+		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 		verify(ide).failedToOpen(eq(scratchInfo));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchesListIsNotEmpty_and_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
-		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
+		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
 		scratch.userWantsToOpenDefaultScratch(USER_DATA);
 
@@ -187,10 +187,10 @@ public class ScratchTest {
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		scratch = createScratchWith(defaultConfig().with(list(new ScratchInfo("scratch", "txt"))));
-		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
+		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
 
 		scratch.userWantsToOpenDefaultScratch(USER_DATA);
-		verify(fileSystem).fileExists(eq("scratch.txt"));
+		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 
 		verify(ide).failedToOpenDefaultScratch();
 	}

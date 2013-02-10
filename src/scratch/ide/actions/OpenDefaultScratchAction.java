@@ -15,27 +15,28 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import scratch.ide.ScratchComponent;
+
+import static scratch.ide.Util.holdingTo;
 
 /**
  * @author Dmitry Kandalov
  */
-public class OpenScratchAction extends DumbAwareAction {
+public class OpenDefaultScratchAction extends DumbAwareAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		Project project = projectFor(event);
-
-		VirtualFile defaultScratch = ScratchComponent.getDefaultScratch();
-		if (defaultScratch != null) {
-			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, defaultScratch);
-			fileDescriptor.navigate(true);
-		} else {
-			new AddScratchAction().actionPerformed(event);
-		}
+		ScratchComponent.instance().userWantsToOpenDefaultScratch(holdingTo(event));
+//		Project project = projectFor(event);
+//
+//		VirtualFile defaultScratch = ScratchComponent.getDefaultScratch();
+//		if (defaultScratch != null) {
+//			OpenFileDescriptor fileDescriptor = new OpenFileDescriptor(project, defaultScratch);
+//			fileDescriptor.navigate(true);
+//		} else {
+//			new AddScratchAction().actionPerformed(event);
+//		}
 	}
 
 	@Override

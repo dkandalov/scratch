@@ -46,7 +46,7 @@
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</group>
-		<action id="Scratch.OpenScratch" class="scratch.ide.actions.OpenScratchAction" text="Open Scratch"
+		<action id="Scratch.OpenDefaultScratch" class="scratch.ide.actions.OpenDefaultScratchAction" text="Open Scratch"
 				description="Opens default scratch editor" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>

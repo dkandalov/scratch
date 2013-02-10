@@ -25,9 +25,9 @@ import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NU
 import static scratch.ide.Util.*;
 
 /**
-* User: dima
-* Date: 10/02/2013
-*/
+ * User: dima
+ * Date: 10/02/2013
+ */
 public class Ide {
 	private static final Logger LOG = Logger.getInstance(Ide.class);
 

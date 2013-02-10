@@ -16,40 +16,33 @@ import static com.intellij.util.containers.ContainerUtil.findAll;
 import static com.intellij.util.containers.ContainerUtil.map;
 
 /**
-* User: dima
-* Date: 10/02/2013
-*/
+ * User: dima
+ * Date: 10/02/2013
+ */
 public class FileSystem {
 	private static final String ROOT_PATH = toSystemIndependentName(PathManager.getPluginsPath() + "/scratch/");
 
-	private VirtualFileManager fileManager = VirtualFileManager.getInstance();
-
+	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
+	private final Condition<VirtualFile> canBeScratch = new Condition<VirtualFile>() {
+		@Override public boolean value(VirtualFile it) {
+			return it != null && it.exists() && !it.isDirectory() && !it.getName().startsWith(".");
+		}
+	};
 
 	public List<String> listOfScratchFiles() {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH);
 		if (virtualFile == null) return Collections.emptyList();
 
-		Condition<VirtualFile> isNotDirectory = new Condition<VirtualFile>() {
-			@Override public boolean value(VirtualFile it) {
-				return !it.isDirectory();
-			}
-		};
-		Condition<VirtualFile> isNotHidden = new Condition<VirtualFile>() {
-			@Override public boolean value(VirtualFile it) {
-				return !it.getName().startsWith(".");
-			}
-		};
-		Function<VirtualFile, String> toFileName = new Function<VirtualFile, String>() {
+		return map(findAll(virtualFile.getChildren(), canBeScratch), new Function<VirtualFile, String>() {
 			@Override public String fun(VirtualFile it) {
 				return it.getName();
 			}
-		};
-		return map(findAll(findAll(virtualFile.getChildren(), isNotDirectory), isNotHidden), toFileName);
+		});
 	}
 
-	public boolean fileExists(String fileName) {
+	public boolean scratchFileExists(String fileName) {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH + fileName);
-		return virtualFile != null && virtualFile.exists();
+		return canBeScratch.value(virtualFile);
 	}
 
 	public boolean createFile(String fileName, String text) {

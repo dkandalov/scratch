@@ -1,9 +1,9 @@
 package scratch;
 
 /**
-* User: dima
-* Date: 10/02/2013
-*/
+ * User: dima
+ * Date: 10/02/2013
+ */
 public class ScratchInfo {
 	public final String nameWithMnemonics;
 	public final String name;
@@ -53,7 +53,8 @@ public class ScratchInfo {
 		ScratchInfo that = (ScratchInfo) o;
 
 		if (extension != null ? !extension.equals(that.extension) : that.extension != null) return false;
-		if (nameWithMnemonics != null ? !nameWithMnemonics.equals(that.nameWithMnemonics) : that.nameWithMnemonics != null) return false;
+		if (nameWithMnemonics != null ? !nameWithMnemonics.equals(that.nameWithMnemonics) : that.nameWithMnemonics != null)
+			return false;
 
 		return true;
 	}
