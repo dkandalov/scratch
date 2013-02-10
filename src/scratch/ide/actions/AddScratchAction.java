@@ -19,7 +19,7 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.NonEmptyInputValidator;
-import scratch.ScratchComponent;
+import scratch.ide.ScratchComponent;
 
 import java.io.File;
 

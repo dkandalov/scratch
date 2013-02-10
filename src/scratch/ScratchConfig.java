@@ -15,17 +15,17 @@ public class ScratchConfig {
 	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<ScratchInfo>emptyList(), false, true);
 
 	public final List<ScratchInfo> scratchInfos;
-	public final boolean needsMigration;
+	public final boolean needMigration;
 	public final boolean listenToClipboard;
 
-	ScratchConfig(List<ScratchInfo> scratchInfos, boolean listenToClipboard, boolean needsMigration) {
+	ScratchConfig(List<ScratchInfo> scratchInfos, boolean listenToClipboard, boolean needMigration) {
 		this.scratchInfos = scratchInfos;
 		this.listenToClipboard = listenToClipboard;
-		this.needsMigration = needsMigration;
+		this.needMigration = needMigration;
 	}
 
 	public ScratchConfig with(List<ScratchInfo> newScratchInfos) {
-		return new ScratchConfig(newScratchInfos, listenToClipboard, needsMigration);
+		return new ScratchConfig(newScratchInfos, listenToClipboard, needMigration);
 	}
 
 	public ScratchConfig replace(final ScratchInfo scratchInfo, final ScratchInfo newScratchInfo) {
@@ -33,7 +33,7 @@ public class ScratchConfig {
 			@Override public ScratchInfo fun(ScratchInfo it) {
 				return it.equals(scratchInfo) ? newScratchInfo : it;
 			}
-		}),listenToClipboard, needsMigration);
+		}),listenToClipboard, needMigration);
 	}
 
 	public ScratchConfig move(final ScratchInfo scratchInfo, int shift) {
@@ -52,13 +52,13 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig listenToClipboard(boolean value) {
-		return new ScratchConfig(scratchInfos, value, needsMigration);
+		return new ScratchConfig(scratchInfos, value, needMigration);
 	}
 
 	@Override public String toString() {
 		return "ScratchConfig{" +
 				"listenToClipboard=" + listenToClipboard + ", " +
-				"needsMigration=" + needsMigration + ", " +
+				"needMigration=" + needMigration + ", " +
 				"scratchInfos=\n" + StringUtil.join(scratchInfos, ",\n") +
 				'}';
 	}
@@ -71,7 +71,7 @@ public class ScratchConfig {
 		ScratchConfig that = (ScratchConfig) o;
 
 		if (listenToClipboard != that.listenToClipboard) return false;
-		if (needsMigration != that.needsMigration) return false;
+		if (needMigration != that.needMigration) return false;
 		if (scratchInfos != null ? !scratchInfos.equals(that.scratchInfos) : that.scratchInfos != null)
 			return false;
 
@@ -80,7 +80,7 @@ public class ScratchConfig {
 
 	@Override public int hashCode() {
 		int result = scratchInfos != null ? scratchInfos.hashCode() : 0;
-		result = 31 * result + (needsMigration ? 1 : 0);
+		result = 31 * result + (needMigration ? 1 : 0);
 		result = 31 * result + (listenToClipboard ? 1 : 0);
 		return result;
 	}

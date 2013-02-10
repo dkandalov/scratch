@@ -38,7 +38,7 @@
 
 	<application-components>
 		<component>
-			<implementation-class>scratch.ScratchComponent</implementation-class>
+			<implementation-class>scratch.ide.ScratchComponent</implementation-class>
 		</component>
 	</application-components>
 
@@ -73,6 +73,8 @@ TODO enable
 
 	<extensions defaultExtensionNs="com.intellij">
 		<applicationService serviceInterface="scratch.ide.ScratchOldData"
-							serviceImplementation="scratch.ide.ScratchOldData"/>
+                            serviceImplementation="scratch.ide.ScratchOldData"/>
+		<applicationService serviceInterface="scratch.ide.ScratchConfigPersistence"
+                            serviceImplementation="scratch.ide.ScratchConfigPersistence"/>
 	</extensions>
 </idea-plugin>

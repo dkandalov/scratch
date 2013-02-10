@@ -26,6 +26,10 @@ public class ScratchInfo {
 		return name + "." + extension;
 	}
 
+	public String fullNameWithMnemonics() {
+		return nameWithMnemonics + "." + extension;
+	}
+
 	private static String extractExtensionFrom(String fileName) {
 		int index = fileName.lastIndexOf(".");
 		return index == -1 ? "" : fileName.substring(index + 1);

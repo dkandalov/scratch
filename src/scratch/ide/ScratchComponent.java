@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scratch;
+package scratch.ide;
 
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -22,10 +22,9 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import scratch.Scratch;
+import scratch.ScratchConfig;
 import scratch.filesystem.FileSystem;
-import scratch.ide.Ide;
-import scratch.ide.ScratchOldData;
-import scratch.ide.Util;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -33,6 +32,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
+import static java.util.Arrays.asList;
 
 /**
  * @author Dmitry Kandalov
@@ -44,14 +44,12 @@ public class ScratchComponent implements ApplicationComponent {
 	public void initComponent() {
 		Ide ide = new Ide();
 		FileSystem fileSystem = new FileSystem();
-		ScratchConfig config = ScratchConfig.DEFAULT_CONFIG;
-		new Scratch(ide, fileSystem, config);
+		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
+		Scratch scratch = new Scratch(ide, fileSystem, config);
 
-
-		ScratchOldData scratchOldData = ScratchOldData.getInstance();
-		if (scratchOldData.isMigrateToPhysicalFiles()) {
-			createFilesFor(scratchOldData.getScratchTextInternal());
-			scratchOldData.setMigrateToPhysicalFiles(false);
+		if (config.needMigration) {
+			ScratchOldData scratchOldData = ScratchOldData.getInstance();
+			scratch.migrate(asList(scratchOldData.getScratchText()));
 		}
 	}
 

@@ -19,7 +19,7 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import scratch.ScratchComponent;
+import scratch.ide.ScratchComponent;
 
 /**
  * @author Dmitry Kandalov

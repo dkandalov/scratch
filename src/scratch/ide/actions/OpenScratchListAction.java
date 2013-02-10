@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
-import scratch.ScratchComponent;
+import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
 import java.io.File;

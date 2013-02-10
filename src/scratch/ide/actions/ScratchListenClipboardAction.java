@@ -30,7 +30,7 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import scratch.ScratchComponent;
+import scratch.ide.ScratchComponent;
 import scratch.ide.ScratchOldData;
 
 import javax.swing.*;
