@@ -20,7 +20,7 @@ import static com.intellij.util.containers.ContainerUtil.map;
  * Date: 10/02/2013
  */
 public class FileSystem {
-	private static final String ROOT_PATH = toSystemIndependentName(PathManager.getPluginsPath() + "/scratch/");
+	private static final String ROOT_PATH = toSystemIndependentName(PathManager.getPluginsPath() + "/scratches/");
 
 	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
 	private final Condition<VirtualFile> canBeScratch = new Condition<VirtualFile>() {
