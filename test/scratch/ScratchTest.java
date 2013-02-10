@@ -1,6 +1,8 @@
 package scratch;
 
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -8,7 +10,8 @@ import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.list;
 import static com.intellij.util.containers.ContainerUtil.newArrayList;
-import static org.junit.Assert.fail;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 
@@ -155,15 +158,25 @@ public class ScratchTest {
 
 	@Test public void openingDefaultScratch_when_scratchesListIsEmpty() {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
-		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
 
 		scratch.userWantsToOpenDefaultScratch();
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
-	@Test public void renamingScratch() {
-		fail(); // TODO
+	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccesful() {
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
+				new ScratchInfo("scratch", "txt")
+		)));
+		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
+
+		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "scratch3.txt"), equalTo(true));
+		scratch.rename(new ScratchInfo("scratch", "txt"), "renamedScratch.txt");
+
+		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
+		verify(ide).updateConfig(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
+				new ScratchInfo("renamedScratch", "txt")
+		)));
 	}
 
 
@@ -191,6 +204,14 @@ public class ScratchTest {
 
 		public ScratchConfig needsMigration(boolean value) {
 			return new ScratchConfig(scratchInfos, listenToClipboard, value);
+		}
+
+		public ScratchConfig replace(final ScratchInfo scratchInfo, final ScratchInfo newScratchInfo) {
+			return new ScratchConfig(ContainerUtil.map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
+				@Override public ScratchInfo fun(ScratchInfo it) {
+					return it.equals(scratchInfo) ? newScratchInfo : it;
+				}
+			}),listenToClipboard, needsMigration);
 		}
 
 		@Override public String toString() {
@@ -250,6 +271,7 @@ public class ScratchTest {
 					indexes.add(i);
 				}
 			}
+
 			if (indexes.isEmpty()) {
 				ide.migratedScratchesToFiles();
 			} else {
@@ -291,6 +313,22 @@ public class ScratchTest {
 				}
 			}
 		}
+
+		public boolean canRename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
+			// TODO implement
+			return true;
+		}
+
+		public void rename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
+			// TODO name without extension
+			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
+			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
+			ScratchInfo renamedScratchInfo = new ScratchInfo(nameWithMnemonics, extension);
+
+			fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
+			config = config.replace(scratchInfo, renamedScratchInfo);
+			ide.updateConfig(config);
+		}
 	}
 
 	private static class FileSystem {
@@ -305,6 +343,11 @@ public class ScratchTest {
 		}
 
 		public boolean fileExists(String s) {
+			// TODO implement
+			return false;
+		}
+
+		public boolean renameFile(String oldFileName, String newFileName) {
 			// TODO implement
 			return false;
 		}
