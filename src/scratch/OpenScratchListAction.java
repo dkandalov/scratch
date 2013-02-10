@@ -25,8 +25,8 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 import java.io.File;
 
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.*;
-import static scratch.OpenScratchAction.*;
+import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
+import static scratch.OpenScratchAction.projectFor;
 
 /**
  * @author Dmitry Kandalov
@@ -37,7 +37,12 @@ public class OpenScratchListAction extends DumbAwareAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		final Project project = projectFor(event);
+		Project project = projectFor(event);
+
+//		ListPopupStep popupStep = new BaseListPopupStep<String>("strings", asList("aaa", "bbb", "ccc"));
+//		ScratchListPopup popup = new ScratchListPopup(popupStep);
+//		popup.showCenteredInCurrentWindow(project);
+
 		DefaultActionGroup actionGroup = createActionGroup(project);
 		showListPopup(event, actionGroup, project);
 	}
@@ -56,7 +61,7 @@ public class OpenScratchListAction extends DumbAwareAction {
 		return actionGroup;
 	}
 
-	private void showListPopup(AnActionEvent event, DefaultActionGroup actionGroup, Project project) {
+	private static void showListPopup(AnActionEvent event, DefaultActionGroup actionGroup, Project project) {
 		JBPopupFactory factory = JBPopupFactory.getInstance();
 		ListPopup listPopup = factory.createActionGroupPopup(POPUP_TITLE, actionGroup, event.getDataContext(), NUMBERING, true);
 		listPopup.showCenteredInCurrentWindow(project);
