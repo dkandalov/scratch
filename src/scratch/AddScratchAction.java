@@ -15,7 +15,6 @@ package scratch;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -27,8 +26,6 @@ import java.io.File;
  * @author Vojtech Krasa
  */
 public class AddScratchAction extends DumbAwareAction {
-	private static final Logger LOG = Logger.getInstance(AddScratchAction.class);
-
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = projectFor(event);

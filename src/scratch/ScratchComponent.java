@@ -45,14 +45,6 @@ public class ScratchComponent implements ApplicationComponent {
 		}
 	}
 
-	public static void openInEditor(Project project, File scratchFile) {
-		VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getAbsolutePath());
-		if (virtualFile != null) {
-			new OpenFileDescriptor(project, virtualFile).navigate(true);
-			ScratchData.getInstance().setLastOpenedFileName(scratchFile.getName());
-		}
-	}
-
 	private static void createFilesFor(String[] scratchesText) {
 		for (int i = 0; i < scratchesText.length; i++) {
 			try {
@@ -69,21 +61,19 @@ public class ScratchComponent implements ApplicationComponent {
 		ScratchData.getInstance().addCreatedFile(fileName);
 	}
 
+	public static void openInEditor(Project project, File scratchFile) {
+		VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getAbsolutePath());
+		if (virtualFile != null) {
+			new OpenFileDescriptor(project, virtualFile).navigate(true);
+			ScratchData.getInstance().setLastOpenedFileName(scratchFile.getName());
+		}
+	}
+
 	public static File createFile(String fileName) {
 		File file = new File(scratchesRootPath(), fileName);
 		FileUtil.createIfDoesntExist(file);
 		ScratchData.getInstance().addCreatedFile(fileName);
 		return file;
-	}
-
-	@Override
-	public void disposeComponent() {
-	}
-
-	@NotNull
-	@Override
-	public String getComponentName() {
-		return ScratchComponent.class.getSimpleName();
 	}
 
 	@Nullable
@@ -162,4 +152,15 @@ public class ScratchComponent implements ApplicationComponent {
 			}
 		});
 	}
+
+	@Override
+	public void disposeComponent() {
+	}
+
+	@NotNull
+	@Override
+	public String getComponentName() {
+		return ScratchComponent.class.getSimpleName();
+	}
+
 }

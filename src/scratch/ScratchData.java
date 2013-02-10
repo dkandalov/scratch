@@ -33,10 +33,9 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 
 	private final String scratchTexts[];
 	private boolean appendContentFromClipboard;
-	@Nullable
 	private String lastOpenedFileName;
 	private boolean migrateToPhysicalFiles = true;
-	protected List<String> createdFileNames = new ArrayList<String>();
+	private List<String> createdFileNames = new ArrayList<String>();
 
 	public static ScratchData getInstance() {
 		return ServiceManager.getService(ScratchData.class);
@@ -87,23 +86,6 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 		XmlSerializerUtil.copyBean(scratchData, this);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		} else {
-			ScratchData that = (ScratchData) o;
-			return Arrays.equals(scratchTexts, that.scratchTexts);
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
-	}
-
 	@Nullable
 	public String getLastOpenedFileName() {
 		return lastOpenedFileName;
@@ -137,5 +119,22 @@ public class ScratchData implements PersistentStateComponent<ScratchData> {
 
 	public void removeCreatedFileName(String createdFileName) {
 		createdFileNames.remove(createdFileName);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		} else {
+			ScratchData that = (ScratchData) o;
+			return Arrays.equals(scratchTexts, that.scratchTexts);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
 	}
 }
