@@ -60,20 +60,20 @@ public class Scratch {
 		ide.displayScratchesListPopup(scratchesInfo, userDataHolder);
 	}
 
-	public void userWantsToOpenScratch(ScratchInfo scratchInfo) {
+	public void userWantsToOpenScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
 		if (fileSystem.fileExists(scratchInfo.asFileName()))
-			ide.openScratch(scratchInfo);
+			ide.openScratch(scratchInfo, userDataHolder);
 		else
 			ide.failedToOpen(scratchInfo);
 	}
 
-	public void userWantsToOpenDefaultScratch() {
+	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
 		if (config.scratchInfos.isEmpty()) {
 			ide.failedToOpenDefaultScratch();
 		} else {
 			ScratchInfo scratchInfo = config.scratchInfos.get(0);
 			if (fileSystem.fileExists(scratchInfo.asFileName())) {
-				ide.openScratch(scratchInfo);
+				ide.openScratch(scratchInfo, userDataHolder);
 			} else {
 				ide.failedToOpenDefaultScratch();
 			}

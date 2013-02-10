@@ -15,22 +15,19 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.util.UserDataHolder;
-import com.intellij.openapi.util.UserDataHolderBase;
 import scratch.ide.ScratchComponent;
 
-import static scratch.ide.ScratchComponent.ACTION_EVENT_KEY;
+import static scratch.ide.Util.holdingTo;
 import static scratch.ide.actions.OpenScratchAction.projectFor;
 
 /**
  * @author Dmitry Kandalov
  */
 public class OpenScratchListAction extends DumbAwareAction {
+
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		UserDataHolder userDataHolder = new UserDataHolderBase();
-		userDataHolder.putUserData(ACTION_EVENT_KEY, event);
-		ScratchComponent.instance().userWantsToSeeScratchesList(userDataHolder);
+		ScratchComponent.instance().userWantsToSeeScratchesList(holdingTo(event));
 
 //		ListPopupStep popupStep = new BaseListPopupStep<String>("strings", asList("aaa", "bbb", "ccc"));
 //		ScratchListPopup popup = new ScratchListPopup(popupStep);
@@ -38,7 +35,7 @@ public class OpenScratchListAction extends DumbAwareAction {
 	}
 
 	@Override
-	public void update(AnActionEvent e) {
-		e.getPresentation().setEnabled(projectFor(e) != null);
+	public void update(AnActionEvent event) {
+		event.getPresentation().setEnabled(projectFor(event) != null);
 	}
 }

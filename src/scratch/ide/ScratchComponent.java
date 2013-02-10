@@ -13,14 +13,12 @@
  */
 package scratch.ide;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +39,6 @@ import static java.util.Arrays.asList;
  * @author Dmitry Kandalov
  */
 public class ScratchComponent implements ApplicationComponent {
-	public static final Key<AnActionEvent> ACTION_EVENT_KEY = Key.create("AnActionEvent");
 	private static final Logger LOG = Logger.getInstance(ScratchComponent.class);
 
 	private Scratch scratch;
@@ -52,8 +49,8 @@ public class ScratchComponent implements ApplicationComponent {
 
 	@Override
 	public void initComponent() {
-		Ide ide = new Ide();
 		FileSystem fileSystem = new FileSystem();
+		Ide ide = new Ide(fileSystem);
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
 		scratch = new Scratch(ide, fileSystem, config);
 

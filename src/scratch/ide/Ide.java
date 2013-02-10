@@ -5,19 +5,25 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
+import scratch.filesystem.FileSystem;
 
 import javax.swing.*;
 import java.util.List;
 
+import static com.intellij.notification.NotificationType.WARNING;
 import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
+import static scratch.ide.Util.*;
 
 /**
 * User: dima
@@ -26,13 +32,21 @@ import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NU
 public class Ide {
 	private static final Logger LOG = Logger.getInstance(Ide.class);
 
+	private final FileSystem fileSystem;
+
+
+	public Ide(FileSystem fileSystem) {
+		this.fileSystem = fileSystem;
+	}
+
 	public void migratedScratchesToFiles() {
 		LOG.info("Migrated scratches to physical files");
 	}
 
 	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
-		LOG.error("Failed to migrated scratches to physical files. " +
-				"Failed scratches: " + StringUtil.join(scratchIndexes, ", "));
+		String title = "Failed to migrated scratches to physical files. ";
+		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
+		notifyUser(title, message, WARNING);
 	}
 
 	public void updateConfig(ScratchConfig config) {
@@ -40,7 +54,7 @@ public class Ide {
 	}
 
 	public void displayScratchesListPopup(List<ScratchInfo> scratchInfos, UserDataHolder userDataHolder) {
-		AnActionEvent event = userDataHolder.getUserData(ScratchComponent.ACTION_EVENT_KEY);
+		AnActionEvent event = eventFrom(userDataHolder);
 		Project project = event.getProject();
 		DefaultActionGroup actionGroup = createActionGroup(scratchInfos, project);
 
@@ -49,14 +63,20 @@ public class Ide {
 		listPopup.showCenteredInCurrentWindow(project);
 	}
 
-	public void openScratch(ScratchInfo scratchInfo) {
-		// TODO implement
+	public void openScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
+		AnActionEvent event = eventFrom(userDataHolder);
+		Project project = event.getProject();
 
+		VirtualFile file = fileSystem.findVirtualFileFor(scratchInfo);
+		if (file != null) {
+			new OpenFileDescriptor(project, file).navigate(true);
+		} else {
+			failedToFindVirtualFileFor(scratchInfo);
+		}
 	}
 
 	public void failedToOpen(ScratchInfo scratchInfo) {
-		// TODO implement
-
+		notifyUser("", "Failed to open scratch: " + scratchInfo.name, WARNING);
 	}
 
 	public void failedToOpenDefaultScratch() {
@@ -75,7 +95,7 @@ public class Ide {
 			String name = scratchInfo.fullNameWithMnemonics();
 			actionGroup.add(new AnAction(name, "Open " + scratchInfo.name, getIcon(name)) {
 				@Override public void actionPerformed(AnActionEvent event) {
-					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo);
+					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingTo(event));
 				}
 			});
 		}
@@ -90,5 +110,14 @@ public class Ide {
 		} else {
 			return AllIcons.FileTypes.Text;
 		}
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@NotNull private static AnActionEvent eventFrom(UserDataHolder userDataHolder) {
+		return userDataHolder.getUserData(ACTION_EVENT_KEY);
+	}
+
+	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {
+		LOG.warn("Failed to find virtual file for " + scratchInfo.asFileName());
 	}
 }

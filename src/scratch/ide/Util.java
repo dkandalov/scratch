@@ -13,6 +13,14 @@
  */
 package scratch.ide;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.UserDataHolder;
+import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -21,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class Util {
+
+	public static final Key<AnActionEvent> ACTION_EVENT_KEY = Key.create("AnActionEvent");
 
 	@Nullable
 	public static VirtualFile getVirtualFile(String absolutePath) {
@@ -33,5 +43,17 @@ public class Util {
 	@Nullable
 	public static VirtualFile getVirtualFile(File file) {
 		return getVirtualFile(file.getAbsolutePath());
+	}
+
+	public static void notifyUser(String title, String message, NotificationType notificationType) {
+		String groupDisplayId = "Scratch";
+		Notification notification = new Notification(groupDisplayId, title, message, notificationType);
+		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
+	}
+
+	public static UserDataHolder holdingTo(AnActionEvent event) {
+		UserDataHolder userDataHolder = new UserDataHolderBase();
+		userDataHolder.putUserData(ACTION_EVENT_KEY, event);
+		return userDataHolder;
 	}
 }

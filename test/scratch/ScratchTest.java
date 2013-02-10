@@ -1,5 +1,6 @@
 package scratch;
 
+import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.UserDataHolderBase;
 import org.junit.Test;
 import scratch.filesystem.FileSystem;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
  */
 public class ScratchTest {
 
-	private static final UserDataHolderBase USER_DATA = new UserDataHolderBase();
+	private static final UserDataHolder USER_DATA = new UserDataHolderBase();
 
 	private final Ide ide = mock(Ide.class);
 	private final FileSystem fileSystem = mock(FileSystem.class);
@@ -118,10 +119,10 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
 
-		scratch.userWantsToOpenScratch(scratchInfo);
+		scratch.userWantsToOpenScratch(scratchInfo, USER_DATA);
 
 		verify(fileSystem).fileExists(eq("scratch.txt"));
-		verify(ide).openScratch(eq(scratchInfo));
+		verify(ide).openScratch(eq(scratchInfo), same(USER_DATA));
 	}
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
@@ -129,7 +130,7 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
 
-		scratch.userWantsToOpenScratch(scratchInfo);
+		scratch.userWantsToOpenScratch(scratchInfo, USER_DATA);
 
 		verify(fileSystem).fileExists(eq("scratch.txt"));
 		verify(ide).failedToOpen(eq(scratchInfo));
@@ -140,25 +141,26 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
 
-		scratch.userWantsToOpenDefaultScratch();
+		scratch.userWantsToOpenDefaultScratch(USER_DATA);
 
-		verify(ide).openScratch(scratchInfo);
+		verify(ide).openScratch(eq(scratchInfo), same(USER_DATA));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		scratch = createScratchWith(defaultConfig().with(list(new ScratchInfo("scratch", "txt"))));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
 
-		scratch.userWantsToOpenDefaultScratch();
+		scratch.userWantsToOpenDefaultScratch(USER_DATA);
 		verify(fileSystem).fileExists(eq("scratch.txt"));
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
+	// TODO should create new scratch in this case
 	@Test public void openingDefaultScratch_when_scratchesListIsEmpty() {
 		scratch = createScratchWith(defaultConfig());
 
-		scratch.userWantsToOpenDefaultScratch();
+		scratch.userWantsToOpenDefaultScratch(USER_DATA);
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
