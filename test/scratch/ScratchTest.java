@@ -90,18 +90,21 @@ public class ScratchTest {
 	}
 
 	@Test public void displayingScratchesList_WhenConfigAndFiles_Match() {
-		// TODO non-empty config
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(asList(
+				new ScratchInfo("scratch1", "txt"),
+				new ScratchInfo("scratch2", "java"),
+				new ScratchInfo("scratch3", "html")
+		)).needsMigration(false));
 		when(fileSystem.listOfScratchFiles()).thenReturn(asList("scratch1.txt", "scratch2.java", "scratch3.html"));
 
 		scratch.userWantsToSeeScratchesList();
 
 		verify(fileSystem).listOfScratchFiles();
-		verify(ide).displayScratchesListPopup(asList(
+		verify(ide).displayScratchesListPopup(eq(asList(
 				new ScratchInfo("scratch1", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
-		));
+		)));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
@@ -195,8 +198,16 @@ public class ScratchTest {
 		}
 
 		public void userWantsToSeeScratchesList() {
-			// TODO implement
+			List<String> fileNames = fileSystem.listOfScratchFiles();
 
+			List<ScratchInfo> scratchesInfo = new ArrayList<ScratchInfo>();
+			for (String fileName : fileNames) {
+				// TODO fileName without extension
+				String name = fileName.substring(0, fileName.lastIndexOf("."));
+				String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+				scratchesInfo.add(new ScratchInfo(name, extension));
+			}
+			ide.displayScratchesListPopup(scratchesInfo);
 		}
 	}
 
@@ -244,10 +255,7 @@ public class ScratchTest {
 		}
 
 		@Override public String toString() {
-			return "ScratchInfo{" +
-					"extension='" + extension + '\'' +
-					", name='" + name + '\'' +
-					'}';
+			return "{extension='" + extension + '\'' + ", name='" + name + '\'' + '}';
 		}
 
 		@SuppressWarnings("RedundantIfStatement")
