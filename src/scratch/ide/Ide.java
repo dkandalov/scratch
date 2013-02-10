@@ -38,16 +38,6 @@ public class Ide {
 		this.fileSystem = fileSystem;
 	}
 
-	public void migratedScratchesToFiles() {
-		LOG.info("Migrated scratches to physical files");
-	}
-
-	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
-		String title = "Failed to migrated scratches to physical files. ";
-		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
-		notifyUser(title, message, WARNING);
-	}
-
 	public void updateConfig(ScratchConfig config) {
 		ScratchConfigPersistence.getInstance().updateFrom(config);
 	}
@@ -79,10 +69,6 @@ public class Ide {
 		}
 	}
 
-	public void failedToOpen(ScratchInfo scratchInfo) {
-		notifyUser("", "Failed to open scratch: " + scratchInfo.name, WARNING);
-	}
-
 	public void failedToOpenDefaultScratch() {
 		// TODO implement
 
@@ -91,6 +77,20 @@ public class Ide {
 	public void failedToRename(ScratchInfo scratchInfo) {
 		// TODO implement
 
+	}
+
+	public void migratedScratchesToFiles() {
+		LOG.info("Migrated scratches to physical files");
+	}
+
+	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
+		String title = "Failed to migrated scratches to physical files. ";
+		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
+		notifyUser(title, message, WARNING);
+	}
+
+	public void failedToOpen(ScratchInfo scratchInfo) {
+		notifyUser("", "Failed to open scratch: '" + scratchInfo.name + "'", WARNING);
 	}
 
 	private static DefaultActionGroup createActionGroup(List<ScratchInfo> scratchInfos) {
@@ -117,6 +117,6 @@ public class Ide {
 	}
 
 	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {
-		LOG.warn("Failed to find virtual file for " + scratchInfo.asFileName());
+		LOG.warn("Failed to find virtual file for '" + scratchInfo.asFileName() + "'");
 	}
 }

@@ -34,12 +34,17 @@ public class FileSystem {
 				return !it.isDirectory();
 			}
 		};
+		Condition<VirtualFile> isNotHidden = new Condition<VirtualFile>() {
+			@Override public boolean value(VirtualFile it) {
+				return !it.getName().startsWith(".");
+			}
+		};
 		Function<VirtualFile, String> toFileName = new Function<VirtualFile, String>() {
 			@Override public String fun(VirtualFile it) {
 				return it.getName();
 			}
 		};
-		return map(findAll(virtualFile.getChildren(), isNotDirectory), toFileName);
+		return map(findAll(findAll(virtualFile.getChildren(), isNotDirectory), isNotHidden), toFileName);
 	}
 
 	public boolean fileExists(String fileName) {
