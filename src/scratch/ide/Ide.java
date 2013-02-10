@@ -13,7 +13,6 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
 import scratch.filesystem.FileSystem;
@@ -54,9 +53,14 @@ public class Ide {
 	}
 
 	public void displayScratchesListPopup(List<ScratchInfo> scratchInfos, UserDataHolder userDataHolder) {
+		// TODO use this
+//		ListPopupStep popupStep = new BaseListPopupStep<String>("strings", asList("aaa", "bbb", "ccc"));
+//		ScratchListPopup popup = new ScratchListPopup(popupStep);
+//		popup.showCenteredInCurrentWindow(project);
+
 		AnActionEvent event = eventFrom(userDataHolder);
 		Project project = event.getProject();
-		DefaultActionGroup actionGroup = createActionGroup(scratchInfos, project);
+		DefaultActionGroup actionGroup = createActionGroup(scratchInfos);
 
 		JBPopupFactory factory = JBPopupFactory.getInstance();
 		ListPopup listPopup = factory.createActionGroupPopup("List of Scratches", actionGroup, event.getDataContext(), NUMBERING, true);
@@ -89,7 +93,7 @@ public class Ide {
 
 	}
 
-	private DefaultActionGroup createActionGroup(List<ScratchInfo> scratchInfos, final Project project) {
+	private static DefaultActionGroup createActionGroup(List<ScratchInfo> scratchInfos) {
 		DefaultActionGroup actionGroup = new DefaultActionGroup();
 		for (final ScratchInfo scratchInfo : scratchInfos) {
 			String name = scratchInfo.fullNameWithMnemonics();
@@ -110,11 +114,6 @@ public class Ide {
 		} else {
 			return AllIcons.FileTypes.Text;
 		}
-	}
-
-	@SuppressWarnings("ConstantConditions")
-	@NotNull private static AnActionEvent eventFrom(UserDataHolder userDataHolder) {
-		return userDataHolder.getUserData(ACTION_EVENT_KEY);
 	}
 
 	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {

@@ -1,14 +1,19 @@
 package scratch.filesystem;
 
 import com.intellij.openapi.application.PathManager;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
 import scratch.ScratchInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
+import static com.intellij.util.containers.ContainerUtil.findAll;
+import static com.intellij.util.containers.ContainerUtil.map;
 
 /**
 * User: dima
@@ -17,17 +22,32 @@ import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
 public class FileSystem {
 	private static final String ROOT_PATH = toSystemIndependentName(PathManager.getPluginsPath() + "/scratch/");
 
-	public boolean createFile(String fileName, String text) {
-		// TODO implement
-		return false;
-	}
+	private VirtualFileManager fileManager = VirtualFileManager.getInstance();
+
 
 	public List<String> listOfScratchFiles() {
-		// TODO implement
-		return null;
+		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH);
+		if (virtualFile == null) return Collections.emptyList();
+
+		Condition<VirtualFile> isNotDirectory = new Condition<VirtualFile>() {
+			@Override public boolean value(VirtualFile it) {
+				return !it.isDirectory();
+			}
+		};
+		Function<VirtualFile, String> toFileName = new Function<VirtualFile, String>() {
+			@Override public String fun(VirtualFile it) {
+				return it.getName();
+			}
+		};
+		return map(findAll(virtualFile.getChildren(), isNotDirectory), toFileName);
 	}
 
 	public boolean fileExists(String fileName) {
+		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH + fileName);
+		return virtualFile != null && virtualFile.exists();
+	}
+
+	public boolean createFile(String fileName, String text) {
 		// TODO implement
 		return false;
 	}
@@ -38,7 +58,6 @@ public class FileSystem {
 	}
 
 	@Nullable public VirtualFile findVirtualFileFor(ScratchInfo scratchInfo) {
-		VirtualFileManager fileManager = VirtualFileManager.getInstance();
 		return fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH + scratchInfo.asFileName());
 	}
 }

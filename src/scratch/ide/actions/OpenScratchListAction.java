@@ -28,10 +28,6 @@ public class OpenScratchListAction extends DumbAwareAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		ScratchComponent.instance().userWantsToSeeScratchesList(holdingTo(event));
-
-//		ListPopupStep popupStep = new BaseListPopupStep<String>("strings", asList("aaa", "bbb", "ccc"));
-//		ScratchListPopup popup = new ScratchListPopup(popupStep);
-//		popup.showCenteredInCurrentWindow(project);
 	}
 
 	@Override

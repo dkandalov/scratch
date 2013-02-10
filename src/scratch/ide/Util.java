@@ -24,6 +24,7 @@ import com.intellij.openapi.util.UserDataHolderBase;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -55,5 +56,10 @@ public class Util {
 		UserDataHolder userDataHolder = new UserDataHolderBase();
 		userDataHolder.putUserData(ACTION_EVENT_KEY, event);
 		return userDataHolder;
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	@NotNull public static AnActionEvent eventFrom(UserDataHolder userDataHolder) {
+		return userDataHolder.getUserData(ACTION_EVENT_KEY);
 	}
 }
