@@ -2,13 +2,13 @@ package scratch;
 
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.UserDataHolder;
-import com.intellij.util.containers.ContainerUtil;
+import com.intellij.util.Function;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
 
 import java.util.List;
 
-import static com.intellij.util.containers.ContainerUtil.newArrayList;
+import static com.intellij.util.containers.ContainerUtil.*;
 
 /**
 * User: dima
@@ -51,13 +51,35 @@ public class Scratch {
 	}
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
-		List<String> fileNames = fileSystem.listOfScratchFiles();
+		final List<String> fileNames = fileSystem.listOfScratchFiles();
 
-		List<ScratchInfo> scratchesInfo = newArrayList();
-		for (String fileName : fileNames) {
-			scratchesInfo.add(ScratchInfo.createFrom(fileName));
+		final List<ScratchInfo> oldScratchInfos = findAll(config.scratchInfos, new Condition<ScratchInfo>() {
+			@Override public boolean value(ScratchInfo it) {
+				return fileNames.contains(it.asFileName());
+			}
+		});
+		Condition<String> whichAreNewFiles = new Condition<String>() {
+			@Override public boolean value(final String fileName) {
+				return !exists(oldScratchInfos, new Condition<ScratchInfo>() {
+					@Override public boolean value(ScratchInfo scratchInfo) {
+						return fileName.equals(scratchInfo.asFileName());
+					}
+				});
+			}
+		};
+		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
+		List<ScratchInfo> newScratchInfos = map(newFileNames, new Function<String, ScratchInfo>() {
+			@Override public ScratchInfo fun(String it) {
+				return ScratchInfo.createFrom(it);
+			}
+		});
+
+		List<ScratchInfo> scratchInfos = concat(oldScratchInfos, newScratchInfos);
+		if (!newScratchInfos.isEmpty() || oldScratchInfos.size() != config.scratchInfos.size()) {
+			config = config.with(scratchInfos);
+			ide.updateConfig(config);
 		}
-		ide.displayScratchesListPopup(scratchesInfo, userDataHolder);
+		ide.displayScratchesListPopup(scratchInfos, userDataHolder);
 	}
 
 	public void userWantsToOpenScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
@@ -83,7 +105,7 @@ public class Scratch {
 	public boolean canUserRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
 		final ScratchInfo renamedScratchInfo = ScratchInfo.createFrom(fullNameWithMnemonics);
 
-		return !ContainerUtil.exists(config.scratchInfos, new Condition<ScratchInfo>() {
+		return !exists(config.scratchInfos, new Condition<ScratchInfo>() {
 			@Override public boolean value(ScratchInfo it) {
 				return !it.equals(scratchInfo) && it.name.equals(renamedScratchInfo.name);
 			}

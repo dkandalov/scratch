@@ -27,7 +27,7 @@ public class ScratchTest {
 	private Scratch scratch;
 
 	@Test public void shouldNotifyIde_when_successfullyMigratedScratchesToFiles() {
-		scratch = createScratchWith(defaultConfig());
+		scratch = createScratchWith(defaultConfig().needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
@@ -42,7 +42,7 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_successfullyMigratedScratchesToFiles() {
-		scratch = createScratchWith(defaultConfig());
+		scratch = createScratchWith(defaultConfig().needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
@@ -60,7 +60,7 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldNotifyIde_when_failedToMigrateSomeOfTheFiles() {
-		scratch = createScratchWith(defaultConfig());
+		scratch = createScratchWith(defaultConfig().needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
@@ -77,7 +77,7 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_failedToMigrateSomeOfTheFiles() {
-		scratch = createScratchWith(defaultConfig());
+		scratch = createScratchWith(defaultConfig().needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
@@ -95,12 +95,12 @@ public class ScratchTest {
 		));
 	}
 
-	@Test public void displayingScratchesList_when_configAndFiles_Match() {
+	@Test public void displayingScratchesList_when_configAndFiles_MatchExactly() {
 		scratch = createScratchWith(defaultConfig().with(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
-		)).needsMigration(false));
+		)));
 		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
 		scratch.userWantsToSeeScratchesList(USER_DATA);
@@ -110,6 +110,45 @@ public class ScratchTest {
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
+		)), same(USER_DATA));
+		verifyNoMoreInteractions(fileSystem, ide);
+	}
+
+	@Test public void displayingScratchesList_when_configAndFiles_Match_ButHaveDifferentOrder() {
+		scratch = createScratchWith(defaultConfig().with(list(
+				new ScratchInfo("scratch", "txt"),
+				new ScratchInfo("scratch2", "java"),
+				new ScratchInfo("scratch3", "html")
+		)));
+		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch2.java", "scratch3.html", "scratch.txt"));
+
+		scratch.userWantsToSeeScratchesList(USER_DATA);
+
+		verify(fileSystem).listOfScratchFiles();
+		verify(ide).displayScratchesListPopup(eq(list(
+				new ScratchInfo("scratch", "txt"),
+				new ScratchInfo("scratch2", "java"),
+				new ScratchInfo("scratch3", "html")
+		)), same(USER_DATA));
+		verifyNoMoreInteractions(fileSystem, ide);
+	}
+
+	@Test public void displayingScratchesList_when_fileSystemHasNewFiles() {
+		scratch = createScratchWith(defaultConfig().with(list(
+				new ScratchInfo("scratch", "txt")
+		)));
+		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch2.java", "scratch.txt"));
+
+		scratch.userWantsToSeeScratchesList(USER_DATA);
+
+		verify(fileSystem).listOfScratchFiles();
+		verify(ide).updateConfig(eq(defaultConfig().with(list(
+				new ScratchInfo("scratch", "txt"),
+				new ScratchInfo("scratch2", "java")
+		))));
+		verify(ide).displayScratchesListPopup(eq(list(
+				new ScratchInfo("scratch", "txt"),
+				new ScratchInfo("scratch2", "java")
 		)), same(USER_DATA));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
