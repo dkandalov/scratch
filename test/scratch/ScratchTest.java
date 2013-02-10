@@ -225,6 +225,13 @@ public class ScratchTest {
 		)));
 	}
 
+	@Test public void shouldNewConfigToIde_when_userTurnsOnListeningToClipboard() {
+		scratch = createScratchWith(defaultConfig().listenToClipboard(false));
+
+		scratch.userWantsToListenToClipboard(true);
+
+		verify(ide).updateConfig(defaultConfig().listenToClipboard(true));
+	}
 
 	private Scratch createScratchWith(ScratchConfig config) {
 		return new Scratch(ide, fileSystem, config);
@@ -252,10 +259,6 @@ public class ScratchTest {
 			return new ScratchConfig(newScratchInfos, listenToClipboard, needsMigration);
 		}
 
-		public ScratchConfig needsMigration(boolean value) {
-			return new ScratchConfig(scratchInfos, listenToClipboard, value);
-		}
-
 		public ScratchConfig replace(final ScratchInfo scratchInfo, final ScratchInfo newScratchInfo) {
 			return new ScratchConfig(ContainerUtil.map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
 				@Override public ScratchInfo fun(ScratchInfo it) {
@@ -273,6 +276,14 @@ public class ScratchTest {
 					else return it;
 				}
 			}));
+		}
+
+		public ScratchConfig needsMigration(boolean value) {
+			return new ScratchConfig(scratchInfos, listenToClipboard, value);
+		}
+
+		public ScratchConfig listenToClipboard(boolean value) {
+			return new ScratchConfig(scratchInfos, value, needsMigration);
 		}
 
 		@Override public String toString() {
@@ -397,6 +408,10 @@ public class ScratchTest {
 		public void userMovedScratch(final ScratchInfo scratchInfo, int shift) {
 			config = config.move(scratchInfo, shift);
 			ide.updateConfig(config);
+		}
+
+		public void userWantsToListenToClipboard(boolean value) {
+			ide.updateConfig(config.listenToClipboard(value));
 		}
 	}
 
