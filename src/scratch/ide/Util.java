@@ -17,7 +17,9 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.UserDataHolderBase;
@@ -61,5 +63,9 @@ public class Util {
 	@SuppressWarnings("ConstantConditions")
 	@NotNull public static AnActionEvent eventFrom(UserDataHolder userDataHolder) {
 		return userDataHolder.getUserData(ACTION_EVENT_KEY);
+	}
+
+	public static Project projectFor(AnActionEvent event) {
+		return event.getData(PlatformDataKeys.PROJECT);
 	}
 }

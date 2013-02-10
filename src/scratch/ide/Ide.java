@@ -69,11 +69,6 @@ public class Ide {
 		}
 	}
 
-	public void failedToOpenDefaultScratch() {
-		// TODO implement
-
-	}
-
 	public void failedToRename(ScratchInfo scratchInfo) {
 		// TODO implement
 
@@ -87,6 +82,10 @@ public class Ide {
 		String title = "Failed to migrated scratches to physical files. ";
 		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
 		notifyUser(title, message, WARNING);
+	}
+
+	public void failedToOpenDefaultScratch() {
+		notifyUser("", "Failed to open default scratch", WARNING);
 	}
 
 	public void failedToOpen(ScratchInfo scratchInfo) {

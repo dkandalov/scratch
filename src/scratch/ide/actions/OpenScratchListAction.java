@@ -18,20 +18,18 @@ import com.intellij.openapi.project.DumbAwareAction;
 import scratch.ide.ScratchComponent;
 
 import static scratch.ide.Util.holdingTo;
-import static scratch.ide.actions.OpenDefaultScratchAction.projectFor;
+import static scratch.ide.Util.projectFor;
 
 /**
  * @author Dmitry Kandalov
  */
 public class OpenScratchListAction extends DumbAwareAction {
 
-	@Override
-	public void actionPerformed(AnActionEvent event) {
+	@Override public void actionPerformed(AnActionEvent event) {
 		ScratchComponent.instance().userWantsToSeeScratchesList(holdingTo(event));
 	}
 
-	@Override
-	public void update(AnActionEvent event) {
+	@Override public void update(AnActionEvent event) {
 		event.getPresentation().setEnabled(projectFor(event) != null);
 	}
 }
