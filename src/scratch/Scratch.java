@@ -1,6 +1,7 @@
 package scratch;
 
 import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.util.containers.ContainerUtil;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
@@ -49,14 +50,14 @@ public class Scratch {
 		ide.updateConfig(config);
 	}
 
-	public void userWantsToSeeScratchesList() {
+	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
 		List<String> fileNames = fileSystem.listOfScratchFiles();
 
 		List<ScratchInfo> scratchesInfo = newArrayList();
 		for (String fileName : fileNames) {
 			scratchesInfo.add(ScratchInfo.createFrom(fileName));
 		}
-		ide.displayScratchesListPopup(scratchesInfo);
+		ide.displayScratchesListPopup(scratchesInfo, userDataHolder);
 	}
 
 	public void userWantsToOpenScratch(ScratchInfo scratchInfo) {

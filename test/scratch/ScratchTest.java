@@ -1,5 +1,6 @@
 package scratch;
 
+import com.intellij.openapi.util.UserDataHolderBase;
 import org.junit.Test;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
@@ -17,6 +18,8 @@ import static org.mockito.Mockito.*;
  * Date: 09/02/2013
  */
 public class ScratchTest {
+
+	private static final UserDataHolderBase USER_DATA = new UserDataHolderBase();
 
 	private final Ide ide = mock(Ide.class);
 	private final FileSystem fileSystem = mock(FileSystem.class);
@@ -99,14 +102,14 @@ public class ScratchTest {
 		)).needsMigration(false));
 		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
-		scratch.userWantsToSeeScratchesList();
+		scratch.userWantsToSeeScratchesList(USER_DATA);
 
 		verify(fileSystem).listOfScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
-		)));
+		)), same(USER_DATA));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 

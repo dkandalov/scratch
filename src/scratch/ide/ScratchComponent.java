@@ -13,11 +13,14 @@
  */
 package scratch.ide;
 
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -38,14 +41,21 @@ import static java.util.Arrays.asList;
  * @author Dmitry Kandalov
  */
 public class ScratchComponent implements ApplicationComponent {
+	public static final Key<AnActionEvent> ACTION_EVENT_KEY = Key.create("AnActionEvent");
 	private static final Logger LOG = Logger.getInstance(ScratchComponent.class);
+
+	private Scratch scratch;
+
+	public static Scratch instance() {
+		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).scratch;
+	}
 
 	@Override
 	public void initComponent() {
 		Ide ide = new Ide();
 		FileSystem fileSystem = new FileSystem();
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
-		Scratch scratch = new Scratch(ide, fileSystem, config);
+		scratch = new Scratch(ide, fileSystem, config);
 
 		if (config.needMigration) {
 			ScratchOldData scratchOldData = ScratchOldData.getInstance();
