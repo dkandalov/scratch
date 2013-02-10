@@ -1,5 +1,6 @@
 package scratch;
 
+import com.intellij.openapi.util.text.StringUtil;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -52,13 +53,13 @@ public class ScratchTest {
 		));
 	}
 
-	@Test public void shouldNotifyIde_when_notAbleToMigrateSomeOfTheFiles() {
+	@Test public void shouldNotifyIde_when_failedToMigrateSomeOfTheFiles() {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
-		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
 
+		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
 		verify(fileSystem).createFile("scratch1.txt", "text1");
@@ -67,6 +68,25 @@ public class ScratchTest {
 		verify(fileSystem).createFile("scratch4.txt", "text4");
 		verify(fileSystem).createFile("scratch5.txt", "text5");
 		verify(ide).failedToMigrateScratchesToFiles(asList(3, 4));
+	}
+
+	@Test public void shouldSendNewConfigToIde_when_failedToMigrateSomeOfTheFiles() {
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
+		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
+		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
+
+		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
+		scratch.migrate(scratches);
+
+		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
+				.withScratches(asList(
+						new ScratchInfo("scratch1", "txt"),
+						new ScratchInfo("scratch2", "txt"),
+						new ScratchInfo("scratch5", "txt")
+				))
+				.needsMigration(false)
+		));
 	}
 
 	@Test public void displayingScratchesList_WhenConfigAndFiles_Match() {
@@ -113,9 +133,9 @@ public class ScratchTest {
 
 		@Override public String toString() {
 			return "ScratchConfig{" +
-					"listenToClipboard=" + listenToClipboard +
-					", scratchInfos=" + scratchInfos +
-					", needsMigration=" + needsMigration +
+					"listenToClipboard=" + listenToClipboard + ", " +
+					"needsMigration=" + needsMigration + ", " +
+					"scratchInfos=\n" + StringUtil.join(scratchInfos, ",\n") +
 					'}';
 		}
 
@@ -165,14 +185,12 @@ public class ScratchTest {
 					indexes.add(i);
 				}
 			}
-			config = config.withScratches(scratchesInfo);
-
 			if (indexes.isEmpty()) {
-				config = config.needsMigration(false);
 				ide.migratedScratchesToFiles();
 			} else {
 				ide.failedToMigrateScratchesToFiles(indexes);
 			}
+			config = config.withScratches(scratchesInfo).needsMigration(false);
 			ide.updateConfig(config);
 		}
 
