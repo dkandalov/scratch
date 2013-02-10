@@ -8,6 +8,7 @@ import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.list;
 import static com.intellij.util.containers.ContainerUtil.newArrayList;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 
@@ -45,11 +46,11 @@ public class ScratchTest {
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
 				.withScratches(list(
-						new ScratchInfo("scratch", "txt"),
-						new ScratchInfo("scratch2", "txt"),
-						new ScratchInfo("scratch3", "txt"),
-						new ScratchInfo("scratch4", "txt"),
-						new ScratchInfo("scratch5", "txt")))
+						new ScratchInfo("&scratch", "txt"),
+						new ScratchInfo("scratch&2", "txt"),
+						new ScratchInfo("scratch&3", "txt"),
+						new ScratchInfo("scratch&4", "txt"),
+						new ScratchInfo("scratch&5", "txt")))
 				.needsMigration(false)
 		));
 	}
@@ -82,9 +83,9 @@ public class ScratchTest {
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
 				.withScratches(list(
-						new ScratchInfo("scratch", "txt"),
-						new ScratchInfo("scratch2", "txt"),
-						new ScratchInfo("scratch5", "txt")
+						new ScratchInfo("&scratch", "txt"),
+						new ScratchInfo("scratch&2", "txt"),
+						new ScratchInfo("scratch&5", "txt")
 				))
 				.needsMigration(false)
 		));
@@ -92,17 +93,17 @@ public class ScratchTest {
 
 	@Test public void displayingScratchesList_when_configAndFiles_Match() {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
-				new ScratchInfo("scratch1", "txt"),
+				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
 		)).needsMigration(false));
-		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch1.txt", "scratch2.java", "scratch3.html"));
+		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
 		scratch.userWantsToSeeScratchesList();
 
 		verify(fileSystem).listOfScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
-				new ScratchInfo("scratch1", "txt"),
+				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
 		)));
@@ -161,6 +162,9 @@ public class ScratchTest {
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
+	@Test public void renamingScratch() {
+		fail(); // TODO
+	}
 
 
 	private Scratch createScratchWith(ScratchConfig config) {
@@ -236,11 +240,12 @@ public class ScratchTest {
 			List<ScratchInfo> scratchesInfo = newArrayList();
 
 			for (int i = 1; i <= scratches.size(); i++) {
-				String scratchName = (i == 1 ? "scratch" : "scratch" + i);
+				String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
+				ScratchInfo scratchInfo = new ScratchInfo(scratchName, "txt");
 
-				boolean wasCreated = fileSystem.createFile(scratchName + ".txt", scratches.get(i - 1));
+				boolean wasCreated = fileSystem.createFile(scratchInfo.asFileName(), scratches.get(i - 1));
 				if (wasCreated) {
-					scratchesInfo.add(new ScratchInfo(scratchName, "txt"));
+					scratchesInfo.add(scratchInfo);
 				} else {
 					indexes.add(i);
 				}
@@ -343,11 +348,13 @@ public class ScratchTest {
 	}
 
 	private static class ScratchInfo {
+		public final String nameWithMnemonics;
 		public final String name;
 		public final String extension;
 
-		private ScratchInfo(String name, String extension) {
-			this.name = name;
+		private ScratchInfo(String nameWithMnemonics, String extension) {
+			this.nameWithMnemonics = nameWithMnemonics;
+			this.name = nameWithMnemonics.replace("&", "");
 			this.extension = extension;
 		}
 
@@ -356,7 +363,7 @@ public class ScratchTest {
 		}
 
 		@Override public String toString() {
-			return "{extension='" + extension + '\'' + ", name='" + name + '\'' + '}';
+			return "{nameWithMnemonics='" + nameWithMnemonics + "'" + ", extension='" + extension + "'}";
 		}
 
 		@SuppressWarnings("RedundantIfStatement")
@@ -367,13 +374,13 @@ public class ScratchTest {
 			ScratchInfo that = (ScratchInfo) o;
 
 			if (extension != null ? !extension.equals(that.extension) : that.extension != null) return false;
-			if (name != null ? !name.equals(that.name) : that.name != null) return false;
+			if (nameWithMnemonics != null ? !nameWithMnemonics.equals(that.nameWithMnemonics) : that.nameWithMnemonics != null) return false;
 
 			return true;
 		}
 
 		@Override public int hashCode() {
-			int result = name != null ? name.hashCode() : 0;
+			int result = nameWithMnemonics != null ? nameWithMnemonics.hashCode() : 0;
 			result = 31 * result + (extension != null ? extension.hashCode() : 0);
 			return result;
 		}
