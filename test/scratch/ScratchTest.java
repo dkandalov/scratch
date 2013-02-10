@@ -170,8 +170,8 @@ public class ScratchTest {
 		)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
 
-		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt"), equalTo(true));
-		scratch.rename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt");
+		assertThat(scratch.canUserRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt"), equalTo(true));
+		scratch.userWantsToRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).updateConfig(defaultConfig().with(list(
@@ -185,7 +185,7 @@ public class ScratchTest {
 				new ScratchInfo("&renamedScratch", "txt")
 		)));
 
-		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "renamed&Scratch.txt"), equalTo(false));
+		assertThat(scratch.canUserRename(new ScratchInfo("scratch", "txt"), "renamed&Scratch.txt"), equalTo(false));
 		verifyZeroInteractions(ide, fileSystem);
 	}
 
@@ -194,11 +194,28 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
 
-		assertThat(scratch.canRename(scratchInfo, "renamedScratch.txt"), equalTo(true));
-		scratch.rename(scratchInfo, "renamedScratch.txt");
+		assertThat(scratch.canUserRename(scratchInfo, "renamedScratch.txt"), equalTo(true));
+		scratch.userWantsToRename(scratchInfo, "renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).failedToRename(scratchInfo);
+	}
+
+	@Test public void movingScratchUpInScratchesList() {
+		scratch = createScratchWith(defaultConfig().with(list(
+				new ScratchInfo("scratch1", "txt"),
+				new ScratchInfo("scratch2", "txt"),
+				new ScratchInfo("scratch3", "txt")
+		)));
+
+		int shiftUp = -1;
+		scratch.userMovedScratch(new ScratchInfo("scratch2", "txt"), shiftUp);
+
+		verify(ide).updateConfig(defaultConfig().with(list(
+				new ScratchInfo("scratch2", "txt"),
+				new ScratchInfo("scratch1", "txt"),
+				new ScratchInfo("scratch3", "txt")
+		)));
 	}
 
 
@@ -238,6 +255,17 @@ public class ScratchTest {
 					return it.equals(scratchInfo) ? newScratchInfo : it;
 				}
 			}),listenToClipboard, needsMigration);
+		}
+
+		public ScratchConfig move(final ScratchInfo scratchInfo, int shift) {
+			final ScratchInfo prevScratchInfo = scratchInfos.get(scratchInfos.indexOf(scratchInfo) + shift);
+			return this.with(ContainerUtil.map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
+				@Override public ScratchInfo fun(ScratchInfo it) {
+					if (it.equals(prevScratchInfo)) return scratchInfo;
+					else if (it.equals(scratchInfo)) return prevScratchInfo;
+					else return it;
+				}
+			}));
 		}
 
 		@Override public String toString() {
@@ -340,7 +368,7 @@ public class ScratchTest {
 			}
 		}
 
-		public boolean canRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
+		public boolean canUserRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
 			// TODO name without extension
 			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
 			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
@@ -353,7 +381,7 @@ public class ScratchTest {
 			});
 		}
 
-		public void rename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
+		public void userWantsToRename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
 			// TODO name without extension
 			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
 			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
@@ -366,6 +394,11 @@ public class ScratchTest {
 			} else {
 				ide.failedToRename(scratchInfo);
 			}
+		}
+
+		public void userMovedScratch(final ScratchInfo scratchInfo, int shift) {
+			config = config.move(scratchInfo, shift);
+			ide.updateConfig(config);
 		}
 	}
 
