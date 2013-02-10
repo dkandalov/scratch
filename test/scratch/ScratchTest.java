@@ -1,5 +1,6 @@
 package scratch;
 
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
@@ -26,7 +27,7 @@ public class ScratchTest {
 	private Scratch scratch;
 
 	@Test public void shouldNotifyIde_when_successfullyMigratedScratchesToFiles() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(defaultConfig());
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
@@ -41,14 +42,14 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_successfullyMigratedScratchesToFiles() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(defaultConfig());
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
-		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
-				.withScratches(list(
+		verify(ide).updateConfig(eq(defaultConfig()
+				.with(list(
 						new ScratchInfo("&scratch", "txt"),
 						new ScratchInfo("scratch&2", "txt"),
 						new ScratchInfo("scratch&3", "txt"),
@@ -59,7 +60,7 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldNotifyIde_when_failedToMigrateSomeOfTheFiles() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(defaultConfig());
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
@@ -76,7 +77,7 @@ public class ScratchTest {
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_failedToMigrateSomeOfTheFiles() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(defaultConfig());
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
@@ -84,8 +85,8 @@ public class ScratchTest {
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
-		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
-				.withScratches(list(
+		verify(ide).updateConfig(eq(defaultConfig()
+				.with(list(
 						new ScratchInfo("&scratch", "txt"),
 						new ScratchInfo("scratch&2", "txt"),
 						new ScratchInfo("scratch&5", "txt")
@@ -95,7 +96,7 @@ public class ScratchTest {
 	}
 
 	@Test public void displayingScratchesList_when_configAndFiles_Match() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
+		scratch = createScratchWith(defaultConfig().with(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
@@ -115,7 +116,7 @@ public class ScratchTest {
 
 	@Test public void openingScratch_when_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
 
 		scratch.userWantsToOpenScratch(scratchInfo);
@@ -126,7 +127,7 @@ public class ScratchTest {
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
 
 		scratch.userWantsToOpenScratch(scratchInfo);
@@ -137,7 +138,7 @@ public class ScratchTest {
 
 	@Test public void openingDefaultScratch_when_scratchesListIsNotEmpty_and_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
 
 		scratch.userWantsToOpenDefaultScratch();
@@ -146,8 +147,7 @@ public class ScratchTest {
 	}
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		scratch = createScratchWith(defaultConfig().with(list(new ScratchInfo("scratch", "txt"))));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
 
 		scratch.userWantsToOpenDefaultScratch();
@@ -157,26 +157,48 @@ public class ScratchTest {
 	}
 
 	@Test public void openingDefaultScratch_when_scratchesListIsEmpty() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
+		scratch = createScratchWith(defaultConfig());
 
 		scratch.userWantsToOpenDefaultScratch();
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
-	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccesful() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
+	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccessful() {
+		scratch = createScratchWith(defaultConfig().with(list(
 				new ScratchInfo("scratch", "txt")
 		)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
 
-		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "scratch3.txt"), equalTo(true));
-		scratch.rename(new ScratchInfo("scratch", "txt"), "renamedScratch.txt");
+		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt"), equalTo(true));
+		scratch.rename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
-		verify(ide).updateConfig(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
-				new ScratchInfo("renamedScratch", "txt")
+		verify(ide).updateConfig(defaultConfig().with(list(
+				new ScratchInfo("&renamedScratch", "txt")
 		)));
+	}
+
+	@Test public void renamingScratch_when_newNameIsNotUnique() {
+		scratch = createScratchWith(defaultConfig().with(list(
+				new ScratchInfo("scratch", "txt"),
+				new ScratchInfo("&renamedScratch", "txt")
+		)));
+
+		assertThat(scratch.canRename(new ScratchInfo("scratch", "txt"), "renamed&Scratch.txt"), equalTo(false));
+		verifyZeroInteractions(ide, fileSystem);
+	}
+
+	@Test public void renamingScratch_when_fileRenameFailed() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
+		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
+
+		assertThat(scratch.canRename(scratchInfo, "renamedScratch.txt"), equalTo(true));
+		scratch.rename(scratchInfo, "renamedScratch.txt");
+
+		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
+		verify(ide).failedToRename(scratchInfo);
 	}
 
 
@@ -184,6 +206,10 @@ public class ScratchTest {
 		return new Scratch(ide, fileSystem, config);
 	}
 
+
+	private static ScratchConfig defaultConfig() {
+		return ScratchConfig.DEFAULT_CONFIG;
+	}
 
 	private static class ScratchConfig {
 		public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<ScratchInfo>emptyList(), false, true);
@@ -198,7 +224,7 @@ public class ScratchTest {
 			this.needsMigration = needsMigration;
 		}
 
-		public ScratchConfig withScratches(List<ScratchInfo> newScratchInfos) {
+		public ScratchConfig with(List<ScratchInfo> newScratchInfos) {
 			return new ScratchConfig(newScratchInfos, listenToClipboard, needsMigration);
 		}
 
@@ -277,7 +303,7 @@ public class ScratchTest {
 			} else {
 				ide.failedToMigrateScratchesToFiles(indexes);
 			}
-			config = config.withScratches(scratchesInfo).needsMigration(false);
+			config = config.with(scratchesInfo).needsMigration(false);
 			ide.updateConfig(config);
 		}
 
@@ -314,9 +340,17 @@ public class ScratchTest {
 			}
 		}
 
-		public boolean canRename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
-			// TODO implement
-			return true;
+		public boolean canRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
+			// TODO name without extension
+			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
+			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
+			final ScratchInfo renamedScratchInfo = new ScratchInfo(nameWithMnemonics, extension);
+
+			return !ContainerUtil.exists(config.scratchInfos, new Condition<ScratchInfo>() {
+				@Override public boolean value(ScratchInfo it) {
+					return !it.equals(scratchInfo) && it.name.equals(renamedScratchInfo.name);
+				}
+			});
 		}
 
 		public void rename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
@@ -325,9 +359,13 @@ public class ScratchTest {
 			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
 			ScratchInfo renamedScratchInfo = new ScratchInfo(nameWithMnemonics, extension);
 
-			fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
-			config = config.replace(scratchInfo, renamedScratchInfo);
-			ide.updateConfig(config);
+			boolean wasRenamed = fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
+			if (wasRenamed) {
+				config = config.replace(scratchInfo, renamedScratchInfo);
+				ide.updateConfig(config);
+			} else {
+				ide.failedToRename(scratchInfo);
+			}
 		}
 	}
 
@@ -385,6 +423,11 @@ public class ScratchTest {
 		}
 
 		public void failedToOpenDefaultScratch() {
+			// TODO implement
+
+		}
+
+		public void failedToRename(ScratchInfo scratchInfo) {
 			// TODO implement
 
 		}
