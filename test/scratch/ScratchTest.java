@@ -109,7 +109,7 @@ public class ScratchTest {
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
-	@Test public void openingScratch_when_fileExists() {
+	@Test public void openingScratch_when_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
@@ -120,7 +120,7 @@ public class ScratchTest {
 		verify(ide).openScratch(eq(scratchInfo));
 	}
 
-	@Test public void openingScratch_when_fileDoesNotExist() {
+	@Test public void openingScratch_when_scratchFileDoesNotExist() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
 		when(fileSystem.fileExists("scratch.txt")).thenReturn(false);
@@ -129,6 +129,16 @@ public class ScratchTest {
 
 		verify(fileSystem).fileExists(eq("scratch.txt"));
 		verify(ide).failedToOpen(eq(scratchInfo));
+	}
+
+	@Test public void openingDefaultScratch_when_scratchesListIsNotEmpty_and_scratchFileExists() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(scratchInfo)));
+		when(fileSystem.fileExists("scratch.txt")).thenReturn(true);
+
+		scratch.userWantsToOpenDefaultScratch();
+
+		verify(ide).openScratch(scratchInfo);
 	}
 
 	private Scratch createScratchWith(ScratchConfig config) {
@@ -239,6 +249,10 @@ public class ScratchTest {
 				ide.openScratch(scratchInfo);
 			else
 				ide.failedToOpen(scratchInfo);
+		}
+
+		public void userWantsToOpenDefaultScratch() {
+			ide.openScratch(config.scratchInfos.get(0));
 		}
 	}
 
