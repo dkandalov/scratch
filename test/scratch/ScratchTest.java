@@ -189,6 +189,13 @@ public class ScratchTest {
 		verifyZeroInteractions(ide, fileSystem);
 	}
 
+	@Test public void renamingScratch_toNameWithoutExtension() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
+
+		assertThat(scratch.canUserRename(scratchInfo, "renamedScratch"), equalTo(true));
+	}
+
 	@Test public void renamingScratch_when_fileRenameFailed() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
@@ -340,10 +347,7 @@ public class ScratchTest {
 
 			List<ScratchInfo> scratchesInfo = newArrayList();
 			for (String fileName : fileNames) {
-				// TODO fileName without extension
-				String name = fileName.substring(0, fileName.lastIndexOf("."));
-				String extension = fileName.substring(fileName.lastIndexOf(".") + 1);
-				scratchesInfo.add(new ScratchInfo(name, extension));
+				scratchesInfo.add(ScratchInfo.createFrom(fileName));
 			}
 			ide.displayScratchesListPopup(scratchesInfo);
 		}
@@ -369,10 +373,7 @@ public class ScratchTest {
 		}
 
 		public boolean canUserRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
-			// TODO name without extension
-			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
-			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
-			final ScratchInfo renamedScratchInfo = new ScratchInfo(nameWithMnemonics, extension);
+			final ScratchInfo renamedScratchInfo = ScratchInfo.createFrom(fullNameWithMnemonics);
 
 			return !ContainerUtil.exists(config.scratchInfos, new Condition<ScratchInfo>() {
 				@Override public boolean value(ScratchInfo it) {
@@ -382,10 +383,7 @@ public class ScratchTest {
 		}
 
 		public void userWantsToRename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
-			// TODO name without extension
-			String nameWithMnemonics = fullNameWithMnemonics.substring(0, fullNameWithMnemonics.lastIndexOf("."));
-			String extension = fullNameWithMnemonics.substring(fullNameWithMnemonics.lastIndexOf(".") + 1);
-			ScratchInfo renamedScratchInfo = new ScratchInfo(nameWithMnemonics, extension);
+			ScratchInfo renamedScratchInfo = ScratchInfo.createFrom(fullNameWithMnemonics);
 
 			boolean wasRenamed = fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
 			if (wasRenamed) {
@@ -471,6 +469,13 @@ public class ScratchTest {
 		public final String name;
 		public final String extension;
 
+		public static ScratchInfo createFrom(String fullNameWithMnemonics) {
+			return new ScratchInfo(
+					extractNameFrom(fullNameWithMnemonics),
+					extractExtensionFrom(fullNameWithMnemonics)
+			);
+		}
+
 		private ScratchInfo(String nameWithMnemonics, String extension) {
 			this.nameWithMnemonics = nameWithMnemonics;
 			this.name = nameWithMnemonics.replace("&", "");
@@ -502,6 +507,17 @@ public class ScratchTest {
 			int result = nameWithMnemonics != null ? nameWithMnemonics.hashCode() : 0;
 			result = 31 * result + (extension != null ? extension.hashCode() : 0);
 			return result;
+		}
+
+		private static String extractExtensionFrom(String fileName) {
+			int index = fileName.lastIndexOf(".");
+			return index == -1 ? "" : fileName.substring(index + 1);
+		}
+
+		private static String extractNameFrom(String fileName) {
+			int index = fileName.lastIndexOf(".");
+			if (index == -1) index = fileName.length();
+			return fileName.substring(0, index);
 		}
 	}
 }
