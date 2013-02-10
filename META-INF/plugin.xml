@@ -28,7 +28,7 @@
             <li>0.15 - NPE if there are no open projects</li>
             <li>0.16 - fixed reference to icon</li>
             <li>0.17 - fix for UTF-8</li>
-            <li>1.0 - uses physical files, new clipboard listener function, compatible from IJ 10.5</li>
+            <li>1.0 - uses physical files, new clipboard listener function</li>
         </ul>
         </body></html>
         ]]>
@@ -38,7 +38,7 @@
 
 	<application-components>
 		<component>
-			<implementation-class>scratch.ide.ScratchComponent</implementation-class>
+			<implementation-class>scratch.ScratchComponent</implementation-class>
 		</component>
 	</application-components>
 
@@ -46,23 +46,25 @@
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
 		</group>
-		<action id="Scratch.OpenScratch" class="scratch.ide.OpenScratchAction" text="Open Scratch"
+		<action id="Scratch.OpenScratch" class="scratch.ide.actions.OpenScratchAction" text="Open Scratch"
 				description="Opens default scratch editor" icon="/fileTypes/text.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="Scratch.CreateScratchAction" class="scratch.ide.AddScratchAction" text="Add New Scratch"
+<!--
+TODO enable
+		<action id="Scratch.CreateScratchAction" class="scratch.ide.actions.AddScratchAction" text="Add New Scratch"
 				description="Add new scratch file" icon="/actions/new.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<!-- TODO delete scratch -->
-		<action id="Scratch.OpenScratchList" class="scratch.ide.OpenScratchListAction" text="Open Scratch List"
+-->
+		<action id="Scratch.OpenScratchList" class="scratch.ide.actions.OpenScratchListAction" text="Open Scratch List"
 				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="ScratchListenClipboardAction" class="scratch.ide.ScratchListenClipboardAction"
+		<action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
@@ -70,7 +72,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<applicationService serviceInterface="scratch.ide.ScratchData"
-							serviceImplementation="scratch.ide.ScratchData"/>
+		<applicationService serviceInterface="scratch.ide.ScratchOldData"
+							serviceImplementation="scratch.ide.ScratchOldData"/>
 	</extensions>
 </idea-plugin>

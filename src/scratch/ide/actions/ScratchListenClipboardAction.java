@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scratch.ide;
+package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -30,6 +30,8 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import scratch.ScratchComponent;
+import scratch.ide.ScratchOldData;
 
 import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
@@ -49,18 +51,18 @@ public class ScratchListenClipboardAction extends ToggleAction implements DumbAw
 
 	@Override
 	public void setSelected(AnActionEvent event, boolean enabled) {
-		ScratchData.getInstance().setAppendContentFromClipboard(enabled);
+		ScratchOldData.getInstance().setAppendContentFromClipboard(enabled);
 		updateIcon(event.getPresentation(), enabled);
 	}
 
 	@Override
 	public boolean isSelected(AnActionEvent event) {
-		return ScratchData.getInstance().isAppendContentFromClipboard();
+		return ScratchOldData.getInstance().isAppendContentFromClipboard();
 	}
 
 	@Override
 	public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
-		if (!ScratchData.getInstance().isAppendContentFromClipboard()) return;
+		if (!ScratchOldData.getInstance().isAppendContentFromClipboard()) return;
 
 		try {
 			String oldClipboard = null;

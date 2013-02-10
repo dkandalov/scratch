@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package scratch.ide;
+package scratch;
 
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.components.ApplicationComponent;
@@ -22,6 +22,10 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import scratch.filesystem.FileSystem;
+import scratch.ide.Ide;
+import scratch.ide.ScratchOldData;
+import scratch.ide.Util;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -38,10 +42,16 @@ public class ScratchComponent implements ApplicationComponent {
 
 	@Override
 	public void initComponent() {
-		ScratchData scratchData = ScratchData.getInstance();
-		if (scratchData.isMigrateToPhysicalFiles()) {
-			createFilesFor(scratchData.getScratchTextInternal());
-			scratchData.setMigrateToPhysicalFiles(false);
+		Ide ide = new Ide();
+		FileSystem fileSystem = new FileSystem();
+		ScratchConfig config = ScratchConfig.DEFAULT_CONFIG;
+		new Scratch(ide, fileSystem, config);
+
+
+		ScratchOldData scratchOldData = ScratchOldData.getInstance();
+		if (scratchOldData.isMigrateToPhysicalFiles()) {
+			createFilesFor(scratchOldData.getScratchTextInternal());
+			scratchOldData.setMigrateToPhysicalFiles(false);
 		}
 	}
 
@@ -58,27 +68,27 @@ public class ScratchComponent implements ApplicationComponent {
 
 	private static void createFile(String fileName, String content) throws IOException {
 		FileUtil.writeToFile(new File(scratchesRootPath(), fileName), content);
-		ScratchData.getInstance().addCreatedFile(fileName);
+		ScratchOldData.getInstance().addCreatedFile(fileName);
 	}
 
 	public static void openInEditor(Project project, File scratchFile) {
 		VirtualFile virtualFile = Util.getVirtualFile(scratchFile.getAbsolutePath());
 		if (virtualFile != null) {
 			new OpenFileDescriptor(project, virtualFile).navigate(true);
-			ScratchData.getInstance().setLastOpenedFileName(scratchFile.getName());
+			ScratchOldData.getInstance().setLastOpenedFileName(scratchFile.getName());
 		}
 	}
 
 	public static File createFile(String fileName) {
 		File file = new File(scratchesRootPath(), fileName);
 		FileUtil.createIfDoesntExist(file);
-		ScratchData.getInstance().addCreatedFile(fileName);
+		ScratchOldData.getInstance().addCreatedFile(fileName);
 		return file;
 	}
 
 	@Nullable
 	public static VirtualFile getDefaultScratch() {
-		File file = nameToFileMap().get(ScratchData.getInstance().getLastOpenedFileName());
+		File file = nameToFileMap().get(ScratchOldData.getInstance().getLastOpenedFileName());
 		if (file == null) {
 			List<File> entries = filesAsList();
 			if (entries.isEmpty()) {
@@ -110,7 +120,7 @@ public class ScratchComponent implements ApplicationComponent {
 	 * when the file no longer exists, it is removed from ScretchData
 	 */
 	public static List<File> filesAsList() {
-		List<String> createdFileNames = ScratchData.getInstance().getCreatedFileNames();
+		List<String> createdFileNames = ScratchOldData.getInstance().getCreatedFileNames();
 		List<File> result = new ArrayList<File>(createdFileNames.size());
 		Map<String, File> map = nameToFileMap();
 
@@ -126,7 +136,7 @@ public class ScratchComponent implements ApplicationComponent {
 			if (file != null) {
 				result.add(file);
 			} else {
-				ScratchData.getInstance().removeCreatedFileName(createdFileName);
+				ScratchOldData.getInstance().removeCreatedFileName(createdFileName);
 			}
 			map.remove(createdFileName);
 		}
@@ -139,7 +149,7 @@ public class ScratchComponent implements ApplicationComponent {
 			Collections.sort(newFileNames);
 			for (String newFileName : newFileNames) {
 				result.add(map.get(newFileName));
-				ScratchData.getInstance().addCreatedFile(newFileName);
+				ScratchOldData.getInstance().addCreatedFile(newFileName);
 			}
 		}
 	}
