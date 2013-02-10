@@ -3,12 +3,13 @@ package scratch;
 import com.intellij.openapi.util.text.StringUtil;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static com.intellij.util.containers.ContainerUtil.list;
+import static com.intellij.util.containers.ContainerUtil.newArrayList;
 import static org.mockito.Mockito.*;
+
 
 /**
  * User: dima
@@ -24,7 +25,7 @@ public class ScratchTest {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
-		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
+		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
 		verify(fileSystem).createFile("scratch1.txt", "text1");
@@ -39,11 +40,11 @@ public class ScratchTest {
 		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG);
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
-		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
+		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
-				.withScratches(asList(
+				.withScratches(list(
 						new ScratchInfo("scratch1", "txt"),
 						new ScratchInfo("scratch2", "txt"),
 						new ScratchInfo("scratch3", "txt"),
@@ -59,7 +60,7 @@ public class ScratchTest {
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
 
-		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
+		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
 		verify(fileSystem).createFile("scratch1.txt", "text1");
@@ -67,7 +68,7 @@ public class ScratchTest {
 		verify(fileSystem).createFile("scratch3.txt", "text3");
 		verify(fileSystem).createFile("scratch4.txt", "text4");
 		verify(fileSystem).createFile("scratch5.txt", "text5");
-		verify(ide).failedToMigrateScratchesToFiles(asList(3, 4));
+		verify(ide).failedToMigrateScratchesToFiles(list(3, 4));
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_failedToMigrateSomeOfTheFiles() {
@@ -76,11 +77,11 @@ public class ScratchTest {
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);
 		when(fileSystem.createFile(eq("scratch4.txt"), anyString())).thenReturn(false);
 
-		List<String> scratches = asList("text1", "text2", "text3", "text4", "text5");
+		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
-				.withScratches(asList(
+				.withScratches(list(
 						new ScratchInfo("scratch1", "txt"),
 						new ScratchInfo("scratch2", "txt"),
 						new ScratchInfo("scratch5", "txt")
@@ -90,17 +91,17 @@ public class ScratchTest {
 	}
 
 	@Test public void displayingScratchesList_WhenConfigAndFiles_Match() {
-		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(asList(
+		scratch = createScratchWith(ScratchConfig.DEFAULT_CONFIG.withScratches(list(
 				new ScratchInfo("scratch1", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
 		)).needsMigration(false));
-		when(fileSystem.listOfScratchFiles()).thenReturn(asList("scratch1.txt", "scratch2.java", "scratch3.html"));
+		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch1.txt", "scratch2.java", "scratch3.html"));
 
 		scratch.userWantsToSeeScratchesList();
 
 		verify(fileSystem).listOfScratchFiles();
-		verify(ide).displayScratchesListPopup(eq(asList(
+		verify(ide).displayScratchesListPopup(eq(list(
 				new ScratchInfo("scratch1", "txt"),
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
@@ -177,8 +178,8 @@ public class ScratchTest {
 		}
 
 		public void migrate(List<String> scratches) {
-			List<Integer> indexes = new ArrayList<Integer>();
-			List<ScratchInfo> scratchesInfo = new ArrayList<ScratchInfo>();
+			List<Integer> indexes = newArrayList();
+			List<ScratchInfo> scratchesInfo = newArrayList();
 
 			for (int i = 1; i <= scratches.size(); i++) {
 				boolean wasCreated = fileSystem.createFile("scratch" + i + ".txt", scratches.get(i - 1));
@@ -200,7 +201,7 @@ public class ScratchTest {
 		public void userWantsToSeeScratchesList() {
 			List<String> fileNames = fileSystem.listOfScratchFiles();
 
-			List<ScratchInfo> scratchesInfo = new ArrayList<ScratchInfo>();
+			List<ScratchInfo> scratchesInfo = newArrayList();
 			for (String fileName : fileNames) {
 				// TODO fileName without extension
 				String name = fileName.substring(0, fileName.lastIndexOf("."));
