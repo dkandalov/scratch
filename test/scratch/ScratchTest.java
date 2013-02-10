@@ -28,7 +28,7 @@ public class ScratchTest {
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
-		verify(fileSystem).createFile("scratch1.txt", "text1");
+		verify(fileSystem).createFile("scratch.txt", "text1");
 		verify(fileSystem).createFile("scratch2.txt", "text2");
 		verify(fileSystem).createFile("scratch3.txt", "text3");
 		verify(fileSystem).createFile("scratch4.txt", "text4");
@@ -45,7 +45,7 @@ public class ScratchTest {
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
 				.withScratches(list(
-						new ScratchInfo("scratch1", "txt"),
+						new ScratchInfo("scratch", "txt"),
 						new ScratchInfo("scratch2", "txt"),
 						new ScratchInfo("scratch3", "txt"),
 						new ScratchInfo("scratch4", "txt"),
@@ -63,7 +63,7 @@ public class ScratchTest {
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		scratch.migrate(scratches);
 
-		verify(fileSystem).createFile("scratch1.txt", "text1");
+		verify(fileSystem).createFile("scratch.txt", "text1");
 		verify(fileSystem).createFile("scratch2.txt", "text2");
 		verify(fileSystem).createFile("scratch3.txt", "text3");
 		verify(fileSystem).createFile("scratch4.txt", "text4");
@@ -82,7 +82,7 @@ public class ScratchTest {
 
 		verify(ide).updateConfig(eq(ScratchConfig.DEFAULT_CONFIG
 				.withScratches(list(
-						new ScratchInfo("scratch1", "txt"),
+						new ScratchInfo("scratch", "txt"),
 						new ScratchInfo("scratch2", "txt"),
 						new ScratchInfo("scratch5", "txt")
 				))
@@ -214,9 +214,11 @@ public class ScratchTest {
 			List<ScratchInfo> scratchesInfo = newArrayList();
 
 			for (int i = 1; i <= scratches.size(); i++) {
-				boolean wasCreated = fileSystem.createFile("scratch" + i + ".txt", scratches.get(i - 1));
+				String scratchName = (i == 1 ? "scratch" : "scratch" + i);
+
+				boolean wasCreated = fileSystem.createFile(scratchName + ".txt", scratches.get(i - 1));
 				if (wasCreated) {
-					scratchesInfo.add(new ScratchInfo("scratch" + i, "txt"));
+					scratchesInfo.add(new ScratchInfo(scratchName, "txt"));
 				} else {
 					indexes.add(i);
 				}
