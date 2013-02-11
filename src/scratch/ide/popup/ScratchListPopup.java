@@ -19,7 +19,6 @@ import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
-import scratch.ScratchInfo;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -69,7 +68,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		});
 	}
 
-	public ScratchListPopup(@NotNull ListPopupStep<ScratchInfo> aStep) {
+	public ScratchListPopup(@NotNull ListPopupStep aStep) {
 		this(aStep, -1);
 	}
 
