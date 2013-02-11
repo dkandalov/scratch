@@ -31,7 +31,10 @@ public class FileSystem {
 
 	public List<String> listOfScratchFiles() {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH);
-		if (virtualFile == null) return Collections.emptyList();
+		if (virtualFile == null || !virtualFile.exists()) {
+			// TODO create ROOT_PATH folder
+			return Collections.emptyList();
+		}
 
 		return map(findAll(virtualFile.getChildren(), canBeScratch), new Function<VirtualFile, String>() {
 			@Override public String fun(VirtualFile it) {

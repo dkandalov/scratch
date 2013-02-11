@@ -17,19 +17,17 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
 import scratch.ide.ScratchComponent;
 
-import static scratch.ide.Util.holdingTo;
-import static scratch.ide.Util.projectFor;
+import static scratch.ide.Util.holdingOnTo;
 
 /**
  * @author Dmitry Kandalov
  */
 public class OpenScratchListAction extends DumbAwareAction {
-
 	@Override public void actionPerformed(AnActionEvent event) {
-		ScratchComponent.instance().userWantsToSeeScratchesList(holdingTo(event));
+		ScratchComponent.instance().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
 	}
 
 	@Override public void update(AnActionEvent event) {
-		event.getPresentation().setEnabled(projectFor(event) != null);
+		event.getPresentation().setEnabled(event.getProject() != null);
 	}
 }

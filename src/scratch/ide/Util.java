@@ -33,7 +33,7 @@ import java.io.File;
 
 public class Util {
 
-	public static final Key<AnActionEvent> ACTION_EVENT_KEY = Key.create("AnActionEvent");
+	public static final Key<Project> PROJECT_KEY = Key.create("AnActionEvent");
 
 	@Nullable
 	public static VirtualFile getVirtualFile(String absolutePath) {
@@ -54,15 +54,15 @@ public class Util {
 		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
 	}
 
-	public static UserDataHolder holdingTo(AnActionEvent event) {
+	public static UserDataHolder holdingOnTo(Project project) {
 		UserDataHolder userDataHolder = new UserDataHolderBase();
-		userDataHolder.putUserData(ACTION_EVENT_KEY, event);
+		userDataHolder.putUserData(PROJECT_KEY, project);
 		return userDataHolder;
 	}
 
 	@SuppressWarnings("ConstantConditions")
-	@NotNull public static AnActionEvent eventFrom(UserDataHolder userDataHolder) {
-		return userDataHolder.getUserData(ACTION_EVENT_KEY);
+	@NotNull public static Project takeProjectFrom(UserDataHolder userDataHolder) {
+		return userDataHolder.getUserData(PROJECT_KEY);
 	}
 
 	public static Project projectFor(AnActionEvent event) {

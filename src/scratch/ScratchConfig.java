@@ -2,10 +2,11 @@ package scratch;
 
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.intellij.util.containers.ContainerUtil.map;
 
 /**
  * User: dima
@@ -29,7 +30,7 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig replace(final ScratchInfo scratchInfo, final ScratchInfo newScratchInfo) {
-		return new ScratchConfig(ContainerUtil.map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
+		return new ScratchConfig(map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
 			@Override public ScratchInfo fun(ScratchInfo it) {
 				return it.equals(scratchInfo) ? newScratchInfo : it;
 			}
@@ -38,7 +39,7 @@ public class ScratchConfig {
 
 	public ScratchConfig move(final ScratchInfo scratchInfo, int shift) {
 		final ScratchInfo prevScratchInfo = scratchInfos.get(scratchInfos.indexOf(scratchInfo) + shift);
-		return this.with(ContainerUtil.map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
+		return this.with(map(scratchInfos, new Function<ScratchInfo, ScratchInfo>() {
 			@Override public ScratchInfo fun(ScratchInfo it) {
 				if (it.equals(prevScratchInfo)) return scratchInfo;
 				else if (it.equals(scratchInfo)) return prevScratchInfo;

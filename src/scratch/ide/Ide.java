@@ -1,27 +1,37 @@
 package scratch.ide;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.openapi.ui.popup.ListPopupStep;
+import com.intellij.openapi.ui.popup.PopupStep;
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
 import scratch.filesystem.FileSystem;
+import scratch.ide.popup.ScratchListPopup;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
-import static com.intellij.openapi.ui.popup.JBPopupFactory.ActionSelectionAid.NUMBERING;
 import static scratch.ide.Util.*;
 
 /**
@@ -43,23 +53,64 @@ public class Ide {
 	}
 
 	public void displayScratchesListPopup(List<ScratchInfo> scratchInfos, UserDataHolder userDataHolder) {
-		// TODO use this
-//		ListPopupStep popupStep = new BaseListPopupStep<String>("strings", asList("aaa", "bbb", "ccc"));
-//		ScratchListPopup popup = new ScratchListPopup(popupStep);
-//		popup.showCenteredInCurrentWindow(project);
+		final Project project = takeProjectFrom(userDataHolder);
+		final Ref<Component> componentRef = Ref.create();
 
-		AnActionEvent event = eventFrom(userDataHolder);
-		Project project = event.getProject();
-		DefaultActionGroup actionGroup = createActionGroup(scratchInfos);
+		ListPopupStep popupStep = new BaseListPopupStep<ScratchInfo>("List of Scratches", scratchInfos) {
+			private final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
 
-		JBPopupFactory factory = JBPopupFactory.getInstance();
-		ListPopup listPopup = factory.createActionGroupPopup("List of Scratches", actionGroup, event.getDataContext(), NUMBERING, true);
-		listPopup.showCenteredInCurrentWindow(project);
+			@Override public PopupStep onChosen(ScratchInfo scratchInfo, boolean finalChoice) {
+				if (finalChoice) {
+					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+					return FINAL_CHOICE;
+				}
+				return createActionsPopupFor(scratchInfo);
+			}
+
+			private PopupStep createActionsPopupFor(final ScratchInfo scratchInfo) {
+				AnAction openAction = new DumbAwareAction("Open") {
+					@Override public void actionPerformed(AnActionEvent event) {
+						ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+					}
+				};
+				AnAction renameAction = new DumbAwareAction("Rename") {
+					@Override public void actionPerformed(AnActionEvent event) {
+						// TODO
+					}
+				};
+				AnAction deleteAction = new DumbAwareAction("Delete") {
+					@Override public void actionPerformed(AnActionEvent event) {
+						// TODO
+					}
+				};
+				ActionGroup actionGroup = new DefaultActionGroup(openAction, renameAction, deleteAction);
+				return JBPopupFactory.getInstance().createActionsStep(
+						actionGroup,
+						DataManager.getInstance().getDataContext(componentRef.get()),
+						false, true, "", componentRef.get(), false
+				);
+			}
+
+			@NotNull @Override public String getTextFor(ScratchInfo scratchInfo) {
+				return scratchInfo.nameWithMnemonics;
+			}
+
+			@Override public Icon getIconFor(ScratchInfo scratchInfo) {
+				FileType fileType = fileTypeManager.getFileTypeByExtension(scratchInfo.extension);
+				return fileType.getIcon();
+			}
+
+			@Override public boolean hasSubstep(ScratchInfo selectedValue) {
+				return true;
+			}
+		};
+		ScratchListPopup popup = new ScratchListPopup(popupStep);
+		componentRef.set(popup.getComponent());
+		popup.showCenteredInCurrentWindow(project);
 	}
 
 	public void openScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
-		AnActionEvent event = eventFrom(userDataHolder);
-		Project project = event.getProject();
+		Project project = takeProjectFrom(userDataHolder);
 
 		VirtualFile file = fileSystem.findVirtualFileFor(scratchInfo);
 		if (file != null) {
@@ -98,7 +149,7 @@ public class Ide {
 			String name = scratchInfo.fullNameWithMnemonics();
 			actionGroup.add(new AnAction(name, "Open " + scratchInfo.name, getIcon(name)) {
 				@Override public void actionPerformed(AnActionEvent event) {
-					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingTo(event));
+					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(event.getProject()));
 				}
 			});
 		}
