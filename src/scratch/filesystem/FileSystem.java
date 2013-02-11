@@ -32,7 +32,6 @@ public class FileSystem {
 	public List<String> listScratchFiles() {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH);
 		if (virtualFile == null || !virtualFile.exists()) {
-			// TODO create ROOT_PATH folder
 			return Collections.emptyList();
 		}
 
@@ -49,6 +48,7 @@ public class FileSystem {
 	}
 
 	public boolean createFile(String fileName, String text) {
+		// TODO create ROOT_PATH folder if it doesn't exist
 		// TODO implement
 		return false;
 	}

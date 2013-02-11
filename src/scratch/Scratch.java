@@ -46,8 +46,7 @@ public class Scratch {
 		} else {
 			ide.failedToMigrateScratchesToFiles(indexes);
 		}
-		config = config.with(scratchesInfo).needsMigration(false);
-		ide.updateConfig(config);
+		update(config.with(scratchesInfo).needsMigration(false));
 	}
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
@@ -76,8 +75,7 @@ public class Scratch {
 
 		List<ScratchInfo> scratchInfos = concat(oldScratchInfos, newScratchInfos);
 		if (!newScratchInfos.isEmpty() || oldScratchInfos.size() != config.scratchInfos.size()) {
-			config = config.with(scratchInfos);
-			ide.updateConfig(config);
+			update(config.with(scratchInfos));
 		}
 		ide.displayScratchesListPopup(scratchInfos, userDataHolder);
 	}
@@ -117,20 +115,18 @@ public class Scratch {
 
 		boolean wasRenamed = fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
 		if (wasRenamed) {
-			config = config.replace(scratchInfo, renamedScratchInfo);
-			ide.updateConfig(config);
+			update(config.replace(scratchInfo, renamedScratchInfo));
 		} else {
 			ide.failedToRename(scratchInfo);
 		}
 	}
 
 	public void userMovedScratch(final ScratchInfo scratchInfo, int shift) {
-		config = config.move(scratchInfo, shift);
-		ide.updateConfig(config);
+		update(config.move(scratchInfo, shift));
 	}
 
 	public void userWantsToListenToClipboard(boolean value) {
-		ide.updateConfig(config.listenToClipboard(value));
+		update(config.listenToClipboard(value));
 	}
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
@@ -148,5 +144,10 @@ public class Scratch {
 
 	public boolean shouldListenToClipboard() {
 		return config.listenToClipboard;
+	}
+
+	private void update(ScratchConfig newConfig) {
+		config = newConfig;
+		ide.updateConfig(config);
 	}
 }
