@@ -56,7 +56,7 @@ public class ScratchComponent implements ApplicationComponent {
 
 		if (config.needMigration) {
 			ScratchOldData scratchOldData = ScratchOldData.getInstance();
-			scratch.migrate(asList(scratchOldData.getScratchText()));
+			scratch.migrate(asList(scratchOldData.getScratchTextInternal()));
 		}
 	}
 

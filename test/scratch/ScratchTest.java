@@ -101,11 +101,11 @@ public class ScratchTest {
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
 		)));
-		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
+		when(fileSystem.listScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
 		scratch.userWantsToSeeScratchesList(USER_DATA);
 
-		verify(fileSystem).listOfScratchFiles();
+		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
@@ -120,11 +120,11 @@ public class ScratchTest {
 				new ScratchInfo("scratch2", "java"),
 				new ScratchInfo("scratch3", "html")
 		)));
-		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch2.java", "scratch3.html", "scratch.txt"));
+		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch3.html", "scratch.txt"));
 
 		scratch.userWantsToSeeScratchesList(USER_DATA);
 
-		verify(fileSystem).listOfScratchFiles();
+		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java"),
@@ -137,11 +137,11 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(
 				new ScratchInfo("scratch", "txt")
 		)));
-		when(fileSystem.listOfScratchFiles()).thenReturn(list("scratch2.java", "scratch.txt"));
+		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch.txt"));
 
 		scratch.userWantsToSeeScratchesList(USER_DATA);
 
-		verify(fileSystem).listOfScratchFiles();
+		verify(fileSystem).listScratchFiles();
 		verify(ide).updateConfig(eq(defaultConfig().with(list(
 				new ScratchInfo("scratch", "txt"),
 				new ScratchInfo("scratch2", "java")

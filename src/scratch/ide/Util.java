@@ -16,8 +16,6 @@ package scratch.ide;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -32,8 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class Util {
-
-	public static final Key<Project> PROJECT_KEY = Key.create("AnActionEvent");
+	private static final Key<Project> PROJECT_KEY = Key.create("AnActionEvent");
 
 	@Nullable
 	public static VirtualFile getVirtualFile(String absolutePath) {
@@ -63,9 +60,5 @@ public class Util {
 	@SuppressWarnings("ConstantConditions")
 	@NotNull public static Project takeProjectFrom(UserDataHolder userDataHolder) {
 		return userDataHolder.getUserData(PROJECT_KEY);
-	}
-
-	public static Project projectFor(AnActionEvent event) {
-		return event.getData(PlatformDataKeys.PROJECT);
 	}
 }

@@ -51,7 +51,7 @@ public class Scratch {
 	}
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
-		final List<String> fileNames = fileSystem.listOfScratchFiles();
+		final List<String> fileNames = fileSystem.listScratchFiles();
 
 		final List<ScratchInfo> oldScratchInfos = findAll(config.scratchInfos, new Condition<ScratchInfo>() {
 			@Override public boolean value(ScratchInfo it) {

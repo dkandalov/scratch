@@ -29,7 +29,7 @@ public class FileSystem {
 		}
 	};
 
-	public List<String> listOfScratchFiles() {
+	public List<String> listScratchFiles() {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH);
 		if (virtualFile == null || !virtualFile.exists()) {
 			// TODO create ROOT_PATH folder

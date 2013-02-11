@@ -1,6 +1,5 @@
 package scratch.ide;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -16,7 +15,6 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
@@ -141,29 +139,6 @@ public class Ide {
 
 	public void failedToOpen(ScratchInfo scratchInfo) {
 		notifyUser("", "Failed to open scratch: '" + scratchInfo.name + "'", WARNING);
-	}
-
-	private static DefaultActionGroup createActionGroup(List<ScratchInfo> scratchInfos) {
-		DefaultActionGroup actionGroup = new DefaultActionGroup();
-		for (final ScratchInfo scratchInfo : scratchInfos) {
-			String name = scratchInfo.fullNameWithMnemonics();
-			actionGroup.add(new AnAction(name, "Open " + scratchInfo.name, getIcon(name)) {
-				@Override public void actionPerformed(AnActionEvent event) {
-					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(event.getProject()));
-				}
-			});
-		}
-		return actionGroup;
-	}
-
-	private static Icon getIcon(String scratchName) {
-		String[] split = scratchName.split("\\.");
-		if (split.length > 1) {
-			String fileType = split[split.length - 1];
-			return IconLoader.findIcon("/fileTypes/" + fileType + ".png"); // TODO use FileType class
-		} else {
-			return AllIcons.FileTypes.Text;
-		}
 	}
 
 	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {
