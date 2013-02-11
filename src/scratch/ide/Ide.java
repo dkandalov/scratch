@@ -152,7 +152,7 @@ public class Ide {
 			CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
 				@Override
 				public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
-					if (!ScratchConfigPersistence.getInstance().isListenToClipboard()) return;
+					if (!scratch.shouldListenToClipboard()) return;
 
 					try {
 						String oldClipboard = null;
@@ -167,7 +167,7 @@ public class Ide {
 						}
 						if (clipboard == null || StringUtils.equals(oldClipboard, clipboard)) return;
 
-						scratch.clipboardListenerWantsToAppendText(clipboard);
+						scratch.clipboardListenerWantsToAddTextToScratch(clipboard);
 
 					} catch (UnsupportedFlavorException e) {
 						LOG.info(e);

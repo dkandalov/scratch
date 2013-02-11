@@ -19,7 +19,6 @@ import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.IconLoader;
 import scratch.ide.ScratchComponent;
-import scratch.ide.ScratchConfigPersistence;
 
 import javax.swing.*;
 
@@ -33,7 +32,7 @@ public class ScratchListenClipboardAction extends ToggleAction implements DumbAw
 	}
 
 	@Override public boolean isSelected(AnActionEvent event) {
-		return ScratchConfigPersistence.getInstance().isListenToClipboard();
+		return ScratchComponent.instance().shouldListenToClipboard();
 	}
 
 	@Override public void update(AnActionEvent event) {

@@ -209,7 +209,7 @@ public class ScratchTest {
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
-		scratch.clipboardListenerWantsToAppendText("clipboard text");
+		scratch.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 		verify(ide).appendTextTo(eq(scratchInfo), eq("clipboard text"));
@@ -219,7 +219,7 @@ public class ScratchTest {
 	@Test public void appendingClipboardTextToDefaultScratch_when_scratchListIsEmpty() {
 		scratch = createScratchWith(defaultConfig());
 
-		scratch.clipboardListenerWantsToAppendText("clipboard text");
+		scratch.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
