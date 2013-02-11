@@ -69,6 +69,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				moveSelected(1);
 			}
 		});
+		// TODO register rename action
 	}
 
 	public ScratchListPopup(@NotNull ListPopupStep aStep) {
@@ -95,6 +96,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	private void removeSelected() {
 		ScratchInfo scratchInfo = (ScratchInfo) getListModel().get(getSelectedIndex());
 		getListModel().deleteItem(scratchInfo);
+		// TODO
 	}
 
 	protected ScratchPopupModel getListModel() {

@@ -31,68 +31,78 @@ import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.ide.ScratchComponent;
-import scratch.ide.ScratchOldData;
+import scratch.ide.ScratchConfigPersistence;
 
 import javax.swing.*;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class ScratchListenClipboardAction extends ToggleAction implements DumbAware, CopyPasteManager.ContentChangedListener {
-	private static final Logger LOG = Logger.getInstance(ScratchListenClipboardAction.class.getName());
+import static java.awt.datatransfer.DataFlavor.stringFlavor;
+
+public class ScratchListenClipboardAction extends ToggleAction implements DumbAware {
+	private static final Logger LOG = Logger.getInstance(ScratchListenClipboardAction.class);
 
 	private static final Icon IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png");
 	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IconLoader.getIcon("/actions/menu-paste.png"));
 
+
 	public ScratchListenClipboardAction() {
-		CopyPasteManager.getInstance().addContentChangedListener(this);
+		CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
+			@Override public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
+				if (!ScratchConfigPersistence.getInstance().isListenToClipboard()) return;
+
+				try {
+
+					String oldClipboard = null;
+					if (oldTransferable != null && oldTransferable.getTransferData(stringFlavor) != null) {
+						oldClipboard = oldTransferable.getTransferData(stringFlavor).toString();
+					}
+					String clipboard = null;
+					if (newTransferable != null && newTransferable.getTransferData(stringFlavor) != null) {
+						clipboard = newTransferable.getTransferData(stringFlavor).toString();
+					}
+					if (clipboard != null && !StringUtils.equals(oldClipboard, clipboard)) {
+						appendToScratch(clipboard);
+					}
+
+				} catch (UnsupportedFlavorException e) {
+					LOG.info(e);
+				} catch (IOException e) {
+					LOG.info(e);
+				}
+			}
+		});
 	}
 
 	@Override
 	public void setSelected(AnActionEvent event, boolean enabled) {
-		ScratchOldData.getInstance().setAppendContentFromClipboard(enabled);
+		ScratchComponent.instance().userWantsToListenToClipboard(enabled);
 		updateIcon(event.getPresentation(), enabled);
 	}
 
 	@Override
 	public boolean isSelected(AnActionEvent event) {
-		return ScratchOldData.getInstance().isAppendContentFromClipboard();
+		return ScratchConfigPersistence.getInstance().isListenToClipboard();
 	}
 
 	@Override
-	public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
-		if (!ScratchOldData.getInstance().isAppendContentFromClipboard()) return;
-
-		try {
-			String oldClipboard = null;
-			if (oldTransferable != null && oldTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
-				oldClipboard = oldTransferable.getTransferData(DataFlavor.stringFlavor).toString();
-			}
-			String clipboard = null;
-			if (newTransferable != null && newTransferable.getTransferData(DataFlavor.stringFlavor) != null) {
-				clipboard = newTransferable.getTransferData(DataFlavor.stringFlavor).toString();
-			}
-			if (clipboard != null && !StringUtils.equals(oldClipboard, clipboard)) {
-				writeToScratch(clipboard);
-			}
-		} catch (UnsupportedFlavorException e) {
-			LOG.info(e);
-		} catch (IOException e) {
-			LOG.info(e);
-		}
+	public void update(AnActionEvent event) {
+		super.update(event);
+		updateIcon(event.getPresentation(), isSelected(event));
 	}
 
-	private static void writeToScratch(final String clipboard) {
+	private void updateIcon(Presentation presentation, boolean enabled) {
+		presentation.setIcon(enabled ? IS_ON_ICON : IS_OFF_ICON);
+	}
+
+	private static void appendToScratch(final String clipboard) {
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override
 			public void run() {
 				Document document = getScratchDocument();
-				if (document == null) {
-					return;
-				}
-				if (hasFocusInEditor(document))
-					return;
+				if (document == null) return;
+				if (hasFocusInEditor(document)) return;
 
 				String text = document.getText();
 				if (text.endsWith("\n")) {
@@ -100,7 +110,6 @@ public class ScratchListenClipboardAction extends ToggleAction implements DumbAw
 				} else {
 					document.setText(text + "\n" + clipboard);
 				}
-
 				FileDocumentManager.getInstance().saveDocument(document);
 			}
 		});
@@ -108,20 +117,13 @@ public class ScratchListenClipboardAction extends ToggleAction implements DumbAw
 
 	private static boolean hasFocusInEditor(Document document) {
 		Editor selectedTextEditor = getSelectedEditor();
-		if (selectedTextEditor != null) {
-			if (selectedTextEditor.getDocument().equals(document)) {
-				return true;
-			}
-		}
-		return false;
+		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
 	}
 
-	@Nullable
-	private static Document getScratchDocument() {
+	@Nullable private static Document getScratchDocument() {
 		VirtualFile file = ScratchComponent.getDefaultScratch();
-		if (file == null) {
-			return null;
-		}
+		if (file == null) return null;
+
 		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
 		return fileDocumentManager.getDocument(file);
 	}
@@ -132,16 +134,6 @@ public class ScratchListenClipboardAction extends ToggleAction implements DumbAw
 
 		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
 		return instance.getSelectedTextEditor();
-	}
-
-	@Override
-	public void update(AnActionEvent e) {
-		super.update(e);
-		updateIcon(e.getPresentation(), isSelected(e));
-	}
-
-	private void updateIcon(Presentation presentation, boolean enabled) {
-		presentation.setIcon(enabled ? IS_ON_ICON : IS_OFF_ICON);
 	}
 
 }
