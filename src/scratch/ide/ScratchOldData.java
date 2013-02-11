@@ -121,12 +121,11 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 
 	@Deprecated
 	public void setAppendContentFromClipboard(boolean enabled) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Deprecated
 	public boolean isAppendContentFromClipboard() {
-		throw new UnsupportedOperationException();
+		return false;
 	}
 
 	public static class XmlUtil {

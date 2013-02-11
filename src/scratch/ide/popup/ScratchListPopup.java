@@ -19,6 +19,8 @@ import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
+import scratch.ScratchInfo;
+import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -45,6 +47,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	private int myMaxRowCount = 20;
 	private boolean myAutoHandleBeforeShow;
 
+
 	public ScratchListPopup(@NotNull ListPopupStep aStep, int maxRowCount) {
 		super(aStep);
 		if (maxRowCount != -1){
@@ -52,17 +55,17 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 
 		registerAction("deleteScratch", KeyStroke.getKeyStroke("DELETE"), new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent event) {
 				removeSelected();
 			}
 		});
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent event) {
 				moveSelected(-1);
 			}
 		});
 		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent e) {
+			@Override public void actionPerformed(ActionEvent event) {
 				moveSelected(1);
 			}
 		});
@@ -78,6 +81,20 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		if (maxRowCount != -1){
 			myMaxRowCount = maxRowCount;
 		}
+	}
+
+	private void moveSelected(int shift) {
+		ScratchInfo scratchInfo = (ScratchInfo) getListModel().get(getSelectedIndex());
+		boolean wasMoved = getListModel().moveItem(scratchInfo, shift);
+		if (wasMoved) {
+			myList.setSelectedIndex(getSelectedIndex() + shift);
+			ScratchComponent.instance().userMovedScratch(scratchInfo, shift);
+		}
+	}
+
+	private void removeSelected() {
+		ScratchInfo scratchInfo = (ScratchInfo) getListModel().get(getSelectedIndex());
+		getListModel().deleteItem(scratchInfo);
 	}
 
 	protected ScratchPopupModel getListModel() {
@@ -410,18 +427,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	@Override
 	public void addListSelectionListener(ListSelectionListener listSelectionListener) {
 		myList.addListSelectionListener(listSelectionListener);
-	}
-
-	public void removeSelected() {
-		Object item = getListModel().get(getSelectedIndex());
-		getListModel().deleteItem(item);
-	}
-
-	public void moveSelected(int shift) {
-		Object item = getListModel().get(getSelectedIndex());
-		boolean wasMoved = getListModel().moveItem(item, shift);
-		if (wasMoved)
-			myList.setSelectedIndex(getSelectedIndex() + shift);
 	}
 
 	private class MyMouseMotionListener extends MouseMotionAdapter {
