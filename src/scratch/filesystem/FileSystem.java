@@ -59,6 +59,6 @@ public class FileSystem {
 	}
 
 	@Nullable public VirtualFile findVirtualFileFor(ScratchInfo scratchInfo) {
-		return fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH + scratchInfo.asFileName());
+		return fileManager.findFileByUrl("file://" + ROOT_PATH + scratchInfo.asFileName());
 	}
 }

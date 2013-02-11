@@ -1,13 +1,24 @@
 package scratch.ide;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.openapi.wm.IdeFrame;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
+import scratch.Scratch;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
 import scratch.filesystem.FileSystem;
@@ -15,9 +26,13 @@ import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
+import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ide.Util.*;
 
 /**
@@ -84,6 +99,84 @@ public class Ide {
 
 	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {
 		LOG.warn("Failed to find virtual file for '" + scratchInfo.asFileName() + "'");
+	}
+
+	public void appendTextTo(ScratchInfo scratchInfo, final String clipboardText) {
+		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratchInfo);
+		if (virtualFile == null) {
+			failedToFindVirtualFileFor(scratchInfo);
+			return;
+		}
+		final Document document = FileDocumentManager.getInstance().getDocument(virtualFile);
+		if (document == null) return;
+		if (hasFocusInEditor(document)) return;
+
+		ApplicationManager.getApplication().runWriteAction(new Runnable() {
+			@Override public void run() {
+				String text = document.getText();
+				if (text.endsWith("\n")) {
+					document.setText(text + clipboardText);
+				} else {
+					document.setText(text + "\n" + clipboardText);
+				}
+				FileDocumentManager.getInstance().saveDocument(document);
+			}
+		});
+	}
+
+	private static boolean hasFocusInEditor(Document document) {
+		Editor selectedTextEditor = getSelectedEditor();
+		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
+	}
+
+	private static Editor getSelectedEditor() {
+		IdeFrame frame = IdeFocusManager.findInstance().getLastFocusedFrame();
+		if (frame == null) return null;
+
+		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
+		return instance.getSelectedTextEditor();
+	}
+
+
+	// TODO what if this is ON and clipboard content is appended to scratch forever?
+	public static class ClipboardListener {
+		private static final Logger LOG = Logger.getInstance(ClipboardListener.class);
+
+		private final Scratch scratch;
+
+		public ClipboardListener(Scratch scratch) {
+			this.scratch = scratch;
+		}
+
+		public void start() {
+			CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
+				@Override
+				public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
+					if (!ScratchConfigPersistence.getInstance().isListenToClipboard()) return;
+
+					try {
+						String oldClipboard = null;
+						if (oldTransferable != null) {
+							Object transferData = oldTransferable.getTransferData(stringFlavor);
+							oldClipboard = (transferData == null ? null : transferData.toString());
+						}
+						String clipboard = null;
+						if (newTransferable != null) {
+							Object transferData = newTransferable.getTransferData(stringFlavor);
+							clipboard = (transferData == null ? null : transferData.toString());
+						}
+						if (clipboard == null || StringUtils.equals(oldClipboard, clipboard)) return;
+
+						scratch.clipboardListenerWantsToAppendText(clipboard);
+
+					} catch (UnsupportedFlavorException e) {
+						LOG.info(e);
+					} catch (IOException e) {
+						LOG.info(e);
+					}
+				}
+			});
+		}
 	}
 
 }

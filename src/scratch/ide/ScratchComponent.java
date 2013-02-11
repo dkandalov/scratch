@@ -52,12 +52,15 @@ public class ScratchComponent implements ApplicationComponent {
 		FileSystem fileSystem = new FileSystem();
 		Ide ide = new Ide(fileSystem);
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
+
 		scratch = new Scratch(ide, fileSystem, config);
 
 		if (config.needMigration) {
 			ScratchOldData scratchOldData = ScratchOldData.getInstance();
 			scratch.migrate(asList(scratchOldData.getScratchTextInternal()));
 		}
+
+		new Ide.ClipboardListener(scratch).start();
 	}
 
 	private static void createFilesFor(String[] scratchesText) {

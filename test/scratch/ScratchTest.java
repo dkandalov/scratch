@@ -175,7 +175,7 @@ public class ScratchTest {
 		verify(ide).failedToOpen(eq(scratchInfo));
 	}
 
-	@Test public void openingDefaultScratch_when_scratchesListIsNotEmpty_and_scratchFileExists() {
+	@Test public void openingDefaultScratch_when_scratchListIsNotEmpty_and_scratchFileExists() {
 		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
 		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
@@ -196,10 +196,30 @@ public class ScratchTest {
 	}
 
 	// TODO should create new scratch in this case
-	@Test public void openingDefaultScratch_when_scratchesListIsEmpty() {
+	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
 		scratch = createScratchWith(defaultConfig());
 
 		scratch.userWantsToOpenDefaultScratch(USER_DATA);
+
+		verify(ide).failedToOpenDefaultScratch();
+	}
+
+	@Test public void appendingClipboardTextToDefaultScratch() {
+		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
+		scratch = createScratchWith(defaultConfig().with(list(scratchInfo)));
+		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
+
+		scratch.clipboardListenerWantsToAppendText("clipboard text");
+
+		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
+		verify(ide).appendTextTo(eq(scratchInfo), eq("clipboard text"));
+	}
+
+	// TODO should create new scratch in this case?
+	@Test public void appendingClipboardTextToDefaultScratch_when_scratchListIsEmpty() {
+		scratch = createScratchWith(defaultConfig());
+
+		scratch.clipboardListenerWantsToAppendText("clipboard text");
 
 		verify(ide).failedToOpenDefaultScratch();
 	}

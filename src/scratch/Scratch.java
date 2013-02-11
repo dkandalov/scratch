@@ -132,4 +132,17 @@ public class Scratch {
 	public void userWantsToListenToClipboard(boolean value) {
 		ide.updateConfig(config.listenToClipboard(value));
 	}
+
+	public void clipboardListenerWantsToAppendText(String clipboardText) {
+		if (config.scratchInfos.isEmpty()) {
+			ide.failedToOpenDefaultScratch();
+		} else {
+			ScratchInfo scratchInfo = config.scratchInfos.get(0);
+			if (fileSystem.scratchFileExists(scratchInfo.asFileName())) {
+				ide.appendTextTo(scratchInfo, clipboardText);
+			} else {
+				ide.failedToOpenDefaultScratch();
+			}
+		}
+	}
 }
