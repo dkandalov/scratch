@@ -20,6 +20,7 @@ import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
+import scratch.Scratch;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
 import scratch.filesystem.FileSystem;
@@ -53,13 +54,14 @@ public class Ide {
 	public void displayScratchesListPopup(List<ScratchInfo> scratchInfos, UserDataHolder userDataHolder) {
 		final Project project = takeProjectFrom(userDataHolder);
 		final Ref<Component> componentRef = Ref.create();
+		final Scratch scratch = ScratchComponent.instance();
 
 		ListPopupStep popupStep = new BaseListPopupStep<ScratchInfo>("List of Scratches", scratchInfos) {
 			private final FileTypeManager fileTypeManager = FileTypeManager.getInstance();
 
 			@Override public PopupStep onChosen(ScratchInfo scratchInfo, boolean finalChoice) {
 				if (finalChoice) {
-					ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+					scratch.userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
 					return FINAL_CHOICE;
 				}
 				return createActionsPopupFor(scratchInfo);
@@ -68,7 +70,7 @@ public class Ide {
 			private PopupStep createActionsPopupFor(final ScratchInfo scratchInfo) {
 				AnAction openAction = new DumbAwareAction("Open") {
 					@Override public void actionPerformed(AnActionEvent event) {
-						ScratchComponent.instance().userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+						scratch.userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
 					}
 				};
 				AnAction renameAction = new DumbAwareAction("Rename") {
@@ -101,9 +103,13 @@ public class Ide {
 			@Override public boolean hasSubstep(ScratchInfo selectedValue) {
 				return true;
 			}
+
+			@Override public boolean isMnemonicsNavigationEnabled() {
+				return true;
+			}
 		};
 		ScratchListPopup popup = new ScratchListPopup(popupStep);
-		componentRef.set(popup.getComponent());
+		componentRef.set(popup.getComponent()); // this kind of a hack was copied from com.intellij.tasks.actions.SwitchTaskAction#createPopup
 		popup.showCenteredInCurrentWindow(project);
 	}
 
