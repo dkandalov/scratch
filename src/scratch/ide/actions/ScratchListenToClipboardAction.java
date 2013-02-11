@@ -22,7 +22,7 @@ import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
 
-public class ScratchListenClipboardAction extends ToggleAction implements DumbAware {
+public class ScratchListenToClipboardAction extends ToggleAction implements DumbAware {
 	private static final Icon IS_ON_ICON = AllIcons.Actions.Menu_paste;
 	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON);
 

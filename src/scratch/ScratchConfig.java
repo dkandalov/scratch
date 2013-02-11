@@ -7,26 +7,31 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.map;
+import static scratch.ScratchConfig.AppendType.APPEND;
 
 /**
  * User: dima
  * Date: 10/02/2013
  */
 public class ScratchConfig {
-	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<ScratchInfo>emptyList(), false, true);
+	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<ScratchInfo>emptyList(), false, true, APPEND);
+
+	public enum AppendType { APPEND, PREPEND }
 
 	public final List<ScratchInfo> scratchInfos;
 	public final boolean needMigration;
 	public final boolean listenToClipboard;
+	public final AppendType clipboardAppendType;
 
-	ScratchConfig(List<ScratchInfo> scratchInfos, boolean listenToClipboard, boolean needMigration) {
+	private ScratchConfig(List<ScratchInfo> scratchInfos, boolean listenToClipboard, boolean needMigration, AppendType clipboardAppendType) {
 		this.scratchInfos = scratchInfos;
 		this.listenToClipboard = listenToClipboard;
 		this.needMigration = needMigration;
+		this.clipboardAppendType = clipboardAppendType;
 	}
 
 	public ScratchConfig with(List<ScratchInfo> newScratchInfos) {
-		return new ScratchConfig(newScratchInfos, listenToClipboard, needMigration);
+		return new ScratchConfig(newScratchInfos, listenToClipboard, needMigration, clipboardAppendType);
 	}
 
 	public ScratchConfig replace(final ScratchInfo scratchInfo, final ScratchInfo newScratchInfo) {
@@ -34,7 +39,7 @@ public class ScratchConfig {
 			@Override public ScratchInfo fun(ScratchInfo it) {
 				return it.equals(scratchInfo) ? newScratchInfo : it;
 			}
-		}), listenToClipboard, needMigration);
+		}), listenToClipboard, needMigration, clipboardAppendType);
 	}
 
 	public ScratchConfig move(final ScratchInfo scratchInfo, int shift) {
@@ -49,11 +54,15 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig needsMigration(boolean value) {
-		return new ScratchConfig(scratchInfos, listenToClipboard, value);
+		return new ScratchConfig(scratchInfos, listenToClipboard, value, clipboardAppendType);
 	}
 
 	public ScratchConfig listenToClipboard(boolean value) {
-		return new ScratchConfig(scratchInfos, value, needMigration);
+		return new ScratchConfig(scratchInfos, value, needMigration, clipboardAppendType);
+	}
+
+	public ScratchConfig with(AppendType appendType) {
+		return new ScratchConfig(scratchInfos, listenToClipboard, needMigration, appendType);
 	}
 
 	@Override public String toString() {

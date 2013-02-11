@@ -33,6 +33,9 @@ import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static scratch.ScratchConfig.AppendType;
+import static scratch.ScratchConfig.AppendType.APPEND;
+import static scratch.ScratchConfig.AppendType.PREPEND;
 import static scratch.ide.Util.*;
 
 /**
@@ -101,7 +104,7 @@ public class Ide {
 		LOG.warn("Failed to find virtual file for '" + scratchInfo.asFileName() + "'");
 	}
 
-	public void appendTextTo(ScratchInfo scratchInfo, final String clipboardText) {
+	public void addTextTo(ScratchInfo scratchInfo, final String clipboardText, final AppendType appendType) {
 		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratchInfo);
 		if (virtualFile == null) {
 			failedToFindVirtualFileFor(scratchInfo);
@@ -114,11 +117,20 @@ public class Ide {
 		ApplicationManager.getApplication().runWriteAction(new Runnable() {
 			@Override public void run() {
 				String text = document.getText();
-				if (text.endsWith("\n")) {
-					document.setText(text + clipboardText);
+				String newText;
+				if (appendType == APPEND) {
+					if (text.endsWith("\n")) {
+						newText = text + clipboardText;
+					} else {
+						newText = text + "\n" + clipboardText;
+					}
+				} else if (appendType == PREPEND) {
+					newText = clipboardText + "\n" + text;
 				} else {
-					document.setText(text + "\n" + clipboardText);
+					throw new IllegalStateException();
 				}
+
+				document.setText(newText);
 				FileDocumentManager.getInstance().saveDocument(document);
 			}
 		});
@@ -148,7 +160,7 @@ public class Ide {
 			this.scratch = scratch;
 		}
 
-		public void start() {
+		public void startListening() {
 			CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
 				@Override
 				public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {

@@ -64,7 +64,7 @@ TODO enable
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenClipboardAction"
+		<action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenToClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt v"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>

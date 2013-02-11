@@ -12,6 +12,7 @@ import static com.intellij.util.containers.ContainerUtil.list;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
+import static scratch.ScratchConfig.AppendType;
 
 
 /**
@@ -212,7 +213,7 @@ public class ScratchTest {
 		scratch.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).appendTextTo(eq(scratchInfo), eq("clipboard text"));
+		verify(ide).addTextTo(eq(scratchInfo), eq("clipboard text"), any(AppendType.class));
 	}
 
 	// TODO should create new scratch in this case?

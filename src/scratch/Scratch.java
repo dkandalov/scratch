@@ -139,7 +139,7 @@ public class Scratch {
 		} else {
 			ScratchInfo scratchInfo = config.scratchInfos.get(0);
 			if (fileSystem.scratchFileExists(scratchInfo.asFileName())) {
-				ide.appendTextTo(scratchInfo, clipboardText);
+				ide.addTextTo(scratchInfo, clipboardText, config.clipboardAppendType);
 			} else {
 				ide.failedToOpenDefaultScratch();
 			}

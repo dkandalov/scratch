@@ -60,7 +60,7 @@ public class ScratchComponent implements ApplicationComponent {
 			scratch.migrate(asList(scratchOldData.getScratchTextInternal()));
 		}
 
-		new Ide.ClipboardListener(scratch).start();
+		new Ide.ClipboardListener(scratch).startListening();
 	}
 
 	private static void createFilesFor(String[] scratchesText) {

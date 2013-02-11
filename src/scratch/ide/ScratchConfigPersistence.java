@@ -14,6 +14,7 @@ import scratch.ScratchInfo;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtilRt.newArrayList;
+import static scratch.ScratchConfig.AppendType.APPEND;
 
 /**
  * User: dima
@@ -24,6 +25,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	private boolean isNeedMigration = true;
 	private boolean isListenToClipboard = false;
 	private List<String> fullScratchNamesOrdered = newArrayList();
+	private ScratchConfig.AppendType clipboardAppendType = APPEND;
 
 	public static ScratchConfigPersistence getInstance() {
 		return ServiceManager.getService(ScratchConfigPersistence.class);
@@ -37,7 +39,8 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 					@Override public ScratchInfo fun(String it) {
 						return ScratchInfo.createFrom(it);
 					}
-				}));
+				}))
+				.with(clipboardAppendType);
 	}
 
 	public void updateFrom(ScratchConfig config) {
@@ -74,6 +77,14 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		isNeedMigration = needMigration;
 	}
 
+	public ScratchConfig.AppendType getClipboardAppendType() {
+		return clipboardAppendType;
+	}
+
+	public void setClipboardAppendType(ScratchConfig.AppendType clipboardAppendType) {
+		this.clipboardAppendType = clipboardAppendType;
+	}
+
 	@Nullable @Override public ScratchConfigPersistence getState() {
 		return this;
 	}
@@ -91,6 +102,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 
 		if (isListenToClipboard != that.isListenToClipboard) return false;
 		if (isNeedMigration != that.isNeedMigration) return false;
+		if (clipboardAppendType != that.clipboardAppendType) return false;
 		if (fullScratchNamesOrdered != null ? !fullScratchNamesOrdered.equals(that.fullScratchNamesOrdered) : that.fullScratchNamesOrdered != null)
 			return false;
 
@@ -101,6 +113,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		int result = (isNeedMigration ? 1 : 0);
 		result = 31 * result + (isListenToClipboard ? 1 : 0);
 		result = 31 * result + (fullScratchNamesOrdered != null ? fullScratchNamesOrdered.hashCode() : 0);
+		result = 31 * result + (clipboardAppendType != null ? clipboardAppendType.hashCode() : 0);
 		return result;
 	}
 }
