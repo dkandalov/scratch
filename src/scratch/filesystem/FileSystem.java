@@ -11,6 +11,7 @@ import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
 import scratch.Scratch;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +32,7 @@ public class FileSystem {
 	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
 	private final Condition<VirtualFile> canBeScratch = new Condition<VirtualFile>() {
 		@Override public boolean value(VirtualFile it) {
-			return it != null && it.exists() && !it.isDirectory() && !it.getName().startsWith(".");
+			return it != null && it.exists() && !it.isDirectory() && !isHidden(it.getName());
 		}
 	};
 
@@ -54,8 +55,15 @@ public class FileSystem {
 	}
 
 	public Answer isValidScratchName(String fileName) {
-		// TODO implement
-		return null;
+		boolean hasPathChars = fileName.contains("/") || fileName.contains("\\");
+		boolean hasWildCards = fileName.contains("*") || fileName.contains("?");
+		if (hasPathChars || hasWildCards || isHidden(fileName)) {
+			return Answer.no("Not a valid file name");
+		} else if (new File(ROOT_PATH + fileName).exists()) {
+			return Answer.no("There is existing file with the same name");
+		} else {
+			return Answer.yes();
+		}
 	}
 
 	public boolean renameFile(String oldFileName, final String newFileName) {
@@ -83,5 +91,9 @@ public class FileSystem {
 
 	@Nullable public VirtualFile findVirtualFileFor(Scratch scratch) {
 		return fileManager.findFileByUrl("file://" + ROOT_PATH + scratch.asFileName());
+	}
+
+	private static boolean isHidden(String fileName) {
+		return fileName.startsWith(".");
 	}
 }

@@ -107,7 +107,7 @@ public class MrScratchManager {
 				return !it.equals(scratch) && it.name.equals(renamedScratch.name);
 			}
 		});
-		if (haveScratchWithSameName) return Answer.no("There is already a scratch with name: '" + renamedScratch.name + "'");
+		if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name");
 
 		return fileSystem.isValidScratchName(renamedScratch.asFileName());
 	}
