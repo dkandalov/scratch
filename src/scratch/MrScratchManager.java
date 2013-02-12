@@ -31,7 +31,7 @@ public class MrScratchManager {
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
-			Scratch scratch = new Scratch(scratchName, "txt");
+			Scratch scratch = Scratch.createFrom(scratchName + ".txt");
 
 			boolean wasCreated = fileSystem.createFile(scratch.asFileName(), scratchTexts.get(i - 1));
 			if (wasCreated) {

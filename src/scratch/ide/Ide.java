@@ -84,7 +84,7 @@ public class Ide {
 	public void showRenameDialogFor(final Scratch scratch) {
 		Project noProject = null;
 		Icon noIcon = null;
-		String initialValue = scratch.fullNameWithMnemonics();
+		String initialValue = scratch.fullNameWithMnemonics;
 		String newScratchName = Messages.showInputDialog(noProject, "Enter new scratch name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
 			@Override public boolean checkInput(String inputString) {
 				Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);

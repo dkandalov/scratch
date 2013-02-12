@@ -48,7 +48,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		isListenToClipboard = config.listenToClipboard;
 		fullScratchNamesOrdered = newArrayList(ContainerUtil.map(config.scratches, new Function<Scratch, String>() {
 					@Override public String fun(Scratch it) {
-						return it.fullNameWithMnemonics();
+						return it.fullNameWithMnemonics;
 					}
 		}));
 	}

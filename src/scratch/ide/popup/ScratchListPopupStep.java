@@ -71,7 +71,7 @@ public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 	}
 
 	@NotNull @Override public String getTextFor(Scratch scratch) {
-		return scratch.fullNameWithMnemonics();
+		return scratch.fullNameWithMnemonics;
 	}
 
 	@Override public Icon getIconFor(Scratch scratch) {

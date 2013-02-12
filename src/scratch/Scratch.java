@@ -5,20 +5,21 @@ package scratch;
  * Date: 10/02/2013
  */
 public class Scratch {
-	public final String nameWithMnemonics;
+	public final String fullNameWithMnemonics;
 	public final String name;
 	public final String extension;
 
 	public static Scratch createFrom(String fullNameWithMnemonics) {
 		return new Scratch(
+				fullNameWithMnemonics,
 				extractNameFrom(fullNameWithMnemonics),
 				extractExtensionFrom(fullNameWithMnemonics)
 		);
 	}
 
-	public Scratch(String nameWithMnemonics, String extension) {
-		this.nameWithMnemonics = nameWithMnemonics;
-		this.name = nameWithMnemonics.replace("&", "");
+	private Scratch(String fullNameWithMnemonics, String name, String extension) {
+		this.fullNameWithMnemonics = fullNameWithMnemonics;
+		this.name = name;
 		this.extension = extension;
 	}
 
@@ -26,23 +27,19 @@ public class Scratch {
 		return name + "." + extension;
 	}
 
-	public String fullNameWithMnemonics() {
-		return nameWithMnemonics + "." + extension;
-	}
-
 	private static String extractExtensionFrom(String fileName) {
 		int index = fileName.lastIndexOf(".");
-		return index == -1 ? "" : fileName.substring(index + 1);
+		return index == -1 ? "" : fileName.substring(index + 1).replace("&", "");
 	}
 
 	private static String extractNameFrom(String fileName) {
 		int index = fileName.lastIndexOf(".");
 		if (index == -1) index = fileName.length();
-		return fileName.substring(0, index);
+		return fileName.substring(0, index).replace("&", "");
 	}
 
 	@Override public String toString() {
-		return "{nameWithMnemonics='" + nameWithMnemonics + "'" + ", extension='" + extension + "'}";
+		return "{fullNameWithMnemonics='" + fullNameWithMnemonics + "'";
 	}
 
 	@SuppressWarnings("RedundantIfStatement")
@@ -50,17 +47,19 @@ public class Scratch {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		Scratch that = (Scratch) o;
+		Scratch scratch = (Scratch) o;
 
-		if (extension != null ? !extension.equals(that.extension) : that.extension != null) return false;
-		if (nameWithMnemonics != null ? !nameWithMnemonics.equals(that.nameWithMnemonics) : that.nameWithMnemonics != null)
+		if (extension != null ? !extension.equals(scratch.extension) : scratch.extension != null) return false;
+		if (fullNameWithMnemonics != null ? !fullNameWithMnemonics.equals(scratch.fullNameWithMnemonics) : scratch.fullNameWithMnemonics != null)
 			return false;
+		if (name != null ? !name.equals(scratch.name) : scratch.name != null) return false;
 
 		return true;
 	}
 
 	@Override public int hashCode() {
-		int result = nameWithMnemonics != null ? nameWithMnemonics.hashCode() : 0;
+		int result = fullNameWithMnemonics != null ? fullNameWithMnemonics.hashCode() : 0;
+		result = 31 * result + (name != null ? name.hashCode() : 0);
 		result = 31 * result + (extension != null ? extension.hashCode() : 0);
 		return result;
 	}
