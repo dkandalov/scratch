@@ -98,7 +98,8 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				Project noProject = null;
 				Icon noIcon = null;
 				String initialValue = scratch.fullNameWithMnemonics;
-				String newScratchName = Messages.showInputDialog(noProject, "Enter new scratch name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
+				String message = "Enter new name (you can use '&' for mnemonics):";
+				String newScratchName = Messages.showInputDialog(noProject, message, "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
 					@Override public boolean checkInput(String inputString) {
 						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
 						return answer.isYes;
