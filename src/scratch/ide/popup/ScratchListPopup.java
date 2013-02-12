@@ -54,22 +54,28 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 			myMaxRowCount = maxRowCount;
 		}
 
+		// TODO copy keyboard shortcuts from existing action
 		registerAction("deleteScratch", KeyStroke.getKeyStroke("DELETE"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				removeSelected();
+				// TODO remove(selectedScratch());
 			}
 		});
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				moveSelected(-1);
+				move(selectedScratch(), -1);
 			}
 		});
 		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				moveSelected(1);
+				move(selectedScratch(), 1);
 			}
 		});
-		// TODO register rename action
+		// TODO copy keyboard shortcuts from existing action
+		registerAction("renameScratch", KeyStroke.getKeyStroke("alt shift R"), new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent event) {
+//				ScratchComponent.instance().userWantsToRename(selectedScratch());
+			}
+		});
 	}
 
 	public ScratchListPopup(@NotNull ListPopupStep aStep) {
@@ -84,8 +90,11 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 	}
 
-	private void moveSelected(int shift) {
-		Scratch scratch = (Scratch) getListModel().get(getSelectedIndex());
+	private Scratch selectedScratch() {
+		return (Scratch) getListModel().get(getSelectedIndex());
+	}
+
+	private void move(Scratch scratch, int shift) {
 		boolean wasMoved = getListModel().moveItem(scratch, shift);
 		if (wasMoved) {
 			myList.setSelectedIndex(getSelectedIndex() + shift);
@@ -93,10 +102,8 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 	}
 
-	private void removeSelected() {
-		Scratch scratch = (Scratch) getListModel().get(getSelectedIndex());
+	private void remove(Scratch scratch) {
 		getListModel().deleteItem(scratch);
-		// TODO
 	}
 
 	protected ScratchPopupModel getListModel() {
