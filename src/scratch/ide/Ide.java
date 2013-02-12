@@ -9,6 +9,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.InputValidatorEx;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
@@ -25,6 +27,7 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -75,6 +78,25 @@ public class Ide {
 		} else {
 			failedToFindVirtualFileFor(scratch);
 		}
+	}
+
+	public void showRenameDialogFor(Scratch scratch) {
+		Component noParent = null;
+		Icon noIcon = null;
+		String initialValue = scratch.fullNameWithMnemonics();
+		Messages.showInputDialog(noParent, "Enter new file name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
+			@Override public boolean checkInput(String inputString) {
+				return false;
+			}
+
+			@Nullable @Override public String getErrorText(String inputString) {
+				return null;
+			}
+
+			@Override public boolean canClose(String inputString) {
+				return true;
+			}
+		});
 	}
 
 	public void failedToRename(Scratch scratch) {
