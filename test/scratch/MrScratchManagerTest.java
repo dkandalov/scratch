@@ -100,6 +100,7 @@ public class MrScratchManagerTest {
 		));
 	}
 
+
 	@Test public void displayingScratchesList_when_configAndFiles_MatchExactly() {
 		mrScratchManager = createWith(defaultConfig.with(list(
 				new Scratch("scratch", "txt"),
@@ -158,6 +159,7 @@ public class MrScratchManagerTest {
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
+
 	@Test public void openingScratch_when_scratchFileExists() {
 		Scratch scratch = new Scratch("scratch", "txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
@@ -200,14 +202,15 @@ public class MrScratchManagerTest {
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
-	// TODO should create new scratch in this case
 	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
+		// TODO should create new scratch in this case
 		mrScratchManager = createWith(defaultConfig);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
 		verify(ide).failedToOpenDefaultScratch();
 	}
+
 
 	@Test public void appendingClipboardTextToDefaultScratch() {
 		Scratch scratch = new Scratch("scratch", "txt");
@@ -220,8 +223,8 @@ public class MrScratchManagerTest {
 		verify(ide).addTextTo(eq(scratch), eq("clipboard text"), any(AppendType.class));
 	}
 
-	// TODO should create new scratch in this case?
 	@Test public void appendingClipboardTextToDefaultScratch_when_scratchListIsEmpty() {
+		// TODO should create new scratch in this case?
 		mrScratchManager = createWith(defaultConfig);
 
 		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");
@@ -229,16 +232,32 @@ public class MrScratchManagerTest {
 		verify(ide).failedToOpenDefaultScratch();
 	}
 
+	@Test public void shouldSendNewConfigToIde_when_userTurnsOnListeningToClipboard() {
+		mrScratchManager = createWith(defaultConfig.listenToClipboard(false));
+
+		mrScratchManager.userWantsToListenToClipboard(true);
+
+		verify(ide).updateConfig(defaultConfig.listenToClipboard(true));
+	}
+
+
+	@Test public void shouldNotifyIde_when_userWantsToRenameScratch() {
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
+
+		mrScratchManager.userWantsToRename(scratch);
+
+		verify(ide).showRenameDialogFor(eq(scratch));
+	}
+
 	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccessful() {
 		Scratch scratch = new Scratch("scratch", "txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
 
-		mrScratchManager.userWantsToRename(scratch);
 		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "&renamedScratch.txt"), equalTo(yes()));
 		mrScratchManager.userRenamed(scratch, "&renamedScratch.txt");
 
-		verify(ide).showRenameDialogFor(scratch);
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).updateConfig(defaultConfig.with(list(
 				new Scratch("&renamedScratch", "txt")
@@ -250,16 +269,14 @@ public class MrScratchManagerTest {
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
 
-		mrScratchManager.userWantsToRename(scratch);
 		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "renamedScratch.txt"), equalTo(yes()));
 		mrScratchManager.userRenamed(scratch, "renamedScratch.txt");
 
-		verify(ide).showRenameDialogFor(scratch);
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).failedToRename(scratch);
 	}
 
-	@Test public void ifCanRenameScratch_when_newNameIsNotUnique() {
+	@Test public void ifCanRenameScratch_when_thereIsScratchWithSameName() {
 		mrScratchManager = createWith(defaultConfig.with(list(
 				new Scratch("scratch", "txt"),
 				new Scratch("&renamedScratch", "txt")
@@ -277,6 +294,7 @@ public class MrScratchManagerTest {
 		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "renamedScratch"), equalTo(yes()));
 	}
 
+
 	@Test public void movingScratchUpInScratchesList() {
 		mrScratchManager = createWith(defaultConfig.with(list(
 				new Scratch("scratch1", "txt"),
@@ -292,14 +310,6 @@ public class MrScratchManagerTest {
 				new Scratch("scratch1", "txt"),
 				new Scratch("scratch3", "txt")
 		)));
-	}
-
-	@Test public void shouldNewConfigToIde_when_userTurnsOnListeningToClipboard() {
-		mrScratchManager = createWith(defaultConfig.listenToClipboard(false));
-
-		mrScratchManager.userWantsToListenToClipboard(true);
-
-		verify(ide).updateConfig(defaultConfig.listenToClipboard(true));
 	}
 
 	private MrScratchManager createWith(ScratchConfig config) {
