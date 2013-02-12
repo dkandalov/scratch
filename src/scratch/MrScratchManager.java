@@ -100,10 +100,6 @@ public class MrScratchManager {
 		}
 	}
 
-	public void userWantsToRename(Scratch scratch) {
-		ide.showRenameDialogFor(scratch);
-	}
-
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		final Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean haveScratchWithSameName = !exists(config.scratches, new Condition<Scratch>() {

@@ -4,6 +4,9 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.InputValidatorEx;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.ui.popup.MultiSelectionListPopupStep;
@@ -20,6 +23,7 @@ import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import scratch.MrScratchManager;
 import scratch.Scratch;
 import scratch.ide.ScratchComponent;
 
@@ -83,11 +87,38 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 					ScratchListPopup.this.dispose();
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override public void run() {
-							ScratchComponent.instance().userWantsToRename(scratch);
+							showRenameDialogFor(scratch);
 						}
 					});
 				}
 			}
+
+			// TODO move this to Ide?
+			public void showRenameDialogFor(final Scratch scratch) {
+				Project noProject = null;
+				Icon noIcon = null;
+				String initialValue = scratch.fullNameWithMnemonics;
+				String newScratchName = Messages.showInputDialog(noProject, "Enter new scratch name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
+					@Override public boolean checkInput(String inputString) {
+						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
+						return answer.isYes;
+					}
+
+					@Nullable @Override public String getErrorText(String inputString) {
+						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
+						return answer.explanation;
+					}
+
+					@Override public boolean canClose(String inputString) {
+						return true;
+					}
+				});
+
+				if (newScratchName != null) {
+					ScratchComponent.instance().userRenamed(scratch, newScratchName);
+				}
+			}
+
 		});
 	}
 

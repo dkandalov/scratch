@@ -241,15 +241,6 @@ public class MrScratchManagerTest {
 	}
 
 
-	@Test public void shouldNotifyIde_when_userWantsToRenameScratch() {
-		Scratch scratch = scratch("scratch.txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
-
-		mrScratchManager.userWantsToRename(scratch);
-
-		verify(ide).showRenameDialogFor(eq(scratch));
-	}
-
 	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccessful() {
 		Scratch scratch = scratch("scratch.txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));

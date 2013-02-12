@@ -9,8 +9,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.InputValidatorEx;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
@@ -21,13 +19,12 @@ import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.MrScratchManager;
-import scratch.ScratchConfig;
 import scratch.Scratch;
+import scratch.ScratchConfig;
 import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -36,11 +33,11 @@ import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
-import static scratch.MrScratchManager.Answer;
 import static scratch.ScratchConfig.AppendType;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
-import static scratch.ide.Util.*;
+import static scratch.ide.Util.notifyUser;
+import static scratch.ide.Util.takeProjectFrom;
 
 /**
  * User: dima
@@ -78,31 +75,6 @@ public class Ide {
 			new OpenFileDescriptor(project, file).navigate(true);
 		} else {
 			failedToFindVirtualFileFor(scratch);
-		}
-	}
-
-	public void showRenameDialogFor(final Scratch scratch) {
-		Project noProject = null;
-		Icon noIcon = null;
-		String initialValue = scratch.fullNameWithMnemonics;
-		String newScratchName = Messages.showInputDialog(noProject, "Enter new scratch name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
-			@Override public boolean checkInput(String inputString) {
-				Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
-				return answer.isYes;
-			}
-
-			@Nullable @Override public String getErrorText(String inputString) {
-				Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
-				return answer.explanation;
-			}
-
-			@Override public boolean canClose(String inputString) {
-				return true;
-			}
-		});
-
-		if (newScratchName != null) {
-			ScratchComponent.instance().userRenamed(scratch, newScratchName);
 		}
 	}
 
