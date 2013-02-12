@@ -8,8 +8,8 @@ import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
+import scratch.Scratch;
 import scratch.ScratchConfig;
-import scratch.ScratchInfo;
 
 import java.util.List;
 
@@ -35,9 +35,9 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		return ScratchConfig.DEFAULT_CONFIG
 				.needsMigration(isNeedMigration)
 				.listenToClipboard(isListenToClipboard)
-				.with(ContainerUtil.map(fullScratchNamesOrdered, new Function<String, ScratchInfo>() {
-					@Override public ScratchInfo fun(String it) {
-						return ScratchInfo.createFrom(it);
+				.with(ContainerUtil.map(fullScratchNamesOrdered, new Function<String, Scratch>() {
+					@Override public Scratch fun(String it) {
+						return Scratch.createFrom(it);
 					}
 				}))
 				.with(clipboardAppendType);
@@ -46,8 +46,8 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	public void updateFrom(ScratchConfig config) {
 		isNeedMigration = config.needMigration;
 		isListenToClipboard = config.listenToClipboard;
-		fullScratchNamesOrdered = newArrayList(ContainerUtil.map(config.scratchInfos, new Function<ScratchInfo, String>() {
-					@Override public String fun(ScratchInfo it) {
+		fullScratchNamesOrdered = newArrayList(ContainerUtil.map(config.scratches, new Function<Scratch, String>() {
+					@Override public String fun(Scratch it) {
 						return it.fullNameWithMnemonics();
 					}
 		}));

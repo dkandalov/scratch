@@ -6,7 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
-import scratch.ScratchInfo;
+import scratch.Scratch;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +58,7 @@ public class FileSystem {
 		return false;
 	}
 
-	@Nullable public VirtualFile findVirtualFileFor(ScratchInfo scratchInfo) {
-		return fileManager.findFileByUrl("file://" + ROOT_PATH + scratchInfo.asFileName());
+	@Nullable public VirtualFile findVirtualFileFor(Scratch scratch) {
+		return fileManager.findFileByUrl("file://" + ROOT_PATH + scratch.asFileName());
 	}
 }

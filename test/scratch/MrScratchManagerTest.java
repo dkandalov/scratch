@@ -52,11 +52,11 @@ public class MrScratchManagerTest {
 
 		verify(ide).updateConfig(eq(defaultConfig
 				.with(list(
-						new ScratchInfo("&scratch", "txt"),
-						new ScratchInfo("scratch&2", "txt"),
-						new ScratchInfo("scratch&3", "txt"),
-						new ScratchInfo("scratch&4", "txt"),
-						new ScratchInfo("scratch&5", "txt")))
+						new Scratch("&scratch", "txt"),
+						new Scratch("scratch&2", "txt"),
+						new Scratch("scratch&3", "txt"),
+						new Scratch("scratch&4", "txt"),
+						new Scratch("scratch&5", "txt")))
 				.needsMigration(false)
 		));
 	}
@@ -89,9 +89,9 @@ public class MrScratchManagerTest {
 
 		verify(ide).updateConfig(eq(defaultConfig
 				.with(list(
-						new ScratchInfo("&scratch", "txt"),
-						new ScratchInfo("scratch&2", "txt"),
-						new ScratchInfo("scratch&5", "txt")
+						new Scratch("&scratch", "txt"),
+						new Scratch("scratch&2", "txt"),
+						new Scratch("scratch&5", "txt")
 				))
 				.needsMigration(false)
 		));
@@ -99,9 +99,9 @@ public class MrScratchManagerTest {
 
 	@Test public void displayingScratchesList_when_configAndFiles_MatchExactly() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java"),
-				new ScratchInfo("scratch3", "html")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java"),
+				new Scratch("scratch3", "html")
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
@@ -109,18 +109,18 @@ public class MrScratchManagerTest {
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java"),
-				new ScratchInfo("scratch3", "html")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java"),
+				new Scratch("scratch3", "html")
 		)), same(USER_DATA));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
 	@Test public void displayingScratchesList_when_configAndFiles_Match_ButHaveDifferentOrder() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java"),
-				new ScratchInfo("scratch3", "html")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java"),
+				new Scratch("scratch3", "html")
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch3.html", "scratch.txt"));
 
@@ -128,16 +128,16 @@ public class MrScratchManagerTest {
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java"),
-				new ScratchInfo("scratch3", "html")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java"),
+				new Scratch("scratch3", "html")
 		)), same(USER_DATA));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
 	@Test public void displayingScratchesList_when_fileSystemHasNewFiles() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt")
+				new Scratch("scratch", "txt")
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch.txt"));
 
@@ -145,50 +145,50 @@ public class MrScratchManagerTest {
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).updateConfig(eq(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java")
 		))));
 		verify(ide).displayScratchesListPopup(eq(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("scratch2", "java")
+				new Scratch("scratch", "txt"),
+				new Scratch("scratch2", "java")
 		)), same(USER_DATA));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
 	@Test public void openingScratch_when_scratchFileExists() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
-		mrScratchManager.userWantsToOpenScratch(scratchInfo, USER_DATA);
+		mrScratchManager.userWantsToOpenScratch(scratch, USER_DATA);
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).openScratch(eq(scratchInfo), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch), same(USER_DATA));
 	}
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
 
-		mrScratchManager.userWantsToOpenScratch(scratchInfo, USER_DATA);
+		mrScratchManager.userWantsToOpenScratch(scratch, USER_DATA);
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).failedToOpen(eq(scratchInfo));
+		verify(ide).failedToOpen(eq(scratch));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchListIsNotEmpty_and_scratchFileExists() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
-		verify(ide).openScratch(eq(scratchInfo), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch), same(USER_DATA));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
-		mrScratchManager = createWith(defaultConfig.with(list(new ScratchInfo("scratch", "txt"))));
+		mrScratchManager = createWith(defaultConfig.with(list(new Scratch("scratch", "txt"))));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
@@ -207,14 +207,14 @@ public class MrScratchManagerTest {
 	}
 
 	@Test public void appendingClipboardTextToDefaultScratch() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
 		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).addTextTo(eq(scratchInfo), eq("clipboard text"), any(AppendType.class));
+		verify(ide).addTextTo(eq(scratch), eq("clipboard text"), any(AppendType.class));
 	}
 
 	// TODO should create new scratch in this case?
@@ -228,62 +228,62 @@ public class MrScratchManagerTest {
 
 	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccessful() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt")
+				new Scratch("scratch", "txt")
 		)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
 
-		assertThat(mrScratchManager.canUserRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt"), equalTo(true));
-		mrScratchManager.userWantsToRename(new ScratchInfo("scratch", "txt"), "&renamedScratch.txt");
+		assertThat(mrScratchManager.canUserRename(new Scratch("scratch", "txt"), "&renamedScratch.txt"), equalTo(true));
+		mrScratchManager.userWantsToRename(new Scratch("scratch", "txt"), "&renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).updateConfig(defaultConfig.with(list(
-				new ScratchInfo("&renamedScratch", "txt")
+				new Scratch("&renamedScratch", "txt")
 		)));
 	}
 
 	@Test public void renamingScratch_when_newNameIsNotUnique() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch", "txt"),
-				new ScratchInfo("&renamedScratch", "txt")
+				new Scratch("scratch", "txt"),
+				new Scratch("&renamedScratch", "txt")
 		)));
 
-		assertThat(mrScratchManager.canUserRename(new ScratchInfo("scratch", "txt"), "renamed&Scratch.txt"), equalTo(false));
+		assertThat(mrScratchManager.canUserRename(new Scratch("scratch", "txt"), "renamed&Scratch.txt"), equalTo(false));
 		verifyZeroInteractions(ide, fileSystem);
 	}
 
 	@Test public void renamingScratch_toNameWithoutExtension() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 
-		assertThat(mrScratchManager.canUserRename(scratchInfo, "renamedScratch"), equalTo(true));
+		assertThat(mrScratchManager.canUserRename(scratch, "renamedScratch"), equalTo(true));
 	}
 
 	@Test public void renamingScratch_when_fileRenameFailed() {
-		ScratchInfo scratchInfo = new ScratchInfo("scratch", "txt");
-		mrScratchManager = createWith(defaultConfig.with(list(scratchInfo)));
+		Scratch scratch = new Scratch("scratch", "txt");
+		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
 
-		assertThat(mrScratchManager.canUserRename(scratchInfo, "renamedScratch.txt"), equalTo(true));
-		mrScratchManager.userWantsToRename(scratchInfo, "renamedScratch.txt");
+		assertThat(mrScratchManager.canUserRename(scratch, "renamedScratch.txt"), equalTo(true));
+		mrScratchManager.userWantsToRename(scratch, "renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
-		verify(ide).failedToRename(scratchInfo);
+		verify(ide).failedToRename(scratch);
 	}
 
 	@Test public void movingScratchUpInScratchesList() {
 		mrScratchManager = createWith(defaultConfig.with(list(
-				new ScratchInfo("scratch1", "txt"),
-				new ScratchInfo("scratch2", "txt"),
-				new ScratchInfo("scratch3", "txt")
+				new Scratch("scratch1", "txt"),
+				new Scratch("scratch2", "txt"),
+				new Scratch("scratch3", "txt")
 		)));
 
 		int shiftUp = -1;
-		mrScratchManager.userMovedScratch(new ScratchInfo("scratch2", "txt"), shiftUp);
+		mrScratchManager.userMovedScratch(new Scratch("scratch2", "txt"), shiftUp);
 
 		verify(ide).updateConfig(defaultConfig.with(list(
-				new ScratchInfo("scratch2", "txt"),
-				new ScratchInfo("scratch1", "txt"),
-				new ScratchInfo("scratch3", "txt")
+				new Scratch("scratch2", "txt"),
+				new Scratch("scratch1", "txt"),
+				new Scratch("scratch3", "txt")
 		)));
 	}
 

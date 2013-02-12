@@ -19,7 +19,7 @@ import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
-import scratch.ScratchInfo;
+import scratch.Scratch;
 import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
@@ -85,17 +85,17 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	}
 
 	private void moveSelected(int shift) {
-		ScratchInfo scratchInfo = (ScratchInfo) getListModel().get(getSelectedIndex());
-		boolean wasMoved = getListModel().moveItem(scratchInfo, shift);
+		Scratch scratch = (Scratch) getListModel().get(getSelectedIndex());
+		boolean wasMoved = getListModel().moveItem(scratch, shift);
 		if (wasMoved) {
 			myList.setSelectedIndex(getSelectedIndex() + shift);
-			ScratchComponent.instance().userMovedScratch(scratchInfo, shift);
+			ScratchComponent.instance().userMovedScratch(scratch, shift);
 		}
 	}
 
 	private void removeSelected() {
-		ScratchInfo scratchInfo = (ScratchInfo) getListModel().get(getSelectedIndex());
-		getListModel().deleteItem(scratchInfo);
+		Scratch scratch = (Scratch) getListModel().get(getSelectedIndex());
+		getListModel().deleteItem(scratch);
 		// TODO
 	}
 

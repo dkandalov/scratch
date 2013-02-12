@@ -27,15 +27,15 @@ public class MrScratchManager {
 
 	public void migrate(List<String> scratchTexts) {
 		List<Integer> indexes = newArrayList();
-		List<ScratchInfo> scratchesInfo = newArrayList();
+		List<Scratch> scratchesInfo = newArrayList();
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
-			ScratchInfo scratchInfo = new ScratchInfo(scratchName, "txt");
+			Scratch scratch = new Scratch(scratchName, "txt");
 
-			boolean wasCreated = fileSystem.createFile(scratchInfo.asFileName(), scratchTexts.get(i - 1));
+			boolean wasCreated = fileSystem.createFile(scratch.asFileName(), scratchTexts.get(i - 1));
 			if (wasCreated) {
-				scratchesInfo.add(scratchInfo);
+				scratchesInfo.add(scratch);
 			} else {
 				indexes.add(i);
 			}
@@ -52,77 +52,77 @@ public class MrScratchManager {
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
 		final List<String> fileNames = fileSystem.listScratchFiles();
 
-		final List<ScratchInfo> oldScratchInfos = findAll(config.scratchInfos, new Condition<ScratchInfo>() {
-			@Override public boolean value(ScratchInfo it) {
+		final List<Scratch> oldScratches = findAll(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
 				return fileNames.contains(it.asFileName());
 			}
 		});
 		Condition<String> whichAreNewFiles = new Condition<String>() {
 			@Override public boolean value(final String fileName) {
-				return !exists(oldScratchInfos, new Condition<ScratchInfo>() {
-					@Override public boolean value(ScratchInfo scratchInfo) {
+				return !exists(oldScratches, new Condition<Scratch>() {
+					@Override public boolean value(Scratch scratchInfo) {
 						return fileName.equals(scratchInfo.asFileName());
 					}
 				});
 			}
 		};
 		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
-		List<ScratchInfo> newScratchInfos = map(newFileNames, new Function<String, ScratchInfo>() {
-			@Override public ScratchInfo fun(String it) {
-				return ScratchInfo.createFrom(it);
+		List<Scratch> newScratches = map(newFileNames, new Function<String, Scratch>() {
+			@Override public Scratch fun(String it) {
+				return Scratch.createFrom(it);
 			}
 		});
 
-		List<ScratchInfo> scratchInfos = concat(oldScratchInfos, newScratchInfos);
-		if (!newScratchInfos.isEmpty() || oldScratchInfos.size() != config.scratchInfos.size()) {
-			update(config.with(scratchInfos));
+		List<Scratch> scratches = concat(oldScratches, newScratches);
+		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
+			update(config.with(scratches));
 		}
-		ide.displayScratchesListPopup(scratchInfos, userDataHolder);
+		ide.displayScratchesListPopup(scratches, userDataHolder);
 	}
 
-	public void userWantsToOpenScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
-		if (fileSystem.scratchFileExists(scratchInfo.asFileName()))
-			ide.openScratch(scratchInfo, userDataHolder);
+	public void userWantsToOpenScratch(Scratch scratch, UserDataHolder userDataHolder) {
+		if (fileSystem.scratchFileExists(scratch.asFileName()))
+			ide.openScratch(scratch, userDataHolder);
 		else
-			ide.failedToOpen(scratchInfo);
+			ide.failedToOpen(scratch);
 	}
 
 	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
-		if (config.scratchInfos.isEmpty()) {
+		if (config.scratches.isEmpty()) {
 			ide.failedToOpenDefaultScratch();
 		} else {
-			ScratchInfo scratchInfo = config.scratchInfos.get(0);
-			if (fileSystem.scratchFileExists(scratchInfo.asFileName())) {
-				ide.openScratch(scratchInfo, userDataHolder);
+			Scratch scratch = config.scratches.get(0);
+			if (fileSystem.scratchFileExists(scratch.asFileName())) {
+				ide.openScratch(scratch, userDataHolder);
 			} else {
 				ide.failedToOpenDefaultScratch();
 			}
 		}
 	}
 
-	public boolean canUserRename(final ScratchInfo scratchInfo, String fullNameWithMnemonics) {
-		final ScratchInfo renamedScratchInfo = ScratchInfo.createFrom(fullNameWithMnemonics);
+	public boolean canUserRename(final Scratch scratch, String fullNameWithMnemonics) {
+		final Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 
-		return !exists(config.scratchInfos, new Condition<ScratchInfo>() {
-			@Override public boolean value(ScratchInfo it) {
-				return !it.equals(scratchInfo) && it.name.equals(renamedScratchInfo.name);
+		return !exists(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return !it.equals(scratch) && it.name.equals(renamedScratch.name);
 			}
 		});
 	}
 
-	public void userWantsToRename(ScratchInfo scratchInfo, String fullNameWithMnemonics) {
-		ScratchInfo renamedScratchInfo = ScratchInfo.createFrom(fullNameWithMnemonics);
+	public void userWantsToRename(Scratch scratch, String fullNameWithMnemonics) {
+		Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 
-		boolean wasRenamed = fileSystem.renameFile(scratchInfo.asFileName(), renamedScratchInfo.asFileName());
+		boolean wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName());
 		if (wasRenamed) {
-			update(config.replace(scratchInfo, renamedScratchInfo));
+			update(config.replace(scratch, renamedScratch));
 		} else {
-			ide.failedToRename(scratchInfo);
+			ide.failedToRename(scratch);
 		}
 	}
 
-	public void userMovedScratch(final ScratchInfo scratchInfo, int shift) {
-		update(config.move(scratchInfo, shift));
+	public void userMovedScratch(final Scratch scratch, int shift) {
+		update(config.move(scratch, shift));
 	}
 
 	public void userWantsToListenToClipboard(boolean value) {
@@ -130,12 +130,12 @@ public class MrScratchManager {
 	}
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
-		if (config.scratchInfos.isEmpty()) {
+		if (config.scratches.isEmpty()) {
 			ide.failedToOpenDefaultScratch();
 		} else {
-			ScratchInfo scratchInfo = config.scratchInfos.get(0);
-			if (fileSystem.scratchFileExists(scratchInfo.asFileName())) {
-				ide.addTextTo(scratchInfo, clipboardText, config.clipboardAppendType);
+			Scratch scratch = config.scratches.get(0);
+			if (fileSystem.scratchFileExists(scratch.asFileName())) {
+				ide.addTextTo(scratch, clipboardText, config.clipboardAppendType);
 			} else {
 				ide.failedToOpenDefaultScratch();
 			}

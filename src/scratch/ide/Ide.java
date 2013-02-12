@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.MrScratchManager;
 import scratch.ScratchConfig;
-import scratch.ScratchInfo;
+import scratch.Scratch;
 import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
@@ -56,28 +56,28 @@ public class Ide {
 		ScratchConfigPersistence.getInstance().updateFrom(config);
 	}
 
-	public void displayScratchesListPopup(List<ScratchInfo> scratchInfos, UserDataHolder userDataHolder) {
+	public void displayScratchesListPopup(List<Scratch> scratches, UserDataHolder userDataHolder) {
 		Project project = takeProjectFrom(userDataHolder);
 		Ref<Component> componentRef = Ref.create();
 
-		ListPopupStep popupStep = new ScratchListPopupStep(scratchInfos, project, componentRef);
+		ListPopupStep popupStep = new ScratchListPopupStep(scratches, project, componentRef);
 		ScratchListPopup popup = new ScratchListPopup(popupStep);
 		componentRef.set(popup.getComponent()); // this kind of a hack was copied from com.intellij.tasks.actions.SwitchTaskAction#createPopup
 		popup.showCenteredInCurrentWindow(project);
 	}
 
-	public void openScratch(ScratchInfo scratchInfo, UserDataHolder userDataHolder) {
+	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
 		Project project = takeProjectFrom(userDataHolder);
 
-		VirtualFile file = fileSystem.findVirtualFileFor(scratchInfo);
+		VirtualFile file = fileSystem.findVirtualFileFor(scratch);
 		if (file != null) {
 			new OpenFileDescriptor(project, file).navigate(true);
 		} else {
-			failedToFindVirtualFileFor(scratchInfo);
+			failedToFindVirtualFileFor(scratch);
 		}
 	}
 
-	public void failedToRename(ScratchInfo scratchInfo) {
+	public void failedToRename(Scratch scratch) {
 		// TODO implement
 
 	}
@@ -96,18 +96,18 @@ public class Ide {
 		notifyUser("", "Failed to open default scratch", WARNING);
 	}
 
-	public void failedToOpen(ScratchInfo scratchInfo) {
-		notifyUser("", "Failed to open scratch: '" + scratchInfo.name + "'", WARNING);
+	public void failedToOpen(Scratch scratch) {
+		notifyUser("", "Failed to open scratch: '" + scratch.name + "'", WARNING);
 	}
 
-	private static void failedToFindVirtualFileFor(ScratchInfo scratchInfo) {
-		LOG.warn("Failed to find virtual file for '" + scratchInfo.asFileName() + "'");
+	private static void failedToFindVirtualFileFor(Scratch scratch) {
+		LOG.warn("Failed to find virtual file for '" + scratch.asFileName() + "'");
 	}
 
-	public void addTextTo(ScratchInfo scratchInfo, final String clipboardText, final AppendType appendType) {
-		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratchInfo);
+	public void addTextTo(Scratch scratch, final String clipboardText, final AppendType appendType) {
+		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratch);
 		if (virtualFile == null) {
-			failedToFindVirtualFileFor(scratchInfo);
+			failedToFindVirtualFileFor(scratch);
 			return;
 		}
 		final Document document = FileDocumentManager.getInstance().getDocument(virtualFile);

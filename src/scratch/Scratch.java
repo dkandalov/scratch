@@ -4,19 +4,19 @@ package scratch;
  * User: dima
  * Date: 10/02/2013
  */
-public class ScratchInfo {
+public class Scratch {
 	public final String nameWithMnemonics;
 	public final String name;
 	public final String extension;
 
-	public static ScratchInfo createFrom(String fullNameWithMnemonics) {
-		return new ScratchInfo(
+	public static Scratch createFrom(String fullNameWithMnemonics) {
+		return new Scratch(
 				extractNameFrom(fullNameWithMnemonics),
 				extractExtensionFrom(fullNameWithMnemonics)
 		);
 	}
 
-	public ScratchInfo(String nameWithMnemonics, String extension) {
+	public Scratch(String nameWithMnemonics, String extension) {
 		this.nameWithMnemonics = nameWithMnemonics;
 		this.name = nameWithMnemonics.replace("&", "");
 		this.extension = extension;
@@ -50,7 +50,7 @@ public class ScratchInfo {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		ScratchInfo that = (ScratchInfo) o;
+		Scratch that = (Scratch) o;
 
 		if (extension != null ? !extension.equals(that.extension) : that.extension != null) return false;
 		if (nameWithMnemonics != null ? !nameWithMnemonics.equals(that.nameWithMnemonics) : that.nameWithMnemonics != null)

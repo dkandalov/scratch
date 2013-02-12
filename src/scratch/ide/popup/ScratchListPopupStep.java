@@ -15,7 +15,7 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.Ref;
 import org.jetbrains.annotations.NotNull;
 import scratch.MrScratchManager;
-import scratch.ScratchInfo;
+import scratch.Scratch;
 import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
@@ -28,14 +28,14 @@ import static scratch.ide.Util.holdingOnTo;
  * User: dima
  * Date: 11/02/2013
  */
-public class ScratchListPopupStep extends BaseListPopupStep<ScratchInfo> {
+public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 	private final FileTypeManager fileTypeManager;
 	private final MrScratchManager mrScratchManager;
 	private final Project project;
 	private final Ref<Component> componentRef;
 
-	public ScratchListPopupStep(List<ScratchInfo> scratchInfos, Project project, Ref<Component> componentRef) {
-		super("List of Scratches", scratchInfos);
+	public ScratchListPopupStep(List<Scratch> scratches, Project project, Ref<Component> componentRef) {
+		super("List of Scratches", scratches);
 
 		this.project = project;
 		this.componentRef = componentRef;
@@ -43,15 +43,15 @@ public class ScratchListPopupStep extends BaseListPopupStep<ScratchInfo> {
 		this.fileTypeManager = FileTypeManager.getInstance();
 	}
 
-	@Override public PopupStep onChosen(ScratchInfo scratchInfo, boolean finalChoice) {
+	@Override public PopupStep onChosen(Scratch scratch, boolean finalChoice) {
 		if (finalChoice) {
-			mrScratchManager.userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+			mrScratchManager.userWantsToOpenScratch(scratch, holdingOnTo(project));
 			return FINAL_CHOICE;
 		}
-		return createActionsPopupFor(scratchInfo);
+		return createActionsPopupFor(scratch);
 	}
 
-	private PopupStep createActionsPopupFor(final ScratchInfo scratchInfo) {
+	private PopupStep createActionsPopupFor(final Scratch scratch) {
 		AnAction renameAction = new DumbAwareAction("Rename") {
 			@Override public void actionPerformed(AnActionEvent event) {
 				// TODO
@@ -70,16 +70,16 @@ public class ScratchListPopupStep extends BaseListPopupStep<ScratchInfo> {
 		);
 	}
 
-	@NotNull @Override public String getTextFor(ScratchInfo scratchInfo) {
-		return scratchInfo.fullNameWithMnemonics();
+	@NotNull @Override public String getTextFor(Scratch scratch) {
+		return scratch.fullNameWithMnemonics();
 	}
 
-	@Override public Icon getIconFor(ScratchInfo scratchInfo) {
-		FileType fileType = fileTypeManager.getFileTypeByExtension(scratchInfo.extension);
+	@Override public Icon getIconFor(Scratch scratch) {
+		FileType fileType = fileTypeManager.getFileTypeByExtension(scratch.extension);
 		return fileType.getIcon();
 	}
 
-	@Override public boolean hasSubstep(ScratchInfo selectedValue) {
+	@Override public boolean hasSubstep(Scratch selectedValue) {
 		return false; // TODO make it true
 	}
 
