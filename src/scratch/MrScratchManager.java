@@ -102,12 +102,14 @@ public class MrScratchManager {
 
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		final Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
-		boolean haveScratchWithSameName = !exists(config.scratches, new Condition<Scratch>() {
+		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
 			@Override public boolean value(Scratch it) {
 				return !it.equals(scratch) && it.name.equals(renamedScratch.name);
 			}
 		});
-		return haveScratchWithSameName ? Answer.yes() : Answer.no("There is a scratch with this name");
+		if (haveScratchWithSameName) return Answer.no("There is already a scratch with name: '" + renamedScratch.name + "'");
+
+		return fileSystem.isValidScratchName(renamedScratch.asFileName());
 	}
 
 	public void userRenamed(Scratch scratch, String fullNameWithMnemonics) {

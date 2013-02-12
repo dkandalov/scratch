@@ -14,6 +14,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static scratch.MrScratchManager.Answer;
+import static scratch.MrScratchManager.Answer.no;
 import static scratch.MrScratchManager.Answer.yes;
 import static scratch.ScratchConfig.AppendType;
 
@@ -244,20 +245,23 @@ public class MrScratchManagerTest {
 	@Test public void renamingScratch_when_newNameIsUnique_and_fileRenameWasSuccessful() {
 		Scratch scratch = scratch("scratch.txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.isValidScratchName(anyString())).thenReturn(yes());
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(true);
 
 		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "&renamedScratch.txt"), equalTo(yes()));
 		mrScratchManager.userRenamed(scratch, "&renamedScratch.txt");
 
+		verify(fileSystem).isValidScratchName("renamedScratch.txt");
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
 		verify(ide).updateConfig(defaultConfig.with(list(
 				scratch("&renamedScratch.txt")
 		)));
 	}
 
-	@Test public void renamingScratch_when_fileRenameFailed() {
+	@Test public void renamingScratch_when_fileRenameFails() {
 		Scratch scratch = scratch("scratch.txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.isValidScratchName(anyString())).thenReturn(yes());
 		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
 
 		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "renamedScratch.txt"), equalTo(yes()));
@@ -267,7 +271,7 @@ public class MrScratchManagerTest {
 		verify(ide).failedToRename(scratch);
 	}
 
-	@Test public void ifCanRenameScratch_when_thereIsScratchWithSameName() {
+	@Test public void canRenameScratch_when_thereIsScratchWithSameName() {
 		mrScratchManager = createWith(defaultConfig.with(list(
 				scratch("scratch.txt"),
 				scratch("&renamedScratch.txt")
@@ -278,11 +282,15 @@ public class MrScratchManagerTest {
 		verifyZeroInteractions(ide, fileSystem);
 	}
 
-	@Test public void ifCanRenameScratch_toNameWithoutExtension() {
+	@Test public void canRenameScratch_when_fileNameIsIncorrect() {
 		Scratch scratch = scratch("scratch.txt");
 		mrScratchManager = createWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.isValidScratchName(anyString())).thenReturn(no("for a reason"));
 
-		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "renamedScratch"), equalTo(yes()));
+		assertThat(mrScratchManager.checkIfUserCanRename(scratch, "renamedScratch.txt"), equalTo(no("for a reason")));
+
+		verify(fileSystem).isValidScratchName(eq("renamedScratch.txt"));
+		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
 

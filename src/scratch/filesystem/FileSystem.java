@@ -18,6 +18,7 @@ import java.util.List;
 import static com.intellij.openapi.util.io.FileUtil.toSystemIndependentName;
 import static com.intellij.util.containers.ContainerUtil.findAll;
 import static com.intellij.util.containers.ContainerUtil.map;
+import static scratch.MrScratchManager.Answer;
 
 /**
  * User: dima
@@ -50,6 +51,11 @@ public class FileSystem {
 	public boolean scratchFileExists(String fileName) {
 		VirtualFile virtualFile = fileManager.refreshAndFindFileByUrl("file://" + ROOT_PATH + fileName);
 		return canBeScratch.value(virtualFile);
+	}
+
+	public Answer isValidScratchName(String fileName) {
+		// TODO implement
+		return null;
 	}
 
 	public boolean renameFile(String oldFileName, final String newFileName) {
