@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class Util {
-	private static final Key<Project> PROJECT_KEY = Key.create("AnActionEvent");
+	private static final Key<Project> PROJECT_KEY = Key.create("Project");
 
 	@Nullable
 	public static VirtualFile getVirtualFile(String absolutePath) {

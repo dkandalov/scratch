@@ -14,7 +14,7 @@ import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.Ref;
 import org.jetbrains.annotations.NotNull;
-import scratch.Scratch;
+import scratch.MrScratchManager;
 import scratch.ScratchInfo;
 import scratch.ide.ScratchComponent;
 
@@ -30,7 +30,7 @@ import static scratch.ide.Util.holdingOnTo;
  */
 public class ScratchListPopupStep extends BaseListPopupStep<ScratchInfo> {
 	private final FileTypeManager fileTypeManager;
-	private final Scratch scratch;
+	private final MrScratchManager mrScratchManager;
 	private final Project project;
 	private final Ref<Component> componentRef;
 
@@ -39,13 +39,13 @@ public class ScratchListPopupStep extends BaseListPopupStep<ScratchInfo> {
 
 		this.project = project;
 		this.componentRef = componentRef;
-		this.scratch = ScratchComponent.instance();
+		this.mrScratchManager = ScratchComponent.instance();
 		this.fileTypeManager = FileTypeManager.getInstance();
 	}
 
 	@Override public PopupStep onChosen(ScratchInfo scratchInfo, boolean finalChoice) {
 		if (finalChoice) {
-			scratch.userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
+			mrScratchManager.userWantsToOpenScratch(scratchInfo, holdingOnTo(project));
 			return FINAL_CHOICE;
 		}
 		return createActionsPopupFor(scratchInfo);

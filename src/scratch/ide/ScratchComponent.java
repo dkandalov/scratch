@@ -23,7 +23,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scratch.Scratch;
+import scratch.MrScratchManager;
 import scratch.ScratchConfig;
 import scratch.filesystem.FileSystem;
 
@@ -41,10 +41,10 @@ import static java.util.Arrays.asList;
 public class ScratchComponent implements ApplicationComponent {
 	private static final Logger LOG = Logger.getInstance(ScratchComponent.class);
 
-	private Scratch scratch;
+	private MrScratchManager mrScratchManager;
 
-	public static Scratch instance() {
-		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).scratch;
+	public static MrScratchManager instance() {
+		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).mrScratchManager;
 	}
 
 	@Override
@@ -53,14 +53,14 @@ public class ScratchComponent implements ApplicationComponent {
 		Ide ide = new Ide(fileSystem);
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
 
-		scratch = new Scratch(ide, fileSystem, config);
+		mrScratchManager = new MrScratchManager(ide, fileSystem, config);
 
 		if (config.needMigration) {
 			ScratchOldData scratchOldData = ScratchOldData.getInstance();
-			scratch.migrate(asList(scratchOldData.getScratchTextInternal()));
+			mrScratchManager.migrate(asList(scratchOldData.getScratchTextInternal()));
 		}
 
-		new Ide.ClipboardListener(scratch).startListening();
+		new Ide.ClipboardListener(mrScratchManager).startListening();
 	}
 
 	private static void createFilesFor(String[] scratchesText) {

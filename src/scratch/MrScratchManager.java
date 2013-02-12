@@ -14,12 +14,12 @@ import static com.intellij.util.containers.ContainerUtil.*;
  * User: dima
  * Date: 10/02/2013
  */
-public class Scratch {
+public class MrScratchManager {
 	private final Ide ide;
 	private final FileSystem fileSystem;
 	private ScratchConfig config;
 
-	public Scratch(Ide ide, FileSystem fileSystem, ScratchConfig config) {
+	public MrScratchManager(Ide ide, FileSystem fileSystem, ScratchConfig config) {
 		this.ide = ide;
 		this.fileSystem = fileSystem;
 		this.config = config;

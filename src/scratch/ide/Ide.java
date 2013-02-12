@@ -18,7 +18,7 @@ import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import scratch.Scratch;
+import scratch.MrScratchManager;
 import scratch.ScratchConfig;
 import scratch.ScratchInfo;
 import scratch.filesystem.FileSystem;
@@ -154,17 +154,17 @@ public class Ide {
 	public static class ClipboardListener {
 		private static final Logger LOG = Logger.getInstance(ClipboardListener.class);
 
-		private final Scratch scratch;
+		private final MrScratchManager mrScratchManager;
 
-		public ClipboardListener(Scratch scratch) {
-			this.scratch = scratch;
+		public ClipboardListener(MrScratchManager mrScratchManager) {
+			this.mrScratchManager = mrScratchManager;
 		}
 
 		public void startListening() {
 			CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
 				@Override
 				public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
-					if (!scratch.shouldListenToClipboard()) return;
+					if (!mrScratchManager.shouldListenToClipboard()) return;
 
 					try {
 						String oldClipboard = null;
@@ -179,7 +179,7 @@ public class Ide {
 						}
 						if (clipboard == null || StringUtils.equals(oldClipboard, clipboard)) return;
 
-						scratch.clipboardListenerWantsToAddTextToScratch(clipboard);
+						mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard);
 
 					} catch (UnsupportedFlavorException e) {
 						LOG.info(e);
