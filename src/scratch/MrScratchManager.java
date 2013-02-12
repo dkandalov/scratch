@@ -165,7 +165,7 @@ public class MrScratchManager {
 		}
 
 		public static Answer yes() {
-			return new Answer(true, "");
+			return new Answer(true, null);
 		}
 
 		private Answer(boolean isYes, String explanation) {

@@ -36,6 +36,7 @@ import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static scratch.MrScratchManager.Answer;
 import static scratch.ScratchConfig.AppendType;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
@@ -80,28 +81,33 @@ public class Ide {
 		}
 	}
 
-	public void showRenameDialogFor(Scratch scratch) {
-		Component noParent = null;
+	public void showRenameDialogFor(final Scratch scratch) {
+		Project noProject = null;
 		Icon noIcon = null;
 		String initialValue = scratch.fullNameWithMnemonics();
-		Messages.showInputDialog(noParent, "Enter new file name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
+		String newScratchName = Messages.showInputDialog(noProject, "Enter new scratch name:", "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
 			@Override public boolean checkInput(String inputString) {
-				return false;
+				Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
+				return answer.isYes;
 			}
 
 			@Nullable @Override public String getErrorText(String inputString) {
-				return null;
+				Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
+				return answer.explanation;
 			}
 
 			@Override public boolean canClose(String inputString) {
 				return true;
 			}
 		});
+
+		if (newScratchName != null) {
+			ScratchComponent.instance().userRenamed(scratch, newScratchName);
+		}
 	}
 
 	public void failedToRename(Scratch scratch) {
-		// TODO implement
-
+		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
 	}
 
 	public void migratedScratchesToFiles() {

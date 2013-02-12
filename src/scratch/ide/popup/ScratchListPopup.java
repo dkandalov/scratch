@@ -19,6 +19,7 @@ import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import scratch.Scratch;
 import scratch.ide.ScratchComponent;
 
@@ -62,18 +63,30 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		});
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				move(selectedScratch(), -1);
+				Scratch scratch = selectedScratch();
+				if (scratch != null)
+					move(scratch, -1);
 			}
 		});
 		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				move(selectedScratch(), 1);
+				Scratch scratch = selectedScratch();
+				if (scratch != null)
+					move(scratch, 1);
 			}
 		});
 		// TODO copy keyboard shortcuts from existing action
 		registerAction("renameScratch", KeyStroke.getKeyStroke("alt shift R"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-//				ScratchComponent.instance().userWantsToRename(selectedScratch());
+				final Scratch scratch = selectedScratch();
+				if (scratch != null) {
+					ScratchListPopup.this.dispose();
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override public void run() {
+							ScratchComponent.instance().userWantsToRename(scratch);
+						}
+					});
+				}
 			}
 		});
 	}
@@ -90,8 +103,10 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 	}
 
-	private Scratch selectedScratch() {
-		return (Scratch) getListModel().get(getSelectedIndex());
+	@Nullable private Scratch selectedScratch() {
+		int selectedIndex = getSelectedIndex();
+		if (selectedIndex == -1) return null;
+		return (Scratch) getListModel().get(selectedIndex);
 	}
 
 	private void move(Scratch scratch, int shift) {
