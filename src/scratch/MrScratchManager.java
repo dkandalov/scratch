@@ -158,6 +158,28 @@ public class MrScratchManager {
 		ide.updateConfig(config);
 	}
 
+	public void userWantsToAddNewScratch() {
+		String name = "scratch";
+		if (isUniqueScratch(name)) {
+			ide.openNewScratchDialog(name + ".txt");
+			return;
+		}
+		for (int i = 1; i < 100; i++) {
+			if (isUniqueScratch(name + i)) {
+				ide.openNewScratchDialog(name + i + ".txt");
+				return;
+			}
+		}
+	}
+
+	private boolean isUniqueScratch(final String name) {
+		return !exists(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return it.name.equals(name);
+			}
+		});
+	}
+
 	public static class Answer {
 		public final String explanation;
 		public final boolean isYes;

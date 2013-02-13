@@ -149,6 +149,11 @@ public class Ide {
 		return instance.getSelectedTextEditor();
 	}
 
+	public void openNewScratchDialog(String suggestedScratchName) {
+		// TODO implement
+
+	}
+
 
 	// TODO what if this is ON and clipboard content is appended to scratch forever?
 	public static class ClipboardListener {
