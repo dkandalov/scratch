@@ -14,7 +14,6 @@
 package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -26,10 +25,10 @@ import java.io.File;
 /**
  * @author Vojtech Krasa
  */
-public class AddScratchAction extends DumbAwareAction {
+public class CreateScratchAction extends DumbAwareAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		Project project = projectFor(event);
+		Project project = event.getProject();
 
 		String fileName = showInputDialog();
 		if (fileName != null) {
@@ -40,7 +39,7 @@ public class AddScratchAction extends DumbAwareAction {
 
 	private static String showInputDialog() {
 		return Messages.showInputDialog(
-				"File name:", "Create New Scratch", Messages.getQuestionIcon(),
+				"Scratch name (you can use '&' for mnemonics):", "Create New Scratch", Messages.getQuestionIcon(),
 				defaultScratchName(), new NonEmptyInputValidator());
 	}
 
@@ -56,11 +55,7 @@ public class AddScratchAction extends DumbAwareAction {
 	}
 
 	@Override
-	public void update(AnActionEvent e) {
-		e.getPresentation().setEnabled(projectFor(e) != null);
-	}
-
-	private static Project projectFor(AnActionEvent event) {
-		return event.getData(PlatformDataKeys.PROJECT);
+	public void update(AnActionEvent event) {
+		event.getPresentation().setEnabled(event.getProject() != null);
 	}
 }

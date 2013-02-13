@@ -80,6 +80,12 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 			}
 		});
 		// TODO copy keyboard shortcuts from existing action
+		registerAction("addScratch", KeyStroke.getKeyStroke("ctrl N"), new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent event) {
+				// TODO
+			}
+		});
+		// TODO copy keyboard shortcuts from existing action
 		registerAction("renameScratch", KeyStroke.getKeyStroke("alt shift R"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				final Scratch scratch = selectedScratch();
@@ -98,7 +104,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				Project noProject = null;
 				Icon noIcon = null;
 				String initialValue = scratch.fullNameWithMnemonics;
-				String message = "Enter new name (you can use '&' for mnemonics):";
+				String message = "Scratch name (you can use '&' for mnemonics):";
 				String newScratchName = Messages.showInputDialog(noProject, message, "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
 					@Override public boolean checkInput(String inputString) {
 						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);

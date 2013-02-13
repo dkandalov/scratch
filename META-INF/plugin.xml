@@ -51,20 +51,17 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-<!--
-TODO enable
-		<action id="Scratch.CreateScratchAction" class="scratch.ide.actions.AddScratchAction" text="Add New Scratch"
-				description="Add new scratch file" icon="/actions/new.png">
-			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
-			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
-		</action>
--->
 		<action id="Scratch.OpenScratchList" class="scratch.ide.actions.OpenScratchListAction" text="Open Scratch List"
 				description="Opens list of all scratch editors" icon="/actions/copy.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-		<action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenToClipboardAction"
+        <action id="Scratch.CreateScratchAction" class="scratch.ide.actions.CreateScratchAction" text="Add New Scratch"
+                description="Add new scratch" icon="/actions/new.png">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
+            <add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
+        </action>
+        <action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenToClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 		</action>
 	</actions>

@@ -101,6 +101,8 @@ public class MrScratchManager {
 	}
 
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
+		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
+
 		final Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 		if (scratch.asFileName().equals(renamedScratch.asFileName())) return Answer.yes();
 
@@ -126,6 +128,7 @@ public class MrScratchManager {
 	}
 
 	public void userMovedScratch(final Scratch scratch, int shift) {
+		// TODO wrapped moving
 		update(config.move(scratch, shift));
 	}
 
