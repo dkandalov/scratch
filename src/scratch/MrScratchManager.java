@@ -158,7 +158,7 @@ public class MrScratchManager {
 		ide.updateConfig(config);
 	}
 
-	public void userWantsToAddNewScratch() {
+	public void userWantsToEnterNewScratchName() {
 		String name = "scratch";
 		if (isUniqueScratch(name)) {
 			ide.openNewScratchDialog(name + ".txt");
@@ -178,6 +178,11 @@ public class MrScratchManager {
 				return it.name.equals(name);
 			}
 		});
+	}
+
+	public void userWantsToAddNewScratch(String fullNameWithMnemonics) {
+		// TODO implement
+
 	}
 
 	public static class Answer {

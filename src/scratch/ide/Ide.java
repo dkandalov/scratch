@@ -9,6 +9,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.NonEmptyInputValidator;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
@@ -25,6 +27,7 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -150,8 +153,12 @@ public class Ide {
 	}
 
 	public void openNewScratchDialog(String suggestedScratchName) {
-		// TODO implement
+		Icon noIcon = null;
+		String message = "Scratch name (you can use '&' for mnemonics):";
+		String scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, new NonEmptyInputValidator());
+		if (scratchName == null) return;
 
+		ScratchComponent.instance().userWantsToAddNewScratch(scratchName);
 	}
 
 

@@ -294,21 +294,21 @@ public class MrScratchManagerTest {
 	}
 
 
-	@Test public void addingNewScratch_when_noScratchesExist() {
+	@Test public void enteringNewScratchName_when_noScratchesExist() {
 		mrScratchManager = createWith(defaultConfig);
 
-		mrScratchManager.userWantsToAddNewScratch();
+		mrScratchManager.userWantsToEnterNewScratchName();
 
 		verify(ide).openNewScratchDialog("scratch.txt");
 	}
 
-	@Test public void addingNewScratch_when_thereAreScratches() {
+	@Test public void enteringNewScratchName_when_thereAreScratches() {
 		mrScratchManager = createWith(defaultConfig.with(list(
 				scratch("scratch.txt"),
 				scratch("scratch1.java")
 		)));
 
-		mrScratchManager.userWantsToAddNewScratch();
+		mrScratchManager.userWantsToEnterNewScratchName();
 
 		verify(ide).openNewScratchDialog("scratch2.txt");
 	}

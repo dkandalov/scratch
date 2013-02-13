@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -101,11 +100,10 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 			// TODO move this to Ide?
 			public void showRenameDialogFor(final Scratch scratch) {
-				Project noProject = null;
 				Icon noIcon = null;
 				String initialValue = scratch.fullNameWithMnemonics;
 				String message = "Scratch name (you can use '&' for mnemonics):";
-				String newScratchName = Messages.showInputDialog(noProject, message, "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
+				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
 					@Override public boolean checkInput(String inputString) {
 						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
 						return answer.isYes;
