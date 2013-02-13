@@ -25,9 +25,8 @@ import java.io.File;
 /**
  * @author Vojtech Krasa
  */
-public class CreateScratchAction extends DumbAwareAction {
-	@Override
-	public void actionPerformed(AnActionEvent event) {
+public class NewScratchAction extends DumbAwareAction {
+	@Override public void actionPerformed(AnActionEvent event) {
 		Project project = event.getProject();
 
 		String fileName = showInputDialog();
@@ -39,7 +38,7 @@ public class CreateScratchAction extends DumbAwareAction {
 
 	private static String showInputDialog() {
 		return Messages.showInputDialog(
-				"Scratch name (you can use '&' for mnemonics):", "Create New Scratch", Messages.getQuestionIcon(),
+				"Scratch name (you can use '&' for mnemonics):", "New Scratch", Messages.getQuestionIcon(),
 				defaultScratchName(), new NonEmptyInputValidator());
 	}
 
@@ -54,8 +53,7 @@ public class CreateScratchAction extends DumbAwareAction {
 		return s;
 	}
 
-	@Override
-	public void update(AnActionEvent event) {
+	@Override public void update(AnActionEvent event) {
 		event.getPresentation().setEnabled(event.getProject() != null);
 	}
 }

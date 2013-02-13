@@ -56,8 +56,8 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
 			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
 		</action>
-        <action id="Scratch.CreateScratchAction" class="scratch.ide.actions.CreateScratchAction" text="Add New Scratch"
-                description="Add new scratch" icon="/actions/new.png">
+        <action id="Scratch.NewScratch" class="scratch.ide.actions.NewScratchAction" text="New Scratch"
+                description="Creates new scratch" icon="/actions/new.png">
             <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
             <add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
         </action>

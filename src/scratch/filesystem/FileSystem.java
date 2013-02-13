@@ -56,11 +56,11 @@ public class FileSystem {
 
 	public Answer isValidScratchName(String fileName) {
 		boolean hasPathChars = fileName.contains("/") || fileName.contains("\\");
-		boolean hasWildCards = fileName.contains("*") || fileName.contains("?");
-		if (hasPathChars || hasWildCards || isHidden(fileName)) {
+		boolean hasWildcards = fileName.contains("*") || fileName.contains("?");
+		if (hasPathChars || hasWildcards || isHidden(fileName)) {
 			return Answer.no("Not a valid file name");
 		} else if (new File(ROOT_PATH + fileName).exists()) {
-			return Answer.no("There is existing file with the same name");
+			return Answer.no("There is existing file with this name");
 		} else {
 			return Answer.yes();
 		}

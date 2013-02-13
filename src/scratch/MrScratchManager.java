@@ -27,7 +27,7 @@ public class MrScratchManager {
 
 	public void migrate(List<String> scratchTexts) {
 		List<Integer> indexes = newArrayList();
-		List<Scratch> scratchesInfo = newArrayList();
+		List<Scratch> scratches = newArrayList();
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
@@ -35,7 +35,7 @@ public class MrScratchManager {
 
 			boolean wasCreated = fileSystem.createFile(scratch.asFileName(), scratchTexts.get(i - 1));
 			if (wasCreated) {
-				scratchesInfo.add(scratch);
+				scratches.add(scratch);
 			} else {
 				indexes.add(i);
 			}
@@ -46,7 +46,7 @@ public class MrScratchManager {
 		} else {
 			ide.failedToMigrateScratchesToFiles(indexes);
 		}
-		update(config.with(scratchesInfo).needsMigration(false));
+		update(config.with(scratches).needsMigration(false));
 	}
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
@@ -60,8 +60,8 @@ public class MrScratchManager {
 		Condition<String> whichAreNewFiles = new Condition<String>() {
 			@Override public boolean value(final String fileName) {
 				return !exists(oldScratches, new Condition<Scratch>() {
-					@Override public boolean value(Scratch scratchInfo) {
-						return fileName.equals(scratchInfo.asFileName());
+					@Override public boolean value(Scratch scratch) {
+						return fileName.equals(scratch.asFileName());
 					}
 				});
 			}
