@@ -82,7 +82,12 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		// TODO copy keyboard shortcuts from existing action
 		registerAction("addScratch", KeyStroke.getKeyStroke("ctrl N"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				// TODO
+				ScratchListPopup.this.dispose();
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override public void run() {
+						mrScratchManager().userWantsToEnterNewScratchName();
+					}
+				});
 			}
 		});
 		// TODO copy keyboard shortcuts from existing action
