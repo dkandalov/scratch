@@ -72,7 +72,7 @@ public class Ide {
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
 		Project project = takeProjectFrom(userDataHolder);
 
-		VirtualFile file = fileSystem.findVirtualFileFor(scratch);
+		VirtualFile file = fileSystem.virtualFileFor(scratch.asFileName());
 		if (file != null) {
 			new OpenFileDescriptor(project, file).navigate(true);
 		} else {
@@ -81,7 +81,7 @@ public class Ide {
 	}
 
 	public void addTextTo(Scratch scratch, final String clipboardText, final ScratchConfig.AppendType appendType) {
-		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratch);
+		VirtualFile virtualFile = fileSystem.virtualFileFor(scratch.asFileName());
 		if (virtualFile == null) {
 			failedToFindVirtualFileFor(scratch);
 			return;
@@ -159,6 +159,10 @@ public class Ide {
 
 	public void failedToCreate(Scratch scratch) {
 		notifyUser("", "Failed to create scratch: '" + scratch.name + "'", WARNING);
+	}
+
+	public void failedToDelete(Scratch scratch) {
+		notifyUser("", "Failed to delete scratch: '" + scratch.name + "'", WARNING);
 	}
 
 	private static void failedToFindVirtualFileFor(Scratch scratch) {

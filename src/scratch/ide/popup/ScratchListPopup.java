@@ -62,7 +62,14 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		// TODO copy keyboard shortcuts from existing action
 		registerAction("deleteScratch", KeyStroke.getKeyStroke("DELETE"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
-				// TODO remove(selectedScratch());
+				Scratch scratch = selectedScratch();
+				Icon noIcon = null;
+				String message = "Do you want to delete '" + scratch.name + "'?\n(There is no undo for this operation.)";
+				int userAnswer = Messages.showYesNoCancelDialog(message, "Delete Scratch", noIcon);
+				if (userAnswer == Messages.NO) return;
+
+				ScratchListPopup.this.dispose();
+				mrScratchManager().userWantToDeleteScratch(scratch);
 			}
 		});
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
@@ -145,7 +152,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 	}
 
-	private void remove(Scratch scratch) {
+	private void removeFromPopup(Scratch scratch) {
 		getListModel().deleteItem(scratch);
 	}
 

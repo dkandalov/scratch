@@ -376,6 +376,31 @@ public class MrScratchManagerTest {
 	}
 
 
+	@Test public void deleteScratch_whenFileCanBeRemoved() {
+		Scratch scratch = scratch("&scratch.txt");
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.removeFile(anyString())).thenReturn(true);
+
+		mrScratchManager.userWantToDeleteScratch(scratch);
+
+		verify(fileSystem).removeFile("scratch.txt");
+		verify(ide).persistConfig(defaultConfig);
+		verifyNoMoreInteractions(ide, fileSystem);
+	}
+
+	@Test public void deleteScratch_whenFileCouldNotBeRemoved() {
+		Scratch scratch = scratch("&scratch.txt");
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.removeFile(anyString())).thenReturn(false);
+
+		mrScratchManager.userWantToDeleteScratch(scratch);
+
+		verify(fileSystem).removeFile("scratch.txt");
+		verify(ide).failedToDelete(scratch);
+		verifyNoMoreInteractions(ide, fileSystem);
+	}
+
+
 	@Test public void movingScratchUpInScratchesList() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
 				scratch("scratch1.txt"),

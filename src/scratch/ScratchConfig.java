@@ -41,6 +41,12 @@ public class ScratchConfig {
 		return this.with(newScratches);
 	}
 
+	public ScratchConfig without(Scratch scratch) {
+		ArrayList<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		newScratches.remove(scratch);
+		return this.with(newScratches);
+	}
+
 	public ScratchConfig replace(final Scratch scratch, final Scratch newScratch) {
 		return new ScratchConfig(map(scratches, new Function<Scratch, Scratch>() {
 			@Override public Scratch fun(Scratch it) {

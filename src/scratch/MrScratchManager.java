@@ -193,6 +193,15 @@ public class MrScratchManager {
 		}
 	}
 
+	public void userWantToDeleteScratch(Scratch scratch) {
+		boolean wasRemoved = fileSystem.removeFile(scratch.asFileName());
+		if (wasRemoved) {
+			update(config.without(scratch));
+		} else {
+			ide.failedToDelete(scratch);
+		}
+	}
+
 	private boolean isUniqueScratchName(final String name) {
 		return !exists(config.scratches, new Condition<Scratch>() {
 			@Override public boolean value(Scratch it) {
