@@ -22,7 +22,7 @@ import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scratch.MrScratchManager;
+import scratch.Answer;
 import scratch.Scratch;
 
 import javax.swing.*;
@@ -497,12 +497,12 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		}
 
 		@Override public boolean checkInput(String inputString) {
-			MrScratchManager.Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
+			Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
 			return answer.isYes;
 		}
 
 		@Nullable @Override public String getErrorText(String inputString) {
-			MrScratchManager.Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
+			Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
 			return answer.explanation;
 		}
 

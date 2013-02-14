@@ -10,6 +10,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
+import scratch.Answer;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.findAll;
 import static com.intellij.util.containers.ContainerUtil.map;
-import static scratch.MrScratchManager.Answer;
 
 /**
  * User: dima

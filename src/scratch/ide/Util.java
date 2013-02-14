@@ -13,10 +13,6 @@
  */
 package scratch.ide;
 
-import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationType;
-import com.intellij.notification.Notifications;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.UserDataHolder;
@@ -45,12 +41,6 @@ public class Util {
 	@Nullable
 	public static VirtualFile getVirtualFile(File file) {
 		return getVirtualFile(file.getAbsolutePath());
-	}
-
-	public static void notifyUser(String title, String message, NotificationType notificationType) {
-		String groupDisplayId = "Scratch";
-		Notification notification = new Notification(groupDisplayId, title, message, notificationType);
-		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
 	}
 
 	public static UserDataHolder holdingOnTo(Project project) {

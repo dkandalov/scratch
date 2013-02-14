@@ -5,6 +5,7 @@ import com.intellij.openapi.util.UserDataHolderBase;
 import org.junit.Test;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
+import scratch.ide.ScratchLog;
 
 import java.util.List;
 
@@ -13,9 +14,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-import static scratch.MrScratchManager.Answer;
-import static scratch.MrScratchManager.Answer.no;
-import static scratch.MrScratchManager.Answer.yes;
+import static scratch.Answer.no;
+import static scratch.Answer.yes;
 import static scratch.ScratchConfig.AppendType;
 
 
@@ -27,6 +27,7 @@ public class MrScratchManagerTest {
 
 	private static final UserDataHolder USER_DATA = new UserDataHolderBase();
 
+	private final ScratchLog log = mock(ScratchLog.class);
 	private final Ide ide = mock(Ide.class);
 	private final FileSystem fileSystem = mock(FileSystem.class);
 	private final ScratchConfig defaultConfig = ScratchConfig.DEFAULT_CONFIG;
@@ -44,7 +45,7 @@ public class MrScratchManagerTest {
 		verify(fileSystem).createFile("scratch3.txt", "text3");
 		verify(fileSystem).createFile("scratch4.txt", "text4");
 		verify(fileSystem).createFile("scratch5.txt", "text5");
-		verify(ide).migratedScratchesToFiles();
+		verify(log).migratedScratchesToFiles();
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_successfullyMigratedScratchesToFiles() {
@@ -79,7 +80,7 @@ public class MrScratchManagerTest {
 		verify(fileSystem).createFile("scratch3.txt", "text3");
 		verify(fileSystem).createFile("scratch4.txt", "text4");
 		verify(fileSystem).createFile("scratch5.txt", "text5");
-		verify(ide).failedToMigrateScratchesToFiles(list(3, 4));
+		verify(log).failedToMigrateScratchesToFiles(list(3, 4));
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_failedToMigrateSomeOfTheFiles() {
@@ -180,7 +181,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToOpenScratch(scratch, USER_DATA);
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).failedToOpen(eq(scratch));
+		verify(log).failedToOpen(eq(scratch));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchListIsNotEmpty_and_scratchFileExists() {
@@ -200,7 +201,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 
-		verify(ide).failedToOpenDefaultScratch();
+		verify(log).failedToOpenDefaultScratch();
 	}
 
 	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
@@ -209,7 +210,7 @@ public class MrScratchManagerTest {
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
-		verify(ide).failedToOpenDefaultScratch();
+		verify(log).failedToOpenDefaultScratch();
 	}
 
 
@@ -230,7 +231,7 @@ public class MrScratchManagerTest {
 
 		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
-		verify(ide).failedToOpenDefaultScratch();
+		verify(log).failedToOpenDefaultScratch();
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_userTurnsOnListeningToClipboard() {
@@ -297,8 +298,8 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToRename(scratch, "renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
-		verify(ide).failedToRename(scratch);
-		verifyNoMoreInteractions(ide, fileSystem);
+		verify(log).failedToRename(scratch);
+		verifyNoMoreInteractions(ide, log, fileSystem);
 	}
 
 
@@ -372,7 +373,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToAddNewScratch("&scratch.txt");
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
-		verify(ide).failedToCreate(scratch("&scratch.txt"));
+		verify(log).failedToCreate(scratch("&scratch.txt"));
 	}
 
 
@@ -396,7 +397,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantToDeleteScratch(scratch);
 
 		verify(fileSystem).removeFile("scratch.txt");
-		verify(ide).failedToDelete(scratch);
+		verify(log).failedToDelete(scratch);
 		verifyNoMoreInteractions(ide, fileSystem);
 	}
 
@@ -423,6 +424,6 @@ public class MrScratchManagerTest {
 	}
 
 	private MrScratchManager scratchManagerWith(ScratchConfig config) {
-		return new MrScratchManager(ide, fileSystem, config);
+		return new MrScratchManager(ide, fileSystem, config, log);
 	}
 }

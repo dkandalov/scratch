@@ -50,10 +50,11 @@ public class ScratchComponent implements ApplicationComponent {
 	@Override
 	public void initComponent() {
 		FileSystem fileSystem = new FileSystem();
-		Ide ide = new Ide(fileSystem);
+		ScratchLog log = new ScratchLog();
+		Ide ide = new Ide(fileSystem, log);
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
 
-		mrScratchManager = new MrScratchManager(ide, fileSystem, config);
+		mrScratchManager = new MrScratchManager(ide, fileSystem, config, log);
 
 		if (config.needMigration) {
 			ScratchOldData scratchOldData = ScratchOldData.getInstance();

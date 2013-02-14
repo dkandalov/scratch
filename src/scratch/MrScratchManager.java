@@ -5,6 +5,7 @@ import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.util.Function;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
+import scratch.ide.ScratchLog;
 
 import java.util.List;
 
@@ -16,13 +17,15 @@ import static com.intellij.util.containers.ContainerUtil.*;
  */
 public class MrScratchManager {
 	private final Ide ide;
+	private final ScratchLog log;
 	private final FileSystem fileSystem;
 	private ScratchConfig config;
 
-	public MrScratchManager(Ide ide, FileSystem fileSystem, ScratchConfig config) {
+	public MrScratchManager(Ide ide, FileSystem fileSystem, ScratchConfig config, ScratchLog log) {
 		this.ide = ide;
 		this.fileSystem = fileSystem;
 		this.config = config;
+		this.log = log;
 	}
 
 	public void migrate(List<String> scratchTexts) {
@@ -42,9 +45,9 @@ public class MrScratchManager {
 		}
 
 		if (indexes.isEmpty()) {
-			ide.migratedScratchesToFiles();
+			log.migratedScratchesToFiles();
 		} else {
-			ide.failedToMigrateScratchesToFiles(indexes);
+			log.failedToMigrateScratchesToFiles(indexes);
 		}
 		update(config.with(scratches).needsMigration(false));
 	}
@@ -84,18 +87,18 @@ public class MrScratchManager {
 		if (fileSystem.scratchFileExists(scratch.asFileName()))
 			ide.openScratch(scratch, userDataHolder);
 		else
-			ide.failedToOpen(scratch);
+			log.failedToOpen(scratch);
 	}
 
 	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
 		if (config.scratches.isEmpty()) {
-			ide.failedToOpenDefaultScratch();
+			log.failedToOpenDefaultScratch();
 		} else {
 			Scratch scratch = config.scratches.get(0);
 			if (fileSystem.scratchFileExists(scratch.asFileName())) {
 				ide.openScratch(scratch, userDataHolder);
 			} else {
-				ide.failedToOpenDefaultScratch();
+				log.failedToOpenDefaultScratch();
 			}
 		}
 	}
@@ -124,7 +127,7 @@ public class MrScratchManager {
 		if (wasRenamed) {
 			update(config.replace(scratch, renamedScratch));
 		} else {
-			ide.failedToRename(scratch);
+			log.failedToRename(scratch);
 		}
 	}
 
@@ -139,13 +142,13 @@ public class MrScratchManager {
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
 		if (config.scratches.isEmpty()) {
-			ide.failedToOpenDefaultScratch();
+			log.failedToOpenDefaultScratch();
 		} else {
 			Scratch scratch = config.scratches.get(0);
 			if (fileSystem.scratchFileExists(scratch.asFileName())) {
 				ide.addTextTo(scratch, clipboardText, config.clipboardAppendType);
 			} else {
-				ide.failedToOpenDefaultScratch();
+				log.failedToOpenDefaultScratch();
 			}
 		}
 	}
@@ -189,7 +192,7 @@ public class MrScratchManager {
 		if (wasCreated) {
 			update(config.append(scratch));
 		} else {
-			ide.failedToCreate(scratch);
+			log.failedToCreate(scratch);
 		}
 	}
 
@@ -198,7 +201,7 @@ public class MrScratchManager {
 		if (wasRemoved) {
 			update(config.without(scratch));
 		} else {
-			ide.failedToDelete(scratch);
+			log.failedToDelete(scratch);
 		}
 	}
 
@@ -216,47 +219,4 @@ public class MrScratchManager {
 	}
 
 
-	public static class Answer {
-		public final String explanation;
-		public final boolean isYes;
-		public final boolean isNo;
-
-		public static Answer no(String explanation) {
-			return new Answer(false, explanation);
-		}
-
-		public static Answer yes() {
-			return new Answer(true, null);
-		}
-
-		private Answer(boolean isYes, String explanation) {
-			this.isYes = isYes;
-			this.isNo = !isYes;
-			this.explanation = explanation;
-		}
-
-		@Override public String toString() {
-			return isYes ? "Yes" : "No(" + explanation + ")";
-		}
-
-		@SuppressWarnings("RedundantIfStatement")
-		@Override public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			Answer answer = (Answer) o;
-
-			if (isYes != answer.isYes) return false;
-			if (explanation != null ? !explanation.equals(answer.explanation) : answer.explanation != null)
-				return false;
-
-			return true;
-		}
-
-		@Override public int hashCode() {
-			int result = explanation != null ? explanation.hashCode() : 0;
-			result = 31 * result + (isYes ? 1 : 0);
-			return result;
-		}
-	}
 }
