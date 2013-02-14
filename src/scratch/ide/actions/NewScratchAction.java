@@ -15,42 +15,15 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.NonEmptyInputValidator;
-import scratch.ide.ScratchComponent;
 
-import java.io.File;
+import static scratch.ide.ScratchComponent.mrScratchManager;
 
 /**
  * @author Vojtech Krasa
  */
 public class NewScratchAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		Project project = event.getProject();
-
-		String fileName = showInputDialog();
-		if (fileName != null) {
-			File file = ScratchComponent.createFile(fileName);
-			ScratchComponent.openInEditor(project, file);
-		}
-	}
-
-	private static String showInputDialog() {
-		return Messages.showInputDialog(
-				"Scratch name (you can use '&' for mnemonics):", "New Scratch", Messages.getQuestionIcon(),
-				defaultScratchName(), new NonEmptyInputValidator());
-	}
-
-	private static String defaultScratchName() {
-		String s = "scratch.txt";
-		File file = new File(ScratchComponent.scratchesRootPath(), s);
-		int i = 0;
-		while (file.exists()) {
-			s = "scratch" + ++i + ".txt";
-			file = new File(ScratchComponent.scratchesRootPath(), s);
-		}
-		return s;
+		mrScratchManager().userWantsToEnterNewScratchName();
 	}
 
 	@Override public void update(AnActionEvent event) {
