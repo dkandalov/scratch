@@ -41,6 +41,7 @@ import static scratch.ide.Util.NO_ICON;
  * The main reason for copying was to use {@link PopupModelWithMovableItems}
  * instead of {@link com.intellij.ui.popup.list.ListPopupModel}.
  */
+@SuppressWarnings("unchecked")
 public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 	private MyList myList;
@@ -130,14 +131,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 	public ScratchListPopup(@NotNull ListPopupStep aStep) {
 		this(aStep, -1);
-	}
-
-	public ScratchListPopup(WizardPopup aParent, @NotNull ListPopupStep aStep, Object parentValue, int maxRowCount) {
-		super(aParent, aStep);
-		setParentValue(parentValue);
-		if (maxRowCount != -1){
-			myMaxRowCount = maxRowCount;
-		}
 	}
 
 	@Nullable private Scratch selectedScratch() {
@@ -276,10 +269,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		return count;
 	}
 
-	public JList getList() {
-		return myList;
-	}
-
 	@Override
 	protected JComponent createContent() {
 		myMouseMotionListener = new MyMouseMotionListener();
@@ -368,10 +357,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 	protected int getSelectedIndex() {
 		return myList.getSelectedIndex();
-	}
-
-	protected Rectangle getCellBounds(int i) {
-		return myList.getCellBounds(i, i);
 	}
 
 	@Override
@@ -528,10 +513,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 	protected boolean isActionClick(MouseEvent e) {
 		return UIUtil.isActionClick(e, MouseEvent.MOUSE_RELEASED, true);
-	}
-
-	public Object[] getSelectedValues() {
-		return myList.getSelectedValues();
 	}
 
 	private class MyMouseListener extends MouseAdapter {

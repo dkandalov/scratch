@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 class PopupModelWithMovableItems extends AbstractListModel {
 
 	private final List<Object> myOriginalList;
@@ -29,15 +30,6 @@ class PopupModelWithMovableItems extends AbstractListModel {
 		mySpeedSearch = speedSearch;
 		myOriginalList = new ArrayList<Object>(step.getValues());
 		rebuildLists();
-	}
-
-	public void deleteItem(final Object item) {
-		final int i = myOriginalList.indexOf(item);
-		if (i >= 0) {
-			myOriginalList.remove(i);
-			rebuildLists();
-			fireContentsChanged(this, 0, myFilteredList.size());
-		}
 	}
 
 	public int moveItem(Object item, int shift) {

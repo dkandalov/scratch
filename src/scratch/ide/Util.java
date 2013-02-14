@@ -17,31 +17,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.UserDataHolderBase;
-import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.File;
 
 public class Util {
 	public static final Icon NO_ICON = null;
 	private static final Key<Project> PROJECT_KEY = Key.create("Project");
-
-	@Nullable
-	public static VirtualFile getVirtualFile(String absolutePath) {
-		if (!absolutePath.startsWith("file://")) {
-			absolutePath = "file://" + absolutePath;
-		}
-		return VirtualFileManager.getInstance().refreshAndFindFileByUrl(FileUtil.toSystemIndependentName(absolutePath));
-	}
-
-	@Nullable
-	public static VirtualFile getVirtualFile(File file) {
-		return getVirtualFile(file.getAbsolutePath());
-	}
 
 	public static UserDataHolder holdingOnTo(Project project) {
 		UserDataHolder userDataHolder = new UserDataHolderBase();

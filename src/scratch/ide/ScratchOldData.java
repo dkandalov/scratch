@@ -19,11 +19,8 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Dmitry Kandalov
@@ -33,8 +30,6 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 	private static final int SIZE = 5;
 
 	private final String scratchTexts[];
-	private String lastOpenedFileName;
-	private List<String> createdFileNames = new ArrayList<String>();
 
 	public static ScratchOldData getInstance() {
 		return ServiceManager.getService(ScratchOldData.class);
@@ -75,33 +70,6 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 		XmlSerializerUtil.copyBean(scratchOldData, this);
 	}
 
-	@Nullable
-	public String getLastOpenedFileName() {
-		return lastOpenedFileName;
-	}
-
-	public void setLastOpenedFileName(@Nullable String lastOpenedFileName) {
-		this.lastOpenedFileName = lastOpenedFileName;
-	}
-
-	public List<String> getCreatedFileNames() {
-		return createdFileNames;
-	}
-
-	public void setCreatedFileNames(List<String> createdFileNames) {
-		this.createdFileNames = createdFileNames;
-	}
-
-	public void addCreatedFile(String name) {
-		if (!createdFileNames.contains(name)) {
-			createdFileNames.add(name);
-		}
-	}
-
-	public void removeCreatedFileName(String createdFileName) {
-		createdFileNames.remove(createdFileName);
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -117,15 +85,6 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 	@Override
 	public int hashCode() {
 		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
-	}
-
-	@Deprecated
-	public void setAppendContentFromClipboard(boolean enabled) {
-	}
-
-	@Deprecated
-	public boolean isAppendContentFromClipboard() {
-		return false;
 	}
 
 	public static class XmlUtil {

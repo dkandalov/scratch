@@ -11,8 +11,6 @@ import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.popup.ListPopupStep;
-import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.IdeFocusManager;
@@ -27,7 +25,6 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
-import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
@@ -36,7 +33,8 @@ import java.util.List;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
-import static scratch.ide.Util.*;
+import static scratch.ide.Util.NO_ICON;
+import static scratch.ide.Util.takeProjectFrom;
 
 /**
  * User: dima
@@ -57,13 +55,8 @@ public class Ide {
 	}
 
 	public void displayScratchesListPopup(List<Scratch> scratches, UserDataHolder userDataHolder) {
-		Project project = takeProjectFrom(userDataHolder);
-		Ref<Component> componentRef = Ref.create();
-
-		ListPopupStep popupStep = new ScratchListPopupStep(scratches, project, componentRef);
-		ScratchListPopup popup = new ScratchListPopup(popupStep);
-		componentRef.set(popup.getComponent()); // this "hack" was copied from com.intellij.tasks.actions.SwitchTaskAction#createPopup
-		popup.showCenteredInCurrentWindow(project);
+		ScratchListPopup popup = new ScratchListPopup(new ScratchListPopupStep(scratches));
+		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
 	}
 
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
