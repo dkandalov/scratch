@@ -53,6 +53,12 @@
                     description="Creates new scratch">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
             </action>
+            <action id="Scratch.RenameScratch" class="scratch.ide.actions.RenameScratchAction" text="Rename Scratch"
+                    description="Renames scratch">
+            </action>
+            <action id="Scratch.DeleteScratch" class="scratch.ide.actions.DeleteScratchAction" text="Delete Scratch"
+                    description="Deletes scratch">
+            </action>
 		</group>
         <action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenToClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">

@@ -62,7 +62,7 @@ public class Ide {
 
 		ListPopupStep popupStep = new ScratchListPopupStep(scratches, project, componentRef);
 		ScratchListPopup popup = new ScratchListPopup(popupStep);
-		componentRef.set(popup.getComponent()); // this kind of a hack was copied from com.intellij.tasks.actions.SwitchTaskAction#createPopup
+		componentRef.set(popup.getComponent()); // this "hack" was copied from com.intellij.tasks.actions.SwitchTaskAction#createPopup
 		popup.showCenteredInCurrentWindow(project);
 	}
 
