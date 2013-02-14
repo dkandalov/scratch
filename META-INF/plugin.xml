@@ -10,10 +10,9 @@
 				<br/><br/>
 				Usage:<br/>
 				<ul>
-					<li>Alt+C, Alt+A - add new scratch file</li>
 					<li>Alt+C, Alt+C - opens default scratch</li>
 					<li>Alt+C, Alt+S - opens list of all scratches</li>
-					<li>Alt+C, Alt+V - appends clipboard content to default scratch</li>
+					<li>Alt+C, Alt+A - add new scratch</li>
 				</ul>
 				</body></html>
 		]]>
@@ -21,14 +20,10 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
-            <li>0.11 - fixed bug when control symbols like 0x11 couldn't be saved</li>
-            <li>0.12 - bug fixing</li>
-            <li>0.13 - should work in IntelliJ 11</li>
-            <li>0.14 - should work in PhpStorm EAP</li>
-            <li>0.15 - NPE if there are no open projects</li>
-            <li>0.16 - fixed reference to icon</li>
+            <li>1.0 - file types, uses physical files, add/rename/delete scratches</li>
             <li>0.17 - fix for UTF-8</li>
-            <li>1.0 - uses physical files, new clipboard listener function</li>
+            <li>0.16 - fixed reference to icon</li>
+            <li>0.15 - NPE if there are no open projects</li>
         </ul>
         </body></html>
         ]]>
@@ -45,22 +40,20 @@
 	<actions>
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
+            <action id="Scratch.OpenDefaultScratch" class="scratch.ide.actions.OpenDefaultScratchAction" text="Open Scratch"
+                    description="Opens default scratch editor" icon="/fileTypes/text.png">
+                <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
+            </action>
+            <action id="Scratch.OpenScratchList" class="scratch.ide.actions.OpenScratchListAction" text="Open Scratch List"
+                    description="Opens list of all scratch editors" icon="/actions/copy.png">
+                <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
+            </action>
+            <separator/>
+            <action id="Scratch.NewScratch" class="scratch.ide.actions.NewScratchAction" text="New Scratch"
+                    description="Creates new scratch">
+                <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
+            </action>
 		</group>
-		<action id="Scratch.OpenDefaultScratch" class="scratch.ide.actions.OpenDefaultScratchAction" text="Open Scratch"
-				description="Opens default scratch editor" icon="/fileTypes/text.png">
-			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
-			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
-		</action>
-		<action id="Scratch.OpenScratchList" class="scratch.ide.actions.OpenScratchListAction" text="Open Scratch List"
-				description="Opens list of all scratch editors" icon="/actions/copy.png">
-			<keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
-			<add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
-		</action>
-        <action id="Scratch.NewScratch" class="scratch.ide.actions.NewScratchAction" text="New Scratch"
-                description="Creates new scratch" icon="/actions/new.png">
-            <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
-            <add-to-group group-id="Scratch.ScratchMenu" anchor="last"/>
-        </action>
         <action id="ScratchListenClipboardAction" class="scratch.ide.actions.ScratchListenToClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 		</action>
