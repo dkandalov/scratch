@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 class PopupModelWithMovableItems extends AbstractListModel {
@@ -41,16 +40,19 @@ class PopupModelWithMovableItems extends AbstractListModel {
 		}
 	}
 
-	public boolean moveItem(Object item, int shift) {
-		int index = myOriginalList.indexOf(item);
-		int newIndex = index + shift;
-		if (newIndex < 0 || newIndex >= myOriginalList.size()) return false;
+	public int moveItem(Object item, int shift) {
+		int oldIndex = myOriginalList.indexOf(item);
+		int newIndex = oldIndex + shift;
+		if (newIndex < 0) newIndex += myOriginalList.size();
+		if (newIndex >= myOriginalList.size()) newIndex -= myOriginalList.size();
 
-		Collections.swap(myOriginalList, index, newIndex);
+		myOriginalList.remove(oldIndex);
+		myOriginalList.add(newIndex, item);
 
 		rebuildLists();
 		fireContentsChanged(this, 0, myFilteredList.size());
-		return true;
+
+		return newIndex;
 	}
 
 	@Nullable

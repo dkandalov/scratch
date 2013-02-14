@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
 import scratch.Scratch;
+import scratch.ScratchConfig;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -78,14 +79,14 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
 				if (scratch != null)
-					move(scratch, -1);
+					move(scratch, ScratchConfig.UP);
 			}
 		});
 		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
 				if (scratch != null)
-					move(scratch, 1);
+					move(scratch, ScratchConfig.DOWN);
 			}
 		});
 		// TODO copy keyboard shortcuts from existing action
@@ -146,15 +147,9 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	}
 
 	private void move(Scratch scratch, int shift) {
-		boolean wasMoved = getListModel().moveItem(scratch, shift);
-		if (wasMoved) {
-			myList.setSelectedIndex(getSelectedIndex() + shift);
-			mrScratchManager().userMovedScratch(scratch, shift);
-		}
-	}
-
-	private void removeFromPopup(Scratch scratch) {
-		getListModel().deleteItem(scratch);
+		int newIndex = getListModel().moveItem(scratch, shift);
+		myList.setSelectedIndex(newIndex);
+		mrScratchManager().userMovedScratch(scratch, shift);
 	}
 
 	protected PopupModelWithMovableItems getListModel() {

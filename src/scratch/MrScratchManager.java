@@ -49,7 +49,7 @@ public class MrScratchManager {
 		} else {
 			log.failedToMigrateScratchesToFiles(indexes);
 		}
-		update(config.with(scratches).needsMigration(false));
+		updateConfig(config.with(scratches).needsMigration(false));
 	}
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
@@ -78,7 +78,7 @@ public class MrScratchManager {
 
 		List<Scratch> scratches = concat(oldScratches, newScratches);
 		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
-			update(config.with(scratches));
+			updateConfig(config.with(scratches));
 		}
 		ide.displayScratchesListPopup(scratches, userDataHolder);
 	}
@@ -125,19 +125,18 @@ public class MrScratchManager {
 
 		boolean wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName());
 		if (wasRenamed) {
-			update(config.replace(scratch, renamedScratch));
+			updateConfig(config.replace(scratch, renamedScratch));
 		} else {
 			log.failedToRename(scratch);
 		}
 	}
 
 	public void userMovedScratch(final Scratch scratch, int shift) {
-		// TODO wrapped moving
-		update(config.move(scratch, shift));
+		updateConfig(config.move(scratch, shift));
 	}
 
 	public void userWantsToListenToClipboard(boolean value) {
-		update(config.listenToClipboard(value));
+		updateConfig(config.listenToClipboard(value));
 	}
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
@@ -190,7 +189,7 @@ public class MrScratchManager {
 		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
-			update(config.append(scratch));
+			updateConfig(config.append(scratch));
 		} else {
 			log.failedToCreate(scratch);
 		}
@@ -199,7 +198,7 @@ public class MrScratchManager {
 	public void userWantToDeleteScratch(Scratch scratch) {
 		boolean wasRemoved = fileSystem.removeFile(scratch.asFileName());
 		if (wasRemoved) {
-			update(config.without(scratch));
+			updateConfig(config.without(scratch));
 		} else {
 			log.failedToDelete(scratch);
 		}
@@ -213,10 +212,8 @@ public class MrScratchManager {
 		});
 	}
 
-	private void update(ScratchConfig newConfig) {
+	private void updateConfig(ScratchConfig newConfig) {
 		config = newConfig;
 		ide.persistConfig(config);
 	}
-
-
 }

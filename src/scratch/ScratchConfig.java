@@ -16,6 +16,8 @@ import static scratch.ScratchConfig.AppendType.APPEND;
  */
 public class ScratchConfig {
 	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<Scratch>emptyList(), false, true, APPEND);
+	public static final int UP = -1;
+	public static final int DOWN = 1;
 
 	public enum AppendType { APPEND, PREPEND }
 
@@ -56,14 +58,15 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig move(final Scratch scratch, int shift) {
-		final Scratch prevScratch = scratches.get(scratches.indexOf(scratch) + shift);
-		return this.with(map(scratches, new Function<Scratch, Scratch>() {
-			@Override public Scratch fun(Scratch it) {
-				if (it.equals(prevScratch)) return scratch;
-				else if (it.equals(scratch)) return prevScratch;
-				else return it;
-			}
-		}));
+		int oldIndex = scratches.indexOf(scratch);
+		int newIndex = oldIndex + shift;
+		if (newIndex < 0) newIndex += scratches.size();
+		if (newIndex >= scratches.size()) newIndex -= scratches.size();
+
+		List<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		newScratches.remove(oldIndex);
+		newScratches.add(newIndex, scratch);
+		return this.with(newScratches);
 	}
 
 	public ScratchConfig needsMigration(boolean value) {
