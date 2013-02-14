@@ -27,7 +27,6 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -38,8 +37,7 @@ import static com.intellij.notification.NotificationType.WARNING;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
-import static scratch.ide.Util.notifyUser;
-import static scratch.ide.Util.takeProjectFrom;
+import static scratch.ide.Util.*;
 
 /**
  * User: dima
@@ -113,9 +111,8 @@ public class Ide {
 	}
 
 	public void openNewScratchDialog(String suggestedScratchName) {
-		Icon noIcon = null;
 		String message = "Scratch name (you can use '&' for mnemonics):";
-		String scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, new InputValidatorEx() {
+		String scratchName = Messages.showInputDialog(message, "New Scratch", NO_ICON, suggestedScratchName, new InputValidatorEx() {
 			@Override public boolean checkInput(String scratchName) {
 				return ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes;
 			}

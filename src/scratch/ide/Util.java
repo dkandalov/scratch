@@ -27,9 +27,11 @@ import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.io.File;
 
 public class Util {
+	public static final Icon NO_ICON = null;
 	private static final Key<Project> PROJECT_KEY = Key.create("Project");
 
 	@Nullable

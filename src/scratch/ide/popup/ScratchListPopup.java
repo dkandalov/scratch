@@ -33,6 +33,7 @@ import java.awt.event.*;
 import java.util.Arrays;
 
 import static scratch.ide.ScratchComponent.mrScratchManager;
+import static scratch.ide.Util.NO_ICON;
 
 /**
  * Originally was a copy of {@link com.intellij.ui.popup.list.ListPopupImpl}.
@@ -63,9 +64,10 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		registerAction("deleteScratch", KeyStroke.getKeyStroke("DELETE"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
-				Icon noIcon = null;
-				String message = "Do you want to delete '" + scratch.name + "'?\n(There is no undo for this operation.)";
-				int userAnswer = Messages.showYesNoCancelDialog(message, "Delete Scratch", noIcon);
+				if (scratch == null) return;
+
+				String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
+				int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
 				if (userAnswer == Messages.NO) return;
 
 				ScratchListPopup.this.dispose();
@@ -113,10 +115,9 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 
 			// TODO move this to Ide?
 			public void showRenameDialogFor(final Scratch scratch) {
-				Icon noIcon = null;
 				String initialValue = scratch.fullNameWithMnemonics;
 				String message = "Scratch name (you can use '&' for mnemonics):";
-				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, new ScratchNameValidator(scratch));
+				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", NO_ICON, initialValue, new ScratchNameValidator(scratch));
 
 				if (newScratchName != null) {
 					mrScratchManager().userWantsToRename(scratch, newScratchName);

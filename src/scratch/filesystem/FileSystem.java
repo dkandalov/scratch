@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -98,7 +97,7 @@ public class FileSystem {
 					if (scratchesFolder == null) return false;
 
 					VirtualFile scratchFile = scratchesFolder.createChildData(FileSystem.this, fileName);
-					scratchFile.setBinaryContent(text.getBytes(Charset.forName("UFT-8")));
+					scratchFile.setBinaryContent(text.getBytes()); // use default platform charset
 
 					return true;
 				} catch (IOException e) {
