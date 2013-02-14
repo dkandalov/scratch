@@ -15,8 +15,8 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
-import scratch.ide.ScratchComponent;
 
+import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.holdingOnTo;
 
 /**
@@ -24,7 +24,7 @@ import static scratch.ide.Util.holdingOnTo;
  */
 public class OpenScratchListAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		ScratchComponent.mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
+		mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
 	}
 
 	@Override public void update(AnActionEvent event) {

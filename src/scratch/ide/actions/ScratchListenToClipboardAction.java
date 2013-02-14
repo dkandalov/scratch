@@ -18,21 +18,22 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.util.IconLoader;
-import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
+
+import static scratch.ide.ScratchComponent.mrScratchManager;
 
 public class ScratchListenToClipboardAction extends ToggleAction implements DumbAware {
 	private static final Icon IS_ON_ICON = AllIcons.Actions.Menu_paste;
 	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON);
 
 	@Override public void setSelected(AnActionEvent event, boolean enabled) {
-		ScratchComponent.mrScratchManager().userWantsToListenToClipboard(enabled);
+		mrScratchManager().userWantsToListenToClipboard(enabled);
 		event.getPresentation().setIcon(enabled ? IS_ON_ICON : IS_OFF_ICON);
 	}
 
 	@Override public boolean isSelected(AnActionEvent event) {
-		return ScratchComponent.mrScratchManager().shouldListenToClipboard();
+		return mrScratchManager().shouldListenToClipboard();
 	}
 
 	@Override public void update(AnActionEvent event) {

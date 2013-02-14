@@ -55,7 +55,8 @@ public class Ide {
 	}
 
 	public void displayScratchesListPopup(List<Scratch> scratches, UserDataHolder userDataHolder) {
-		ScratchListPopup popup = new ScratchListPopup(new ScratchListPopupStep(scratches));
+		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
+		ScratchListPopup popup = new ScratchListPopup(popupStep);
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
 	}
 

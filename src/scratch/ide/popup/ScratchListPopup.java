@@ -3,7 +3,10 @@ package scratch.ide.popup;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopup;
@@ -20,6 +23,7 @@ import com.intellij.ui.SeparatorWithText;
 import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
@@ -31,7 +35,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.NO_ICON;
@@ -43,6 +49,9 @@ import static scratch.ide.Util.NO_ICON;
  */
 @SuppressWarnings("unchecked")
 public class ScratchListPopup extends WizardPopup implements ListPopup {
+	private static final String DELETE_ACTION_ID = "$Delete";
+	private static final String GENERATE_ACTION_ID = "Generate";
+	private static final String RENAME_ACTION_ID = "RenameElement";
 
 	private MyList myList;
 
@@ -62,8 +71,8 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 			myMaxRowCount = maxRowCount;
 		}
 
-		// TODO copy keyboard shortcuts from existing action
-		registerAction("deleteScratch", KeyStroke.getKeyStroke("DELETE"), new AbstractAction() {
+		List<KeyStroke> keyStrokes = copyKeyStrokesFromAction(DELETE_ACTION_ID, KeyStroke.getKeyStroke("DELETE"));
+		registerAction("deleteScratch", keyStrokes, new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
 				if (scratch == null) return;
@@ -76,22 +85,9 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				mrScratchManager().userWantToDeleteScratch(scratch);
 			}
 		});
-		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent event) {
-				Scratch scratch = selectedScratch();
-				if (scratch != null)
-					move(scratch, ScratchConfig.UP);
-			}
-		});
-		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent event) {
-				Scratch scratch = selectedScratch();
-				if (scratch != null)
-					move(scratch, ScratchConfig.DOWN);
-			}
-		});
-		// TODO copy keyboard shortcuts from existing action
-		registerAction("addScratch", KeyStroke.getKeyStroke("ctrl N"), new AbstractAction() {
+
+		keyStrokes = copyKeyStrokesFromAction(GENERATE_ACTION_ID, KeyStroke.getKeyStroke("ctrl N"));
+		registerAction("addScratch", keyStrokes, new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				ScratchListPopup.this.dispose();
 				SwingUtilities.invokeLater(new Runnable() {
@@ -101,8 +97,8 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				});
 			}
 		});
-		// TODO copy keyboard shortcuts from existing action
-		registerAction("renameScratch", KeyStroke.getKeyStroke("alt shift R"), new AbstractAction() {
+		keyStrokes = copyKeyStrokesFromAction(RENAME_ACTION_ID, KeyStroke.getKeyStroke("alt shift R"));
+		registerAction("renameScratch", keyStrokes, new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				final Scratch scratch = selectedScratch();
 				if (scratch != null) {
@@ -125,8 +121,44 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 					mrScratchManager().userWantsToRename(scratch, newScratchName);
 				}
 			}
-
 		});
+
+		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent event) {
+				Scratch scratch = selectedScratch();
+				if (scratch != null)
+					move(scratch, ScratchConfig.UP);
+			}
+		});
+		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent event) {
+				Scratch scratch = selectedScratch();
+				if (scratch != null)
+					move(scratch, ScratchConfig.DOWN);
+			}
+		});
+	}
+
+	private void registerAction(@NonNls String aActionName, List<KeyStroke> keyStrokes, Action aAction) {
+		for (int i = 0; i < keyStrokes.size(); i++) {
+			KeyStroke keyStroke = keyStrokes.get(i);
+			registerAction(aActionName + i, keyStroke, aAction);
+		}
+	}
+
+	private static List<KeyStroke> copyKeyStrokesFromAction(String actionId, KeyStroke defaultKeyStroke) {
+		List<KeyStroke> result = new ArrayList<KeyStroke>();
+		Shortcut[] shortcuts = KeymapManager.getInstance().getActiveKeymap().getShortcuts(actionId);
+		for (Shortcut shortcut : shortcuts) {
+			if (!(shortcut instanceof KeyboardShortcut)) continue;
+
+			KeyboardShortcut keyboardShortcut = (KeyboardShortcut) shortcut;
+			if (keyboardShortcut.getSecondKeyStroke() == null && keyboardShortcut.getFirstKeyStroke() != null) {
+				result.add(keyboardShortcut.getFirstKeyStroke());
+			}
+		}
+		if (result.isEmpty()) result.add(defaultKeyStroke);
+		return result;
 	}
 
 	public ScratchListPopup(@NotNull ListPopupStep aStep) {
