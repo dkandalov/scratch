@@ -54,7 +54,7 @@ public class MrScratchManagerTest {
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		mrScratchManager.migrate(scratches);
 
-		verify(ide).updateConfig(eq(defaultConfig
+		verify(ide).persistConfig(eq(defaultConfig
 				.with(list(
 						scratch("&scratch.txt"),
 						scratch("scratch&2.txt"),
@@ -91,7 +91,7 @@ public class MrScratchManagerTest {
 		List<String> scratches = list("text1", "text2", "text3", "text4", "text5");
 		mrScratchManager.migrate(scratches);
 
-		verify(ide).updateConfig(eq(defaultConfig
+		verify(ide).persistConfig(eq(defaultConfig
 				.with(list(
 						scratch("&scratch.txt"),
 						scratch("scratch&2.txt"),
@@ -149,7 +149,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToSeeScratchesList(USER_DATA);
 
 		verify(fileSystem).listScratchFiles();
-		verify(ide).updateConfig(eq(defaultConfig.with(list(
+		verify(ide).persistConfig(eq(defaultConfig.with(list(
 				scratch("scratch.txt"),
 				scratch("scratch2.java")
 		))));
@@ -238,7 +238,7 @@ public class MrScratchManagerTest {
 
 		mrScratchManager.userWantsToListenToClipboard(true);
 
-		verify(ide).updateConfig(defaultConfig.listenToClipboard(true));
+		verify(ide).persistConfig(defaultConfig.listenToClipboard(true));
 	}
 
 
@@ -283,7 +283,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToRename(scratch, "&renamedScratch.txt");
 
 		verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt");
-		verify(ide).updateConfig(defaultConfig.with(list(
+		verify(ide).persistConfig(defaultConfig.with(list(
 				scratch("&renamedScratch.txt")
 		)));
 		verifyNoMoreInteractions(ide, fileSystem);
@@ -359,7 +359,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToAddNewScratch("&scratch.txt");
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
-		verify(ide).updateConfig(eq(defaultConfig.with(list(
+		verify(ide).persistConfig(eq(defaultConfig.with(list(
 				scratch("&scratch.txt")
 		))));
 		verifyNoMoreInteractions(ide, fileSystem);
@@ -386,7 +386,7 @@ public class MrScratchManagerTest {
 		int shiftUp = -1;
 		mrScratchManager.userMovedScratch(scratch("scratch2.txt"), shiftUp);
 
-		verify(ide).updateConfig(defaultConfig.with(list(
+		verify(ide).persistConfig(defaultConfig.with(list(
 				scratch("scratch2.txt"),
 				scratch("scratch1.txt"),
 				scratch("scratch3.txt")

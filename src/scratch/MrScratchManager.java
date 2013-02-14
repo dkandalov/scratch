@@ -203,7 +203,7 @@ public class MrScratchManager {
 
 	private void update(ScratchConfig newConfig) {
 		config = newConfig;
-		ide.updateConfig(config);
+		ide.persistConfig(config);
 	}
 
 

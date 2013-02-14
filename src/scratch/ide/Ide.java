@@ -55,7 +55,7 @@ public class Ide {
 		this.fileSystem = fileSystem;
 	}
 
-	public void updateConfig(ScratchConfig config) {
+	public void persistConfig(ScratchConfig config) {
 		ScratchConfigPersistence.getInstance().updateFrom(config);
 	}
 
@@ -134,6 +134,7 @@ public class Ide {
 		ScratchComponent.mrScratchManager().userWantsToAddNewScratch(scratchName);
 	}
 
+	// TODO extract logging into another object
 	public void failedToRename(Scratch scratch) {
 		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
 	}
