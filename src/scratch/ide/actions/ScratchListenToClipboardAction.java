@@ -27,12 +27,12 @@ public class ScratchListenToClipboardAction extends ToggleAction implements Dumb
 	private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON);
 
 	@Override public void setSelected(AnActionEvent event, boolean enabled) {
-		ScratchComponent.instance().userWantsToListenToClipboard(enabled);
+		ScratchComponent.mrScratchManager().userWantsToListenToClipboard(enabled);
 		event.getPresentation().setIcon(enabled ? IS_ON_ICON : IS_OFF_ICON);
 	}
 
 	@Override public boolean isSelected(AnActionEvent event) {
-		return ScratchComponent.instance().shouldListenToClipboard();
+		return ScratchComponent.mrScratchManager().shouldListenToClipboard();
 	}
 
 	@Override public void update(AnActionEvent event) {

@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scratch.MrScratchManager;
 import scratch.Scratch;
-import scratch.ide.ScratchComponent;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -33,9 +32,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 
+import static scratch.ide.ScratchComponent.mrScratchManager;
+
 /**
  * Originally was a copy of {@link com.intellij.ui.popup.list.ListPopupImpl}.
- * The main reason for copying was to replace use {@link scratch.ide.popup.ScratchPopupModel}
+ * The main reason for copying was to use {@link PopupModelWithMovableItems}
  * instead of {@link com.intellij.ui.popup.list.ListPopupModel}.
  */
 public class ScratchListPopup extends WizardPopup implements ListPopup {
@@ -45,7 +46,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	private MyMouseMotionListener myMouseMotionListener;
 	private MyMouseListener myMouseListener;
 
-	private ScratchPopupModel myListModel;
+	private PopupModelWithMovableItems myListModel;
 
 	private int myIndexForShowingChild = -1;
 	private int myMaxRowCount = 20;
@@ -103,24 +104,10 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 				Icon noIcon = null;
 				String initialValue = scratch.fullNameWithMnemonics;
 				String message = "Scratch name (you can use '&' for mnemonics):";
-				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, new InputValidatorEx() {
-					@Override public boolean checkInput(String inputString) {
-						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
-						return answer.isYes;
-					}
-
-					@Nullable @Override public String getErrorText(String inputString) {
-						MrScratchManager.Answer answer = ScratchComponent.instance().checkIfUserCanRename(scratch, inputString);
-						return answer.explanation;
-					}
-
-					@Override public boolean canClose(String inputString) {
-						return true;
-					}
-				});
+				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, new ScratchNameValidator(scratch));
 
 				if (newScratchName != null) {
-					ScratchComponent.instance().userRenamed(scratch, newScratchName);
+					mrScratchManager().userWantsToRename(scratch, newScratchName);
 				}
 			}
 
@@ -149,7 +136,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		boolean wasMoved = getListModel().moveItem(scratch, shift);
 		if (wasMoved) {
 			myList.setSelectedIndex(getSelectedIndex() + shift);
-			ScratchComponent.instance().userMovedScratch(scratch, shift);
+			mrScratchManager().userMovedScratch(scratch, shift);
 		}
 	}
 
@@ -157,7 +144,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		getListModel().deleteItem(scratch);
 	}
 
-	protected ScratchPopupModel getListModel() {
+	protected PopupModelWithMovableItems getListModel() {
 		return myListModel;
 	}
 
@@ -290,7 +277,7 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		myMouseMotionListener = new MyMouseMotionListener();
 		myMouseListener = new MyMouseListener();
 
-		myListModel = new ScratchPopupModel(this, getSpeedSearch(), getListStep());
+		myListModel = new PopupModelWithMovableItems(this, getSpeedSearch(), getListStep());
 		myList = new MyList();
 		if (myStep.getTitle() != null) {
 			myList.getAccessibleContext().setAccessibleName(myStep.getTitle());
@@ -487,6 +474,28 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	@Override
 	public void addListSelectionListener(ListSelectionListener listSelectionListener) {
 		myList.addListSelectionListener(listSelectionListener);
+	}
+
+	public static class ScratchNameValidator implements InputValidatorEx {
+		private final Scratch scratch;
+
+		public ScratchNameValidator(Scratch scratch) {
+			this.scratch = scratch;
+		}
+
+		@Override public boolean checkInput(String inputString) {
+			MrScratchManager.Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
+			return answer.isYes;
+		}
+
+		@Nullable @Override public String getErrorText(String inputString) {
+			MrScratchManager.Answer answer = mrScratchManager().checkIfUserCanRename(scratch, inputString);
+			return answer.explanation;
+		}
+
+		@Override public boolean canClose(String inputString) {
+			return true;
+		}
 	}
 
 	private class MyMouseMotionListener extends MouseMotionAdapter {

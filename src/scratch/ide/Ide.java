@@ -9,8 +9,8 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.NonEmptyInputValidator;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.util.Ref;
 import com.intellij.openapi.util.UserDataHolder;
@@ -36,7 +36,6 @@ import java.util.List;
 
 import static com.intellij.notification.NotificationType.WARNING;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
-import static scratch.ScratchConfig.AppendType;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
 import static scratch.ide.Util.notifyUser;
@@ -81,33 +80,7 @@ public class Ide {
 		}
 	}
 
-	public void failedToRename(Scratch scratch) {
-		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
-	}
-
-	public void migratedScratchesToFiles() {
-		LOG.info("Migrated scratches to physical files");
-	}
-
-	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
-		String title = "Failed to migrated scratches to physical files. ";
-		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
-		notifyUser(title, message, WARNING);
-	}
-
-	public void failedToOpenDefaultScratch() {
-		notifyUser("", "Failed to open default scratch", WARNING);
-	}
-
-	public void failedToOpen(Scratch scratch) {
-		notifyUser("", "Failed to open scratch: '" + scratch.name + "'", WARNING);
-	}
-
-	private static void failedToFindVirtualFileFor(Scratch scratch) {
-		LOG.warn("Failed to find virtual file for '" + scratch.asFileName() + "'");
-	}
-
-	public void addTextTo(Scratch scratch, final String clipboardText, final AppendType appendType) {
+	public void addTextTo(Scratch scratch, final String clipboardText, final ScratchConfig.AppendType appendType) {
 		VirtualFile virtualFile = fileSystem.findVirtualFileFor(scratch);
 		if (virtualFile == null) {
 			failedToFindVirtualFileFor(scratch);
@@ -139,6 +112,58 @@ public class Ide {
 		});
 	}
 
+	public void openNewScratchDialog(String suggestedScratchName) {
+		Icon noIcon = null;
+		String message = "Scratch name (you can use '&' for mnemonics):";
+		String scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, new InputValidatorEx() {
+			@Override public boolean checkInput(String scratchName) {
+				return ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes;
+			}
+
+			@Nullable @Override public String getErrorText(String scratchName) {
+				MrScratchManager.Answer answer = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName);
+				return answer.explanation;
+			}
+
+			@Override public boolean canClose(String inputString) {
+				return true;
+			}
+		});
+		if (scratchName == null) return;
+
+		ScratchComponent.mrScratchManager().userWantsToAddNewScratch(scratchName);
+	}
+
+	public void failedToRename(Scratch scratch) {
+		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
+	}
+
+	public void migratedScratchesToFiles() {
+		LOG.info("Migrated scratches to physical files");
+	}
+
+	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
+		String title = "Failed to migrated scratches to physical files. ";
+		String message = "Failed scratches: " + StringUtil.join(scratchIndexes, ", ");
+		notifyUser(title, message, WARNING);
+	}
+
+	public void failedToOpenDefaultScratch() {
+		notifyUser("", "Failed to open default scratch", WARNING);
+	}
+
+	public void failedToOpen(Scratch scratch) {
+		notifyUser("", "Failed to open scratch: '" + scratch.name + "'", WARNING);
+	}
+
+	public void failedToCreate(Scratch scratch) {
+		notifyUser("", "Failed to create scratch: '" + scratch.name + "'", WARNING);
+	}
+
+	private static void failedToFindVirtualFileFor(Scratch scratch) {
+		LOG.warn("Failed to find virtual file for '" + scratch.asFileName() + "'");
+	}
+
 	private static boolean hasFocusInEditor(Document document) {
 		Editor selectedTextEditor = getSelectedEditor();
 		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
@@ -150,15 +175,6 @@ public class Ide {
 
 		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
 		return instance.getSelectedTextEditor();
-	}
-
-	public void openNewScratchDialog(String suggestedScratchName) {
-		Icon noIcon = null;
-		String message = "Scratch name (you can use '&' for mnemonics):";
-		String scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, new NonEmptyInputValidator());
-		if (scratchName == null) return;
-
-		ScratchComponent.instance().userWantsToAddNewScratch(scratchName);
 	}
 
 

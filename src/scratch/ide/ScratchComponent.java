@@ -43,7 +43,7 @@ public class ScratchComponent implements ApplicationComponent {
 
 	private MrScratchManager mrScratchManager;
 
-	public static MrScratchManager instance() {
+	public static MrScratchManager mrScratchManager() {
 		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).mrScratchManager;
 	}
 

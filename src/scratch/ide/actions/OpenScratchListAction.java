@@ -24,7 +24,7 @@ import static scratch.ide.Util.holdingOnTo;
  */
 public class OpenScratchListAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		ScratchComponent.instance().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
+		ScratchComponent.mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
 	}
 
 	@Override public void update(AnActionEvent event) {

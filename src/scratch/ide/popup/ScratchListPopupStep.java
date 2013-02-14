@@ -39,7 +39,7 @@ public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 
 		this.project = project;
 		this.componentRef = componentRef;
-		this.mrScratchManager = ScratchComponent.instance();
+		this.mrScratchManager = ScratchComponent.mrScratchManager();
 		this.fileTypeManager = FileTypeManager.getInstance();
 	}
 

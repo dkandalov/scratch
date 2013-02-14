@@ -83,6 +83,11 @@ public class FileSystem {
 		});
 	}
 
+	public boolean createEmptyFile(String fileName) {
+		// TODO implement
+		return false;
+	}
+
 	public boolean createFile(String fileName, String text) {
 		// TODO create ROOT_PATH folder if it doesn't exist
 		// TODO implement

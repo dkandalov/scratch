@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class ScratchPopupModel extends AbstractListModel {
+class PopupModelWithMovableItems extends AbstractListModel {
 
 	private final List<Object> myOriginalList;
 	private final List<Object> myFilteredList = new ArrayList<Object>();
@@ -24,7 +24,7 @@ class ScratchPopupModel extends AbstractListModel {
 	private int myStartsWithIndex = -1;
 	private final SpeedSearch mySpeedSearch;
 
-	public ScratchPopupModel(ElementFilter filter, SpeedSearch speedSearch, ListPopupStep step) {
+	public PopupModelWithMovableItems(ElementFilter filter, SpeedSearch speedSearch, ListPopupStep step) {
 		myFilter = filter;
 		myStep = step;
 		mySpeedSearch = speedSearch;

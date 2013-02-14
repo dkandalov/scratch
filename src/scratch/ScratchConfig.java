@@ -3,6 +3,7 @@ package scratch;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Function;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class ScratchConfig {
 	public final AppendType clipboardAppendType;
 
 	private ScratchConfig(List<Scratch> scratches, boolean listenToClipboard, boolean needMigration, AppendType clipboardAppendType) {
-		this.scratches = scratches;
+		this.scratches = Collections.unmodifiableList(scratches);
 		this.listenToClipboard = listenToClipboard;
 		this.needMigration = needMigration;
 		this.clipboardAppendType = clipboardAppendType;
@@ -32,6 +33,12 @@ public class ScratchConfig {
 
 	public ScratchConfig with(List<Scratch> newScratches) {
 		return new ScratchConfig(newScratches, listenToClipboard, needMigration, clipboardAppendType);
+	}
+
+	public ScratchConfig append(Scratch scratch) {
+		ArrayList<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		newScratches.add(scratch);
+		return this.with(newScratches);
 	}
 
 	public ScratchConfig replace(final Scratch scratch, final Scratch newScratch) {

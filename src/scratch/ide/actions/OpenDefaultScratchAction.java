@@ -24,7 +24,7 @@ import static scratch.ide.Util.holdingOnTo;
  */
 public class OpenDefaultScratchAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		ScratchComponent.instance().userWantsToOpenDefaultScratch(holdingOnTo(event.getProject()));
+		ScratchComponent.mrScratchManager().userWantsToOpenDefaultScratch(holdingOnTo(event.getProject()));
 	}
 
 	@Override public void update(AnActionEvent event) {

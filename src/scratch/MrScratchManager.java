@@ -100,6 +100,7 @@ public class MrScratchManager {
 		}
 	}
 
+	// TODO "merge" with checkIfUserCanCreateScratchWithName
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
 
@@ -116,7 +117,7 @@ public class MrScratchManager {
 		return fileSystem.isValidScratchName(renamedScratch.asFileName());
 	}
 
-	public void userRenamed(Scratch scratch, String fullNameWithMnemonics) {
+	public void userWantsToRename(Scratch scratch, String fullNameWithMnemonics) {
 		Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 
 		boolean wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName());
@@ -153,26 +154,46 @@ public class MrScratchManager {
 		return config.listenToClipboard;
 	}
 
-	private void update(ScratchConfig newConfig) {
-		config = newConfig;
-		ide.updateConfig(config);
-	}
-
 	public void userWantsToEnterNewScratchName() {
 		String name = "scratch";
-		if (isUniqueScratch(name)) {
+		if (isUniqueScratchName(name)) {
 			ide.openNewScratchDialog(name + ".txt");
 			return;
 		}
 		for (int i = 1; i < 100; i++) {
-			if (isUniqueScratch(name + i)) {
+			if (isUniqueScratchName(name + i)) {
 				ide.openNewScratchDialog(name + i + ".txt");
 				return;
 			}
 		}
 	}
 
-	private boolean isUniqueScratch(final String name) {
+	public Answer checkIfUserCanCreateScratchWithName(String fullNameWithMnemonics) {
+		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
+
+		final Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
+
+		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return it.name.equals(scratch.name);
+			}
+		});
+		if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name");
+
+		return fileSystem.isValidScratchName(scratch.asFileName());
+	}
+
+	public void userWantsToAddNewScratch(String fullNameWithMnemonics) {
+		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
+		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
+		if (wasCreated) {
+			update(config.append(scratch));
+		} else {
+			ide.failedToCreate(scratch);
+		}
+	}
+
+	private boolean isUniqueScratchName(final String name) {
 		return !exists(config.scratches, new Condition<Scratch>() {
 			@Override public boolean value(Scratch it) {
 				return it.name.equals(name);
@@ -180,10 +201,11 @@ public class MrScratchManager {
 		});
 	}
 
-	public void userWantsToAddNewScratch(String fullNameWithMnemonics) {
-		// TODO implement
-
+	private void update(ScratchConfig newConfig) {
+		config = newConfig;
+		ide.updateConfig(config);
 	}
+
 
 	public static class Answer {
 		public final String explanation;
