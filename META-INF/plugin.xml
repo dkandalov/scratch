@@ -13,17 +13,25 @@
 				<br/><br/>
 				Usage:<br/>
 				<ul>
-					<li>Alt+C, Alt+C - opens default scratch</li>
-					<li>Alt+C, Alt+S - opens list of all scratches</li>
+					<li>Alt+C, Alt+C - open default scratch</li>
+					<li>Alt+C, Alt+S - open list of all scratches</li>
 					<li>Alt+C, Alt+A - add new scratch</li>
 				</ul>
+				In scratches list popup:
+				<ul>
+				    <li>Alt+Up/Down - move scratches</li>
+				    <li>Delete - delete scratch</li>
+				    <li>Shift+F6 - rename scratch</li>
+				    <li>Alt+Insert - add new scratch</li>
+				</ul>
+				Please see GitHub page for more details https://github.com/dkandalov/scratch.
 				</body></html>
 		]]>
 	</description>
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
-            <li>1.0 - file types, uses physical files, add/rename/delete scratches</li>
+            <li>1.0 - file types, uses physical files, add/rename/delete/move scratches</li>
             <li>0.17 - fix for UTF-8</li>
             <li>0.16 - fixed reference to icon</li>
             <li>0.15 - NPE if there are no open projects</li>
