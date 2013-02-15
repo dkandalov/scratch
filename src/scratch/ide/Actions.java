@@ -15,7 +15,9 @@ import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.currentFileIn;
 import static scratch.ide.Util.holdingOnTo;
 
+@SuppressWarnings("ComponentNotRegistered")
 public class Actions {
+
 	public static class DeleteScratchAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			VirtualFile scratchFile = getCurrentScratchFile(event);

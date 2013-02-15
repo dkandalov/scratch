@@ -27,7 +27,6 @@ import static com.intellij.util.containers.ContainerUtil.map;
  */
 public class FileSystem {
 	private static final Logger LOG = Logger.getInstance(FileSystem.class);
-	private static final String PATH_TO_SCRATCHES = PathManager.getPluginsPath() + "/scratches/"; // TODO make configurable
 	private static final String SCRATCH_FOLDER = "";
 
 	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
@@ -36,13 +35,22 @@ public class FileSystem {
 			return it != null && it.exists() && !it.isDirectory() && !isHidden(it.getName());
 		}
 	};
+	private final String scratchesFolderPath;
+
+
+	public FileSystem(String scratchesFolderPath) {
+		if (scratchesFolderPath == null || scratchesFolderPath.isEmpty()) {
+			this.scratchesFolderPath = PathManager.getPluginsPath() + "/scratches/";
+		} else {
+			this.scratchesFolderPath = scratchesFolderPath + "/"; // add trailing "/" in case it's not specified in config
+		}
+	}
 
 	public List<String> listScratchFiles() {
 		VirtualFile virtualFile = virtualFileFor(SCRATCH_FOLDER);
 		if (virtualFile == null || !virtualFile.exists()) {
 			return Collections.emptyList();
 		}
-
 		return map(findAll(virtualFile.getChildren(), canBeScratch), new Function<VirtualFile, String>() {
 			@Override public String fun(VirtualFile it) {
 				return it.getName();
@@ -60,7 +68,7 @@ public class FileSystem {
 		boolean hasWildcards = fileName.contains("*") || fileName.contains("?");
 		if (hasPathChars || hasWildcards || isHidden(fileName) || !VirtualFile.isValidName(fileName)) {
 			return Answer.no("Not a valid file name");
-		} else if (new File(PATH_TO_SCRATCHES + fileName).exists()) {
+		} else if (new File(scratchesFolderPath + fileName).exists()) {
 			return Answer.no("There is existing file with this name");
 		} else {
 			return Answer.yes();
@@ -92,7 +100,7 @@ public class FileSystem {
 		return ApplicationManager.getApplication().runWriteAction(new Computable<Boolean>() {
 			@Override public Boolean compute() {
 				try {
-					FileUtil.ensureExists(new File(PATH_TO_SCRATCHES));
+					FileUtil.ensureExists(new File(scratchesFolderPath));
 
 					VirtualFile scratchesFolder = virtualFileFor(SCRATCH_FOLDER);
 					if (scratchesFolder == null) return false;
@@ -127,7 +135,7 @@ public class FileSystem {
 	}
 
 	@Nullable public VirtualFile virtualFileFor(String fileName) {
-		return fileManager.refreshAndFindFileByUrl("file://" + PATH_TO_SCRATCHES + fileName);
+		return fileManager.refreshAndFindFileByUrl("file://" + scratchesFolderPath + fileName);
 	}
 
 	public boolean isScratch(final VirtualFile virtualFile) {

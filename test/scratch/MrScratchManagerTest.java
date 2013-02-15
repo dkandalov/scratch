@@ -205,7 +205,6 @@ public class MrScratchManagerTest {
 	}
 
 	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
-		// TODO should create scratch in this case
 		mrScratchManager = scratchManagerWith(defaultConfig);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
@@ -226,7 +225,6 @@ public class MrScratchManagerTest {
 	}
 
 	@Test public void appendingClipboardTextToDefaultScratch_when_scratchListIsEmpty() {
-		// TODO should create scratch in this case?
 		mrScratchManager = scratchManagerWith(defaultConfig);
 
 		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");

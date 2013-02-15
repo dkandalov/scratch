@@ -27,6 +27,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	private boolean isListenToClipboard = false;
 	private List<String> fullScratchNamesOrdered = newArrayList();
 	private ScratchConfig.AppendType clipboardAppendType = APPEND;
+	public String scratchesFolderPath = null;
 
 	public static ScratchConfigPersistence getInstance() {
 		return ServiceManager.getService(ScratchConfigPersistence.class);
@@ -92,6 +93,14 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 
 	@Override public void loadState(ScratchConfigPersistence state) {
 		XmlSerializerUtil.copyBean(state, this);
+	}
+
+	public String getScratchesFolderPath() {
+		return scratchesFolderPath;
+	}
+
+	public void setScratchesFolderPath(String scratchesFolderPath) {
+		this.scratchesFolderPath = scratchesFolderPath;
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

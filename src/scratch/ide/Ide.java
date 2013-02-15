@@ -166,7 +166,10 @@ public class Ide {
 	}
 
 
-	// TODO what if this is ON and clipboard content is appended to scratch forever?
+	/**
+	 *  Ignore for now that it's possible to turn on clipboard listener and forget about it
+	 *  with it appending all clipboard contents to scratch forever.
+	 */
 	public static class ClipboardListener {
 		private static final Logger LOG = Logger.getInstance(ClipboardListener.class);
 
