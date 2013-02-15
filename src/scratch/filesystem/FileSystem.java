@@ -132,9 +132,7 @@ public class FileSystem {
 
 	public boolean isScratch(final VirtualFile virtualFile) {
 		VirtualFile scratchFolder = virtualFileFor(SCRATCH_FOLDER);
-		if (scratchFolder == null) return false;
-
-		return ContainerUtil.exists(scratchFolder.getChildren(), new Condition<VirtualFile>() {
+		return scratchFolder != null && ContainerUtil.exists(scratchFolder.getChildren(), new Condition<VirtualFile>() {
 			@Override public boolean value(VirtualFile it) {
 				return it.equals(virtualFile);
 			}

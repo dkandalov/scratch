@@ -67,7 +67,7 @@ public class Ide {
 			@Override protected void onRenameScratch(final Scratch scratch) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override public void run() {
-						showRenameDialogFor(scratch);
+						mrScratchManager().userWantsToEditScratchName(scratch);
 					}
 				});
 			}
@@ -151,7 +151,7 @@ public class Ide {
 		});
 	}
 
-	public static void showRenameDialogFor(final Scratch scratch) {
+	public void showRenameDialogFor(Scratch scratch) {
 		String initialValue = scratch.fullNameWithMnemonics;
 		String message = "Scratch name (you can use '&' for mnemonics):";
 		String newScratchName = Messages.showInputDialog(message, "Scratch Rename", NO_ICON, initialValue, new ScratchListPopup.ScratchNameValidator(scratch));

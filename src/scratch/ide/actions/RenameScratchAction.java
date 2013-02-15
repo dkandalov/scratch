@@ -5,6 +5,7 @@ import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.vfs.VirtualFile;
 
 import static scratch.ide.ScratchComponent.fileSystem;
+import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.currentFileIn;
 
 /**
@@ -16,8 +17,8 @@ public class RenameScratchAction extends DumbAwareAction {
 		VirtualFile currentFile = currentScratchFile(event);
 		if (currentFile == null) return;
 
-		String scratchName = currentFile.getName();
-//		Ide.showRenameDialogFor(); // TODO
+		String scratchFileName = currentFile.getName();
+		mrScratchManager().userWantsToEditScratchName(scratchFileName);
 	}
 
 	@Override public void update(AnActionEvent event) {

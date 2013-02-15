@@ -3,6 +3,7 @@ package scratch;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
 import scratch.ide.ScratchLog;
@@ -51,6 +52,7 @@ public class MrScratchManager {
 		}
 		updateConfig(config.with(scratches).needsMigration(false));
 	}
+
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
 		final List<String> fileNames = fileSystem.listScratchFiles();
@@ -103,6 +105,20 @@ public class MrScratchManager {
 		}
 	}
 
+
+	public void userWantsToEditScratchName(final String scratchFileName) {
+		Scratch scratch = ContainerUtil.find(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return it.asFileName().equals(scratchFileName);
+			}
+		});
+		userWantsToEditScratchName(scratch);
+	}
+
+	public void userWantsToEditScratchName(Scratch scratch) {
+		ide.showRenameDialogFor(scratch);
+	}
+
 	// TODO "merge" with checkIfUserCanCreateScratchWithName
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
@@ -131,9 +147,11 @@ public class MrScratchManager {
 		}
 	}
 
+
 	public void userMovedScratch(final Scratch scratch, int shift) {
 		updateConfig(config.move(scratch, shift));
 	}
+
 
 	public void userWantsToListenToClipboard(boolean value) {
 		updateConfig(config.listenToClipboard(value));
@@ -155,6 +173,7 @@ public class MrScratchManager {
 	public boolean shouldListenToClipboard() {
 		return config.listenToClipboard;
 	}
+
 
 	public void userWantsToEnterNewScratchName() {
 		String name = "scratch";
@@ -195,6 +214,7 @@ public class MrScratchManager {
 		}
 	}
 
+
 	public void userWantToDeleteScratch(Scratch scratch) {
 		boolean wasRemoved = fileSystem.removeFile(scratch.asFileName());
 		if (wasRemoved) {
@@ -203,6 +223,7 @@ public class MrScratchManager {
 			log.failedToDelete(scratch);
 		}
 	}
+
 
 	private boolean isUniqueScratchName(final String name) {
 		return !exists(config.scratches, new Condition<Scratch>() {
