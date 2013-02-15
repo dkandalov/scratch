@@ -10,6 +10,7 @@ import scratch.Scratch;
 
 import java.util.List;
 
+import static com.intellij.notification.NotificationType.INFORMATION;
 import static com.intellij.notification.NotificationType.WARNING;
 
 /**
@@ -25,6 +26,13 @@ public class ScratchLog {
 
 	public void migratedScratchesToFiles() {
 		LOG.info("Migrated scratches to physical files");
+	}
+
+	public void userWantsToListenToClipboard(boolean isListening) {
+		if (isListening)
+			notifyUser("Scratch", "Started listening to clipboard", INFORMATION);
+		else
+			notifyUser("Scratch", "Stopped listening to clipboard", INFORMATION);
 	}
 
 	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {

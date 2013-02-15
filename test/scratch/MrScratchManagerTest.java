@@ -238,6 +238,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToListenToClipboard(true);
 
 		verify(ide).persistConfig(defaultConfig.listenToClipboard(true));
+		verify(log).userWantsToListenToClipboard(true);
 	}
 
 

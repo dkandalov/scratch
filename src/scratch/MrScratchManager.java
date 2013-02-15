@@ -152,6 +152,7 @@ public class MrScratchManager {
 
 	public void userWantsToListenToClipboard(boolean value) {
 		updateConfig(config.listenToClipboard(value));
+		log.userWantsToListenToClipboard(value);
 	}
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
