@@ -174,15 +174,15 @@ public class MrScratchManager {
 	}
 
 
-	public void userWantsToEnterNewScratchName() {
+	public void userWantsToEnterNewScratchName(UserDataHolder userDataHolder) {
 		String name = "scratch";
 		if (isUniqueScratchName(name)) {
-			ide.openNewScratchDialog(name + ".txt");
+			ide.openNewScratchDialog(name + ".txt", userDataHolder);
 			return;
 		}
 		for (int i = 1; i < 100; i++) {
 			if (isUniqueScratchName(name + i)) {
-				ide.openNewScratchDialog(name + i + ".txt");
+				ide.openNewScratchDialog(name + i + ".txt", userDataHolder);
 				return;
 			}
 		}
@@ -203,11 +203,12 @@ public class MrScratchManager {
 		return fileSystem.isValidScratchName(scratch.asFileName());
 	}
 
-	public void userWantsToAddNewScratch(String fullNameWithMnemonics) {
+	public void userWantsToAddNewScratch(String fullNameWithMnemonics, UserDataHolder userDataHolder) {
 		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
 			updateConfig(config.append(scratch));
+			ide.openScratch(scratch, userDataHolder);
 		} else {
 			log.failedToCreate(scratch);
 		}

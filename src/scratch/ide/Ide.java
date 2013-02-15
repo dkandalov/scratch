@@ -53,13 +53,13 @@ public class Ide {
 		ScratchConfigPersistence.getInstance().updateFrom(config);
 	}
 
-	public void displayScratchesListPopup(List<Scratch> scratches, UserDataHolder userDataHolder) {
+	public void displayScratchesListPopup(List<Scratch> scratches, final UserDataHolder userDataHolder) {
 		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
 		ScratchListPopup popup = new ScratchListPopup(popupStep) {
 			@Override protected void onNewScratch() {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override public void run() {
-						mrScratchManager().userWantsToEnterNewScratchName();
+						mrScratchManager().userWantsToEnterNewScratchName(userDataHolder);
 					}
 				});
 			}
@@ -94,7 +94,7 @@ public class Ide {
 		}
 	}
 
-	public void openNewScratchDialog(String suggestedScratchName) {
+	public void openNewScratchDialog(String suggestedScratchName, UserDataHolder userDataHolder) {
 		String message = "Scratch name (you can use '&' for mnemonics):";
 		String scratchName = Messages.showInputDialog(message, "New Scratch", NO_ICON, suggestedScratchName, new InputValidatorEx() {
 			@Override public boolean checkInput(String scratchName) {
@@ -112,7 +112,7 @@ public class Ide {
 		});
 		if (scratchName == null) return;
 
-		ScratchComponent.mrScratchManager().userWantsToAddNewScratch(scratchName);
+		mrScratchManager().userWantsToAddNewScratch(scratchName, userDataHolder);
 	}
 
 	public void addTextTo(Scratch scratch, final String clipboardText, final ScratchConfig.AppendType appendType) {

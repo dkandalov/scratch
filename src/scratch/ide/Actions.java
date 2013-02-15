@@ -32,7 +32,7 @@ public class Actions {
 
 	public static class NewScratchAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
-			mrScratchManager().userWantsToEnterNewScratchName();
+			mrScratchManager().userWantsToEnterNewScratchName(holdingOnTo(event.getProject()));
 		}
 
 		@Override public void update(AnActionEvent event) {
