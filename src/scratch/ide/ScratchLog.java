@@ -41,6 +41,10 @@ public class ScratchLog {
 		notifyUser("", "Failed to open scratch: '" + scratch.name + "'", WARNING);
 	}
 
+	public void failedToOpenByName(String scratchName) {
+		notifyUser("", "Failed to open scratch by name: '" + scratchName + "'", WARNING);
+	}
+
 	public void failedToCreate(Scratch scratch) {
 		notifyUser("", "Failed to create scratch: '" + scratch.name + "'", WARNING);
 	}

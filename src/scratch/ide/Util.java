@@ -13,11 +13,18 @@
  */
 package scratch.ide;
 
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.IdeFocusManager;
+import com.intellij.openapi.wm.IdeFrame;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -34,5 +41,18 @@ public class Util {
 	@SuppressWarnings("ConstantConditions")
 	@NotNull public static Project takeProjectFrom(UserDataHolder userDataHolder) {
 		return userDataHolder.getUserData(PROJECT_KEY);
+	}
+
+	@Nullable public static Editor getSelectedEditor() {
+		IdeFrame frame = IdeFocusManager.findInstance().getLastFocusedFrame();
+		if (frame == null) return null;
+
+		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
+		return instance.getSelectedTextEditor();
+	}
+
+	public static VirtualFile currentFileIn(Project project) {
+		if (project == null) return null;
+		return ((FileEditorManagerEx) FileEditorManagerEx.getInstance(project)).getCurrentFile();
 	}
 }

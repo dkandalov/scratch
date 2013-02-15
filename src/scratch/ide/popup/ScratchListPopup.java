@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
 import scratch.Scratch;
 import scratch.ScratchConfig;
+import scratch.ide.Ide;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -105,20 +106,9 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 					ScratchListPopup.this.dispose();
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override public void run() {
-							showRenameDialogFor(scratch);
+							Ide.showRenameDialogFor(scratch);
 						}
 					});
-				}
-			}
-
-			// TODO move this to Ide?
-			public void showRenameDialogFor(final Scratch scratch) {
-				String initialValue = scratch.fullNameWithMnemonics;
-				String message = "Scratch name (you can use '&' for mnemonics):";
-				String newScratchName = Messages.showInputDialog(message, "Scratch Rename", NO_ICON, initialValue, new ScratchNameValidator(scratch));
-
-				if (newScratchName != null) {
-					mrScratchManager().userWantsToRename(scratch, newScratchName);
 				}
 			}
 		});

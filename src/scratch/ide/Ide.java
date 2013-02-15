@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
@@ -13,8 +12,6 @@ import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.IdeFocusManager;
-import com.intellij.openapi.wm.IdeFrame;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
@@ -33,6 +30,7 @@ import java.util.List;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
+import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.NO_ICON;
 import static scratch.ide.Util.takeProjectFrom;
 
@@ -124,17 +122,19 @@ public class Ide {
 		});
 	}
 
-	private static boolean hasFocusInEditor(Document document) {
-		Editor selectedTextEditor = getSelectedEditor();
-		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
+	public static void showRenameDialogFor(final Scratch scratch) {
+		String initialValue = scratch.fullNameWithMnemonics;
+		String message = "Scratch name (you can use '&' for mnemonics):";
+		String newScratchName = Messages.showInputDialog(message, "Scratch Rename", NO_ICON, initialValue, new ScratchListPopup.ScratchNameValidator(scratch));
+
+		if (newScratchName != null) {
+			mrScratchManager().userWantsToRename(scratch, newScratchName);
+		}
 	}
 
-	private static Editor getSelectedEditor() {
-		IdeFrame frame = IdeFocusManager.findInstance().getLastFocusedFrame();
-		if (frame == null) return null;
-
-		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
-		return instance.getSelectedTextEditor();
+	private static boolean hasFocusInEditor(Document document) {
+		Editor selectedTextEditor = Util.getSelectedEditor();
+		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
 	}
 
 

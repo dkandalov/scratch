@@ -2,6 +2,10 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.vfs.VirtualFile;
+
+import static scratch.ide.ScratchComponent.fileSystem;
+import static scratch.ide.Util.currentFileIn;
 
 /**
  * User: dima
@@ -9,10 +13,20 @@ import com.intellij.openapi.project.DumbAwareAction;
  */
 public class RenameScratchAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		// TODO
+		VirtualFile currentFile = currentScratchFile(event);
+		if (currentFile == null) return;
+
+		String scratchName = currentFile.getName();
+//		Ide.showRenameDialogFor(); // TODO
 	}
 
-	@Override public void update(AnActionEvent e) {
-		super.update(e);
+	@Override public void update(AnActionEvent event) {
+		event.getPresentation().setEnabled(currentScratchFile(event) != null);
+	}
+
+	private static VirtualFile currentScratchFile(AnActionEvent event) {
+		VirtualFile currentFile = currentFileIn(event.getProject());
+		if (currentFile == null || !fileSystem().isScratch(currentFile)) return null;
+		return currentFile;
 	}
 }

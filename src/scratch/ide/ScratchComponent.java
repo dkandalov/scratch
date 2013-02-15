@@ -25,14 +25,19 @@ import static java.util.Arrays.asList;
 public class ScratchComponent implements ApplicationComponent {
 
 	private MrScratchManager mrScratchManager;
+	private FileSystem fileSystem;
 
 	public static MrScratchManager mrScratchManager() {
 		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).mrScratchManager;
 	}
 
+	public static FileSystem fileSystem() {
+		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).fileSystem;
+	}
+
 	@Override
 	public void initComponent() {
-		FileSystem fileSystem = new FileSystem();
+		fileSystem = new FileSystem();
 		ScratchLog log = new ScratchLog();
 		Ide ide = new Ide(fileSystem, log);
 		ScratchConfig config = ScratchConfigPersistence.getInstance().asConfig();
@@ -56,5 +61,4 @@ public class ScratchComponent implements ApplicationComponent {
 	@Override
 	public void disposeComponent() {
 	}
-
 }

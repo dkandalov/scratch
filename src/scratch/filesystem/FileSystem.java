@@ -9,6 +9,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
 
@@ -127,6 +128,17 @@ public class FileSystem {
 
 	@Nullable public VirtualFile virtualFileFor(String fileName) {
 		return fileManager.refreshAndFindFileByUrl("file://" + PATH_TO_SCRATCHES + fileName);
+	}
+
+	public boolean isScratch(final VirtualFile virtualFile) {
+		VirtualFile scratchFolder = virtualFileFor(SCRATCH_FOLDER);
+		if (scratchFolder == null) return false;
+
+		return ContainerUtil.exists(scratchFolder.getChildren(), new Condition<VirtualFile>() {
+			@Override public boolean value(VirtualFile it) {
+				return it.equals(virtualFile);
+			}
+		});
 	}
 
 	private static boolean isHidden(String fileName) {
