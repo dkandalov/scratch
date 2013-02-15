@@ -8,7 +8,6 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.ui.InputValidatorEx;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.ui.popup.MultiSelectionListPopupStep;
@@ -29,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
 import scratch.Scratch;
 import scratch.ScratchConfig;
-import scratch.ide.Ide;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,7 +39,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static scratch.ide.ScratchComponent.mrScratchManager;
-import static scratch.ide.Util.NO_ICON;
 
 /**
  * Originally was a copy of {@link com.intellij.ui.popup.list.ListPopupImpl}.
@@ -49,7 +46,7 @@ import static scratch.ide.Util.NO_ICON;
  * instead of {@link com.intellij.ui.popup.list.ListPopupModel}.
  */
 @SuppressWarnings("unchecked")
-public class ScratchListPopup extends WizardPopup implements ListPopup {
+public abstract class ScratchListPopup extends WizardPopup implements ListPopup {
 	private static final String DELETE_ACTION_ID = "$Delete";
 	private static final String GENERATE_ACTION_ID = "Generate";
 	private static final String RENAME_ACTION_ID = "RenameElement";
@@ -72,43 +69,34 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 			myMaxRowCount = maxRowCount;
 		}
 
-		List<KeyStroke> keyStrokes = copyKeyStrokesFromAction(DELETE_ACTION_ID, KeyStroke.getKeyStroke("DELETE"));
-		registerAction("deleteScratch", keyStrokes, new AbstractAction() {
-			@Override public void actionPerformed(ActionEvent event) {
-				Scratch scratch = selectedScratch();
-				if (scratch == null) return;
-
-				String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
-				int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
-				if (userAnswer == Messages.NO) return;
-
-				ScratchListPopup.this.dispose();
-				mrScratchManager().userWantToDeleteScratch(scratch);
-			}
-		});
+		List<KeyStroke> keyStrokes;
 
 		keyStrokes = copyKeyStrokesFromAction(GENERATE_ACTION_ID, KeyStroke.getKeyStroke("ctrl N"));
 		registerAction("addScratch", keyStrokes, new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				ScratchListPopup.this.dispose();
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override public void run() {
-						mrScratchManager().userWantsToEnterNewScratchName();
-					}
-				});
+				onNewScratch();
 			}
 		});
+
 		keyStrokes = copyKeyStrokesFromAction(RENAME_ACTION_ID, KeyStroke.getKeyStroke("alt shift R"));
 		registerAction("renameScratch", keyStrokes, new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				final Scratch scratch = selectedScratch();
 				if (scratch != null) {
 					ScratchListPopup.this.dispose();
-					SwingUtilities.invokeLater(new Runnable() {
-						@Override public void run() {
-							Ide.showRenameDialogFor(scratch);
-						}
-					});
+					onRenameScratch(scratch);
+				}
+			}
+		});
+
+		keyStrokes = copyKeyStrokesFromAction(DELETE_ACTION_ID, KeyStroke.getKeyStroke("DELETE"));
+		registerAction("deleteScratch", keyStrokes, new AbstractAction() {
+			@Override public void actionPerformed(ActionEvent event) {
+				Scratch scratch = selectedScratch();
+				if (scratch != null) {
+					ScratchListPopup.this.dispose();
+					onScratchDelete(scratch);
 				}
 			}
 		});
@@ -116,18 +104,30 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
-				if (scratch != null)
+				if (scratch != null) {
 					move(scratch, ScratchConfig.UP);
+					onScratchMoved(scratch, ScratchConfig.UP);
+				}
 			}
 		});
 		registerAction("moveScratchDown", KeyStroke.getKeyStroke("alt DOWN"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
-				if (scratch != null)
+				if (scratch != null) {
 					move(scratch, ScratchConfig.DOWN);
+					onScratchMoved(scratch, ScratchConfig.DOWN);
+				}
 			}
 		});
 	}
+
+	protected void onNewScratch() {}
+
+	protected void onRenameScratch(Scratch scratch) {}
+
+	protected void onScratchDelete(Scratch scratch) {}
+
+	protected void onScratchMoved(Scratch scratch, int down) {}
 
 	private void registerAction(@NonNls String aActionName, List<KeyStroke> keyStrokes, Action aAction) {
 		for (int i = 0; i < keyStrokes.size(); i++) {
@@ -164,7 +164,6 @@ public class ScratchListPopup extends WizardPopup implements ListPopup {
 	private void move(Scratch scratch, int shift) {
 		int newIndex = getListModel().moveItem(scratch, shift);
 		myList.setSelectedIndex(newIndex);
-		mrScratchManager().userMovedScratch(scratch, shift);
 	}
 
 	protected PopupModelWithMovableItems getListModel() {

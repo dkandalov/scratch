@@ -22,6 +22,7 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
+import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
@@ -54,7 +55,35 @@ public class Ide {
 
 	public void displayScratchesListPopup(List<Scratch> scratches, UserDataHolder userDataHolder) {
 		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
-		ScratchListPopup popup = new ScratchListPopup(popupStep);
+		ScratchListPopup popup = new ScratchListPopup(popupStep) {
+			@Override protected void onNewScratch() {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override public void run() {
+						mrScratchManager().userWantsToEnterNewScratchName();
+					}
+				});
+			}
+
+			@Override protected void onRenameScratch(final Scratch scratch) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override public void run() {
+						showRenameDialogFor(scratch);
+					}
+				});
+			}
+
+			@Override protected void onScratchDelete(Scratch scratch) {
+				String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
+				int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
+				if (userAnswer == Messages.NO) return;
+
+				mrScratchManager().userWantToDeleteScratch(scratch);
+			}
+
+			@Override protected void onScratchMoved(Scratch scratch, int shift) {
+				mrScratchManager().userMovedScratch(scratch, shift);
+			}
+		};
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
 	}
 
