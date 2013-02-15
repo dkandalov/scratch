@@ -3,7 +3,7 @@
 	<name>Scratch</name>
 	<version>1.0</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
-	<idea-version since-build="123.0"/>
+	<idea-version since-build="107.0" until-build="122.9999"/>
 	<description>
 		<![CDATA[<html><body>
 				Quickly opens temporary IntelliJ text editor tab. Data is stored on application level.
