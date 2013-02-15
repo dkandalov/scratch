@@ -3,7 +3,6 @@ package scratch.ide;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
@@ -33,6 +32,7 @@ import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
 import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.NO_ICON;
+import static scratch.ide.Util.hasFocusInEditor;
 import static scratch.ide.Util.takeProjectFrom;
 
 /**
@@ -81,14 +81,6 @@ public class Ide {
 			}
 		};
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
-	}
-
-	public void showDeleteDialogFor(Scratch scratch) {
-		String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
-		int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
-		if (userAnswer == Messages.NO) return;
-
-		mrScratchManager().userWantsToDeleteScratch(scratch);
 	}
 
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
@@ -165,9 +157,12 @@ public class Ide {
 		}
 	}
 
-	private static boolean hasFocusInEditor(Document document) {
-		Editor selectedTextEditor = Util.getSelectedEditor();
-		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
+	public void showDeleteDialogFor(Scratch scratch) {
+		String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
+		int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
+		if (userAnswer == Messages.NO) return;
+
+		mrScratchManager().userWantsToDeleteScratch(scratch);
 	}
 
 

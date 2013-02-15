@@ -13,6 +13,7 @@
  */
 package scratch.ide;
 
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
@@ -54,5 +55,10 @@ public class Util {
 	public static VirtualFile currentFileIn(Project project) {
 		if (project == null) return null;
 		return ((FileEditorManagerEx) FileEditorManagerEx.getInstance(project)).getCurrentFile();
+	}
+
+	public static boolean hasFocusInEditor(Document document) {
+		Editor selectedTextEditor = getSelectedEditor();
+		return selectedTextEditor != null && selectedTextEditor.getDocument().equals(document);
 	}
 }
