@@ -382,7 +382,7 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.removeFile(anyString())).thenReturn(true);
 
-		mrScratchManager.userWantToDeleteScratch(scratch);
+		mrScratchManager.userWantsToDeleteScratch(scratch);
 
 		verify(fileSystem).removeFile("scratch.txt");
 		verify(ide).persistConfig(defaultConfig);
@@ -394,7 +394,7 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.removeFile(anyString())).thenReturn(false);
 
-		mrScratchManager.userWantToDeleteScratch(scratch);
+		mrScratchManager.userWantsToDeleteScratch(scratch);
 
 		verify(fileSystem).removeFile("scratch.txt");
 		verify(log).failedToDelete(scratch);

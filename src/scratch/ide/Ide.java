@@ -73,11 +73,7 @@ public class Ide {
 			}
 
 			@Override protected void onScratchDelete(Scratch scratch) {
-				String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
-				int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
-				if (userAnswer == Messages.NO) return;
-
-				mrScratchManager().userWantToDeleteScratch(scratch);
+				mrScratchManager().userAttemptedToDeleteScratch(scratch);
 			}
 
 			@Override protected void onScratchMoved(Scratch scratch, int shift) {
@@ -85,6 +81,14 @@ public class Ide {
 			}
 		};
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
+	}
+
+	public void showDeleteDialogFor(Scratch scratch) {
+		String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
+		int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
+		if (userAnswer == Messages.NO) return;
+
+		mrScratchManager().userWantsToDeleteScratch(scratch);
 	}
 
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {

@@ -14,18 +14,17 @@ import static scratch.ide.Util.currentFileIn;
  */
 public class RenameScratchAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		VirtualFile currentFile = currentScratchFile(event);
-		if (currentFile == null) return;
+		VirtualFile scratchFile = getCurrentScratchFile(event);
+		if (scratchFile == null) return;
 
-		String scratchFileName = currentFile.getName();
-		mrScratchManager().userWantsToEditScratchName(scratchFileName);
+		mrScratchManager().userWantsToEditScratchName(scratchFile.getName());
 	}
 
 	@Override public void update(AnActionEvent event) {
-		event.getPresentation().setEnabled(currentScratchFile(event) != null);
+		event.getPresentation().setEnabled(getCurrentScratchFile(event) != null);
 	}
 
-	private static VirtualFile currentScratchFile(AnActionEvent event) {
+	public static VirtualFile getCurrentScratchFile(AnActionEvent event) {
 		VirtualFile currentFile = currentFileIn(event.getProject());
 		if (currentFile == null || !fileSystem().isScratch(currentFile)) return null;
 		return currentFile;

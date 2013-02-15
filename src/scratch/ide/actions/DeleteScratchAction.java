@@ -2,6 +2,10 @@ package scratch.ide.actions;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.DumbAwareAction;
+import com.intellij.openapi.vfs.VirtualFile;
+
+import static scratch.ide.ScratchComponent.mrScratchManager;
+import static scratch.ide.actions.RenameScratchAction.getCurrentScratchFile;
 
 /**
  * User: dima
@@ -9,10 +13,13 @@ import com.intellij.openapi.project.DumbAwareAction;
  */
 public class DeleteScratchAction extends DumbAwareAction {
 	@Override public void actionPerformed(AnActionEvent event) {
-		// TODO
+		VirtualFile scratchFile = getCurrentScratchFile(event);
+		if (scratchFile == null) return;
+
+		mrScratchManager().userAttemptedToDeleteScratch(scratchFile.getName());
 	}
 
-	@Override public void update(AnActionEvent e) {
-		super.update(e);
+	@Override public void update(AnActionEvent event) {
+		event.getPresentation().setEnabled(getCurrentScratchFile(event) != null);
 	}
 }

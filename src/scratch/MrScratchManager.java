@@ -107,12 +107,9 @@ public class MrScratchManager {
 
 
 	public void userWantsToEditScratchName(final String scratchFileName) {
-		Scratch scratch = ContainerUtil.find(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return it.asFileName().equals(scratchFileName);
-			}
-		});
-		userWantsToEditScratchName(scratch);
+		Scratch scratch = findByFileName(scratchFileName);
+		if (scratch != null)
+			userWantsToEditScratchName(scratch);
 	}
 
 	public void userWantsToEditScratchName(Scratch scratch) {
@@ -215,7 +212,17 @@ public class MrScratchManager {
 	}
 
 
-	public void userWantToDeleteScratch(Scratch scratch) {
+	public void userAttemptedToDeleteScratch(String scratchFileName) {
+		Scratch scratch = findByFileName(scratchFileName);
+		if (scratch != null)
+			userAttemptedToDeleteScratch(scratch);
+	}
+
+	public void userAttemptedToDeleteScratch(Scratch scratch) {
+		ide.showDeleteDialogFor(scratch);
+	}
+
+	public void userWantsToDeleteScratch(Scratch scratch) {
 		boolean wasRemoved = fileSystem.removeFile(scratch.asFileName());
 		if (wasRemoved) {
 			updateConfig(config.without(scratch));
@@ -236,5 +243,13 @@ public class MrScratchManager {
 	private void updateConfig(ScratchConfig newConfig) {
 		config = newConfig;
 		ide.persistConfig(config);
+	}
+
+	private Scratch findByFileName(final String scratchFileName) {
+		return ContainerUtil.find(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return it.asFileName().equals(scratchFileName);
+			}
+		});
 	}
 }
