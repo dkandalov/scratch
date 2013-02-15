@@ -116,7 +116,6 @@ public class MrScratchManager {
 		ide.showRenameDialogFor(scratch);
 	}
 
-	// TODO "merge" with checkIfUserCanCreateScratchWithName
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
 
@@ -134,8 +133,9 @@ public class MrScratchManager {
 	}
 
 	public void userWantsToRename(Scratch scratch, String fullNameWithMnemonics) {
-		Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
+		if (scratch.fullNameWithMnemonics.equals(fullNameWithMnemonics)) return;
 
+		Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName());
 		if (wasRenamed) {
 			updateConfig(config.replace(scratch, renamedScratch));

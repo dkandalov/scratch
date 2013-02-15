@@ -301,6 +301,16 @@ public class MrScratchManagerTest {
 		verifyNoMoreInteractions(ide, log, fileSystem);
 	}
 
+	@Test public void renamingScratch_when_newNameIsSameAsTheOldOne() {
+		Scratch scratch = scratch("scratch.txt");
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
+		when(fileSystem.renameFile(anyString(), anyString())).thenReturn(false);
+
+		mrScratchManager.userWantsToRename(scratch, "scratch.txt");
+
+		verifyZeroInteractions(ide, log, fileSystem);
+	}
+
 
 	@Test public void enteringNewScratchName_when_noScratchesExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig);
