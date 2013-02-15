@@ -1,6 +1,5 @@
 package scratch;
 
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Function;
 
 import java.util.ArrayList;
@@ -85,7 +84,7 @@ public class ScratchConfig {
 		return "ScratchConfig{" +
 				"listenToClipboard=" + listenToClipboard + ", " +
 				"needMigration=" + needMigration + ", " +
-				"scratches=\n" + StringUtil.join(scratches, ",\n") +
+				"scratches=" + scratches.toString() +
 				'}';
 	}
 

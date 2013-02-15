@@ -1,6 +1,5 @@
 package scratch.ide;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.DumbAware;
@@ -75,7 +74,7 @@ public class Actions {
 	}
 
 	public static class ScratchListenToClipboardAction extends ToggleAction implements DumbAware {
-		private static final Icon IS_ON_ICON = AllIcons.Actions.Menu_paste;
+		private static final Icon IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png");
 		private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON);
 
 		@Override public void setSelected(AnActionEvent event, boolean enabled) {

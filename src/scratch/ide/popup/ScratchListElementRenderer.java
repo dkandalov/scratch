@@ -1,8 +1,8 @@
 package scratch.ide.popup;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.popup.ListItemDescriptor;
 import com.intellij.openapi.ui.popup.ListPopupStep;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.popup.list.GroupedItemsListRenderer;
 import com.intellij.util.ui.UIUtil;
@@ -10,6 +10,10 @@ import com.intellij.util.ui.UIUtil;
 import javax.swing.*;
 
 class ScratchListElementRenderer extends GroupedItemsListRenderer {
+	public static final Icon NextStep = IconLoader.findIcon("/icons/ide/nextStep.png");
+	public static final Icon NextStepGrayed = IconLoader.getIcon("/icons/ide/nextStepGrayed.png"); // 12x12
+	public static final Icon NextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.png"); // 12x12
+
 	private final ScratchListPopup myPopup;
 
 	public ScratchListElementRenderer(final ScratchListPopup aPopup) {
@@ -64,9 +68,9 @@ class ScratchListElementRenderer extends GroupedItemsListRenderer {
 		if (step.hasSubstep(value) && isSelectable) {
 			myNextStepLabel.setVisible(true);
 			final boolean isDark = ColorUtil.isDark(UIUtil.getListSelectionBackground());
-			myNextStepLabel.setIcon(isSelected ? isDark ? AllIcons.Icons.Ide.NextStepInverted
-					: AllIcons.Icons.Ide.NextStep
-					: AllIcons.Icons.Ide.NextStepGrayed);
+			myNextStepLabel.setIcon(isSelected ? isDark ? NextStepInverted
+					: NextStep
+					: NextStepGrayed);
 		}
 		else {
 			myNextStepLabel.setVisible(false);

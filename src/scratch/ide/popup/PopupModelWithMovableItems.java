@@ -70,8 +70,8 @@ class PopupModelWithMovableItems extends AbstractListModel {
 
 	private void addToFiltered(Object each) {
 		myFilteredList.add(each);
-		String filterString = StringUtil.toUpperCase(mySpeedSearch.getFilter());
-		String candidateString = StringUtil.toUpperCase(myStep.getTextFor(each));
+		String filterString = toUpperCase(mySpeedSearch.getFilter());
+		String candidateString = toUpperCase(myStep.getTextFor(each));
 		int index = myFilteredList.size() - 1;
 
 		if (myFullMatchIndex == -1 && filterString.equals(candidateString)) {
@@ -126,5 +126,9 @@ class PopupModelWithMovableItems extends AbstractListModel {
 
 	public int getClosestMatchIndex() {
 		return myFullMatchIndex != -1 ? myFullMatchIndex : myStartsWithIndex;
+	}
+
+	private static String toUpperCase(String s) {
+		return StringUtil.capitalize(s);
 	}
 }

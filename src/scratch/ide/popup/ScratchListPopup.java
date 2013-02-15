@@ -1,6 +1,5 @@
 package scratch.ide.popup;
 
-import com.intellij.icons.AllIcons;
 import com.intellij.ide.IdeEventQueue;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
@@ -10,7 +9,6 @@ import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.ListPopupStep;
-import com.intellij.openapi.ui.popup.MultiSelectionListPopupStep;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
@@ -35,10 +33,10 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static scratch.ide.ScratchComponent.mrScratchManager;
+import static scratch.ide.popup.ScratchListElementRenderer.NextStep;
 
 /**
  * Originally was a copy of {@link com.intellij.ui.popup.list.ListPopupImpl}.
@@ -194,20 +192,11 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	private boolean tryToAutoSelect(boolean handleFinalChoices) {
 		ListPopupStep<Object> listStep = getListStep();
 		boolean selected = false;
-		if (listStep instanceof MultiSelectionListPopupStep<?>) {
-			int[] indices = ((MultiSelectionListPopupStep)listStep).getDefaultOptionIndices();
-			if (indices.length > 0) {
-				ListScrollingUtil.ensureIndexIsVisible(myList, indices[0], 0);
-				myList.setSelectedIndices(indices);
-				selected = true;
-			}
-		}
-		else {
-			final int defaultIndex = listStep.getDefaultOptionIndex();
-			if (defaultIndex >= 0 && defaultIndex < myList.getModel().getSize()) {
-				ListScrollingUtil.selectItem(myList, defaultIndex);
-				selected = true;
-			}
+
+		final int defaultIndex = listStep.getDefaultOptionIndex();
+		if (defaultIndex >= 0 && defaultIndex < myList.getModel().getSize()) {
+			ListScrollingUtil.selectItem(myList, defaultIndex);
+			selected = true;
 		}
 
 		if (!selected) {
@@ -343,7 +332,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	}
 
 	private boolean isMultiSelectionEnabled() {
-		return getListStep() instanceof MultiSelectionListPopupStep<?>;
+		return false; // TODO remove
 	}
 
 	private boolean isClosableByLeftArrow() {
@@ -421,9 +410,6 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		final ListPopupStep<Object> listStep = getListStep();
 		if (!listStep.isSelectable(selectedValues[0])) return false;
 
-		if ((listStep instanceof MultiSelectionListPopupStep<?> && !((MultiSelectionListPopupStep<Object>)listStep).hasSubstep(Arrays.asList(selectedValues))
-				|| !listStep.hasSubstep(selectedValues[0])) && !handleFinalChoices) return false;
-
 		disposeChildren();
 
 		if (myListModel.getSize() == 0) {
@@ -436,8 +422,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 		valuesSelected(selectedValues);
 
-		final PopupStep nextStep = listStep instanceof MultiSelectionListPopupStep<?> ? ((MultiSelectionListPopupStep<Object>)listStep).onChosen(Arrays.asList(selectedValues), handleFinalChoices)
-				: listStep.onChosen(selectedValues[0], handleFinalChoices);
+		final PopupStep nextStep = listStep.onChosen(selectedValues[0], handleFinalChoices);
 		return handleNextStep(nextStep, selectedValues.length == 1 ? selectedValues[0] : null, e);
 	}
 
@@ -484,8 +469,6 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		}
 	}
 
-
-	@Override
 	public void addListSelectionListener(ListSelectionListener listSelectionListener) {
 		myList.addListSelectionListener(listSelectionListener);
 	}
@@ -557,7 +540,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		final int index = myList.getSelectedIndex();
 		final Rectangle bounds = myList.getCellBounds(index, index);
 		final Point point = e.getPoint();
-		return bounds != null && point.getX() > bounds.width + bounds.getX() - AllIcons.Icons.Ide.NextStep.getIconWidth();
+		return bounds != null && point.getX() > bounds.width + bounds.getX() - NextStep.getIconWidth();
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package scratch.filesystem;
 
+import com.intellij.CommonBundle;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.Function;
@@ -15,6 +15,7 @@ import scratch.Answer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,6 +44,12 @@ public class FileSystem {
 			this.scratchesFolderPath = PathManager.getPluginsPath() + "/scratches/";
 		} else {
 			this.scratchesFolderPath = scratchesFolderPath + "/"; // add trailing "/" in case it's not specified in config
+		}
+	}
+
+	public static void ensureExists(File dir) throws IOException {
+		if (!dir.exists() && !dir.mkdirs()) {
+			throw new IOException(CommonBundle.message("exception.directory.can.not.create", dir.getPath()));
 		}
 	}
 
@@ -100,13 +107,13 @@ public class FileSystem {
 		return ApplicationManager.getApplication().runWriteAction(new Computable<Boolean>() {
 			@Override public Boolean compute() {
 				try {
-					FileUtil.ensureExists(new File(scratchesFolderPath));
+					ensureExists(new File(scratchesFolderPath));
 
 					VirtualFile scratchesFolder = virtualFileFor(SCRATCH_FOLDER);
 					if (scratchesFolder == null) return false;
 
 					VirtualFile scratchFile = scratchesFolder.createChildData(FileSystem.this, fileName);
-					scratchFile.setBinaryContent(text.getBytes()); // use default platform charset
+					scratchFile.setBinaryContent(text.getBytes(Charset.forName("UTF8")));
 
 					return true;
 				} catch (IOException e) {
