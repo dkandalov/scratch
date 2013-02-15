@@ -8,6 +8,7 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
 import scratch.ide.ScratchLog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.*;
@@ -30,8 +31,8 @@ public class MrScratchManager {
 	}
 
 	public void migrate(List<String> scratchTexts) {
-		List<Integer> indexes = newArrayList();
-		List<Scratch> scratches = newArrayList();
+		List<Integer> indexes = new ArrayList<Integer>();
+		List<Scratch> scratches = new ArrayList<Scratch>();
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);

@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 import scratch.Scratch;
 import scratch.ScratchConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.intellij.util.containers.ContainerUtilRt.newArrayList;
 import static scratch.ScratchConfig.AppendType.APPEND;
 
 /**
@@ -25,7 +25,7 @@ import static scratch.ScratchConfig.AppendType.APPEND;
 public class ScratchConfigPersistence implements PersistentStateComponent<ScratchConfigPersistence> {
 	private boolean isNeedMigration = true;
 	private boolean isListenToClipboard = false;
-	private List<String> fullScratchNamesOrdered = newArrayList();
+	private List<String> fullScratchNamesOrdered = new ArrayList<String>();
 	private ScratchConfig.AppendType clipboardAppendType = APPEND;
 	public String scratchesFolderPath = null;
 
@@ -48,7 +48,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	public void updateFrom(ScratchConfig config) {
 		isNeedMigration = config.needMigration;
 		isListenToClipboard = config.listenToClipboard;
-		fullScratchNamesOrdered = newArrayList(ContainerUtil.map(config.scratches, new Function<Scratch, String>() {
+		fullScratchNamesOrdered = new ArrayList<String>(ContainerUtil.map(config.scratches, new Function<Scratch, String>() {
 					@Override public String fun(Scratch it) {
 						return it.fullNameWithMnemonics;
 					}
