@@ -60,4 +60,4 @@ Some of these actions are also in "Main menu -> Tools -> Scratch".
 ```
 
 
-Thanks to Vojtech Krasa for insisting on new features and making me update this plugin.
+Thanks to Vojtěch Krása for insisting on new features and making me update this plugin.
