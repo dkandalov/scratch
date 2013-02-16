@@ -47,14 +47,8 @@ public class FileSystem {
 		}
 	}
 
-	public static void ensureExists(File dir) throws IOException {
-		if (!dir.exists() && !dir.mkdirs()) {
-			throw new IOException(CommonBundle.message("exception.directory.can.not.create", dir.getPath()));
-		}
-	}
-
 	public List<String> listScratchFiles() {
-		VirtualFile virtualFile = virtualFileFor(SCRATCH_FOLDER);
+		VirtualFile virtualFile = virtualFileBy(SCRATCH_FOLDER);
 		if (virtualFile == null || !virtualFile.exists()) {
 			return Collections.emptyList();
 		}
@@ -66,7 +60,7 @@ public class FileSystem {
 	}
 
 	public boolean scratchFileExists(String fileName) {
-		VirtualFile virtualFile = virtualFileFor(fileName);
+		VirtualFile virtualFile = virtualFileBy(fileName);
 		return canBeScratch.value(virtualFile);
 	}
 
@@ -83,7 +77,7 @@ public class FileSystem {
 	}
 
 	public boolean renameFile(String oldFileName, final String newFileName) {
-		final VirtualFile virtualFile = virtualFileFor(oldFileName);
+		final VirtualFile virtualFile = virtualFileBy(oldFileName);
 		if (virtualFile == null) return false;
 
 		return ApplicationManager.getApplication().runWriteAction(new Computable<Boolean>() {
@@ -109,7 +103,7 @@ public class FileSystem {
 				try {
 					ensureExists(new File(scratchesFolderPath));
 
-					VirtualFile scratchesFolder = virtualFileFor(SCRATCH_FOLDER);
+					VirtualFile scratchesFolder = virtualFileBy(SCRATCH_FOLDER);
 					if (scratchesFolder == null) return false;
 
 					VirtualFile scratchFile = scratchesFolder.createChildData(FileSystem.this, fileName);
@@ -127,7 +121,7 @@ public class FileSystem {
 	public boolean removeFile(final String fileName) {
 		return ApplicationManager.getApplication().runWriteAction(new Computable<Boolean>() {
 			@Override public Boolean compute() {
-				VirtualFile virtualFile = virtualFileFor(fileName);
+				VirtualFile virtualFile = virtualFileBy(fileName);
 				if (virtualFile == null) return false;
 
 				try {
@@ -141,12 +135,12 @@ public class FileSystem {
 		});
 	}
 
-	@Nullable public VirtualFile virtualFileFor(String fileName) {
+	@Nullable public VirtualFile virtualFileBy(String fileName) {
 		return fileManager.refreshAndFindFileByUrl("file://" + scratchesFolderPath + fileName);
 	}
 
 	public boolean isScratch(final VirtualFile virtualFile) {
-		VirtualFile scratchFolder = virtualFileFor(SCRATCH_FOLDER);
+		VirtualFile scratchFolder = virtualFileBy(SCRATCH_FOLDER);
 		return scratchFolder != null && ContainerUtil.exists(scratchFolder.getChildren(), new Condition<VirtualFile>() {
 			@Override public boolean value(VirtualFile it) {
 				return it.equals(virtualFile);
@@ -156,5 +150,11 @@ public class FileSystem {
 
 	private static boolean isHidden(String fileName) {
 		return fileName.startsWith(".");
+	}
+
+	private static void ensureExists(File dir) throws IOException {
+		if (!dir.exists() && !dir.mkdirs()) {
+			throw new IOException(CommonBundle.message("exception.directory.can.not.create", dir.getPath()));
+		}
 	}
 }

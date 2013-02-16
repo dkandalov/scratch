@@ -29,6 +29,8 @@ public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 	}
 
 	@Override public PopupStep onChosen(Scratch scratch, boolean finalChoice) {
+		if (!finalChoice) return null;
+
 		mrScratchManager().userWantsToOpenScratch(scratch, holdingOnTo(project));
 		return FINAL_CHOICE;
 	}
@@ -48,5 +50,9 @@ public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 
 	@Override public boolean isSpeedSearchEnabled() {
 		return true;
+	}
+
+	@Override public boolean isAutoSelectionEnabled() {
+		return false;
 	}
 }

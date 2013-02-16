@@ -37,13 +37,12 @@ public class ScratchComponent implements ApplicationComponent {
 
 	@Override
 	public void initComponent() {
-		ScratchConfigPersistence configPersistence = ScratchConfigPersistence.getInstance();
-
-		fileSystem = new FileSystem(configPersistence.scratchesFolderPath);
 		ScratchLog log = new ScratchLog();
-		Ide ide = new Ide(fileSystem, log);
+		ScratchConfigPersistence configPersistence = ScratchConfigPersistence.getInstance();
 		ScratchConfig config = configPersistence.asConfig();
 
+		fileSystem = new FileSystem(configPersistence.scratchesFolderPath);
+		Ide ide = new Ide(fileSystem, log);
 		mrScratchManager = new MrScratchManager(ide, fileSystem, config, log);
 
 		if (config.needMigration) {

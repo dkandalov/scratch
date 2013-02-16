@@ -86,7 +86,7 @@ public class Ide {
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
 		Project project = takeProjectFrom(userDataHolder);
 
-		VirtualFile file = fileSystem.virtualFileFor(scratch.asFileName());
+		VirtualFile file = fileSystem.virtualFileBy(scratch.asFileName());
 		if (file != null) {
 			new OpenFileDescriptor(project, file).navigate(true);
 		} else {
@@ -116,7 +116,7 @@ public class Ide {
 	}
 
 	public void addTextTo(Scratch scratch, final String clipboardText, final ScratchConfig.AppendType appendType) {
-		VirtualFile virtualFile = fileSystem.virtualFileFor(scratch.asFileName());
+		VirtualFile virtualFile = fileSystem.virtualFileBy(scratch.asFileName());
 		if (virtualFile == null) {
 			log.failedToFindVirtualFileFor(scratch);
 			return;

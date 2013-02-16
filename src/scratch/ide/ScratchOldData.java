@@ -90,11 +90,6 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 	public static class XmlUtil {
 		private static final int ESCAPED_CODE_MAX_SIZE = 10;
 
-		public static String escape(String text) {
-			String escapedXml = StringEscapeUtils.escapeXml(text);
-			return escapeControlCodes(escapedXml);
-		}
-
 		public static String unescape(String text) {
 			String unescapedControlCodes = unescapeControlCodes(text);
 			return StringEscapeUtils.unescapeXml(unescapedControlCodes);
@@ -131,22 +126,6 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 				j++;
 			} while (true);
 			return semiColonIndex;
-		}
-
-		private static String escapeControlCodes(String text) {
-			StringBuilder builder = new StringBuilder();
-			for (int i = 0; i < text.length(); i++) {
-				char c = text.charAt(i);
-				if (isNotAllowedControlCode(c))
-					builder.append("&#").append(c).append(';');
-				else
-					builder.append(c);
-			}
-			return builder.toString();
-		}
-
-		private static boolean isNotAllowedControlCode(char c) {
-			return c < ' ' && c != '\t' && c != '\n' && c != '\r';
 		}
 	}
 }
