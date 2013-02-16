@@ -45,7 +45,8 @@ public class MrScratchManagerTest {
 	private final ScratchConfig defaultConfig = ScratchConfig.DEFAULT_CONFIG;
 	private MrScratchManager mrScratchManager;
 
-	@Test public void shouldNotifyIde_when_successfullyMigratedScratchesToFiles() {
+
+	@Test public void shouldLog_when_successfullyMigratedScratchesToFiles() {
 		mrScratchManager = scratchManagerWith(defaultConfig.needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 
@@ -58,6 +59,18 @@ public class MrScratchManagerTest {
 		verify(fileSystem).createFile("scratch4.txt", "text4");
 		verify(fileSystem).createFile("scratch5.txt", "text5");
 		verify(log).migratedScratchesToFiles();
+	}
+
+	@Test public void shouldNotMigrate_when_thereAreFilesInScratchFolder() {
+		mrScratchManager = scratchManagerWith(defaultConfig.needsMigration(true));
+		when(fileSystem.listScratchFiles()).thenReturn(list("scratch.txt"));
+
+		List<String> scratchTexts = list("text1", "text2", "text3", "text4", "text5");
+		mrScratchManager.migrate(scratchTexts);
+
+		verify(fileSystem).listScratchFiles();
+		verifyNoMoreInteractions(fileSystem);
+		verify(log).willNotMigrateBecauseTargetFolderIsNotEmpty();
 	}
 
 	@Test public void shouldSendNewConfigToIde_when_successfullyMigratedScratchesToFiles() {
@@ -78,7 +91,7 @@ public class MrScratchManagerTest {
 		));
 	}
 
-	@Test public void shouldNotifyIde_when_failedToMigrateSomeOfTheFiles() {
+	@Test public void shouldLog_when_failedToMigrateSomeOfTheFiles() {
 		mrScratchManager = scratchManagerWith(defaultConfig.needsMigration(true));
 		when(fileSystem.createFile(anyString(), anyString())).thenReturn(true);
 		when(fileSystem.createFile(eq("scratch3.txt"), anyString())).thenReturn(false);

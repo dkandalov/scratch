@@ -31,6 +31,7 @@ import static com.intellij.notification.NotificationType.WARNING;
 
 public class ScratchLog {
 	private static final Logger LOG = Logger.getInstance(ScratchLog.class);
+	private static final String TITLE = "Scratch Plugin";
 
 	public void failedToRename(Scratch scratch) {
 		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
@@ -42,15 +43,19 @@ public class ScratchLog {
 
 	public void listeningToClipboard(boolean isListening) {
 		if (isListening)
-			notifyUser("Scratch", "Started listening to clipboard", INFORMATION);
+			notifyUser(TITLE, "Started listening to clipboard", INFORMATION);
 		else
-			notifyUser("Scratch", "Stopped listening to clipboard", INFORMATION);
+			notifyUser(TITLE, "Stopped listening to clipboard", INFORMATION);
 	}
 
 	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
 		String title = "Failed to migrated scratches to physical files. ";
 		String message = "Failed scratches: " + join(scratchIndexes, ", ");
 		notifyUser(title, message, WARNING);
+	}
+
+	public void willNotMigrateBecauseTargetFolderIsNotEmpty() {
+		notifyUser(TITLE, "Old scratches data won't be save because scratches folder is not empty", WARNING);
 	}
 
 	public void failedToOpenDefaultScratch() {
@@ -74,7 +79,7 @@ public class ScratchLog {
 	}
 
 	private static void notifyUser(String title, String message, NotificationType notificationType) {
-		String groupDisplayId = "Scratch";
+		String groupDisplayId = TITLE;
 		Notification notification = new Notification(groupDisplayId, title, message, notificationType);
 		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
 	}

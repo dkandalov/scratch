@@ -45,6 +45,11 @@ public class MrScratchManager {
 	}
 
 	public void migrate(List<String> scratchTexts) {
+		if (!fileSystem.listScratchFiles().isEmpty()) {
+			log.willNotMigrateBecauseTargetFolderIsNotEmpty();
+			return;
+		}
+
 		List<Integer> indexes = new ArrayList<Integer>();
 		List<Scratch> scratches = new ArrayList<Scratch>();
 
