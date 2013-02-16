@@ -13,7 +13,7 @@
 				<br/>
 				<ul>
 					<li>Alt+C, Alt+C - open default scratch</li>
-					<li>Alt+C, Alt+S - open list of all scratches</li>
+					<li>Alt+C, Alt+S - open list with all scratches</li>
 					<li>Alt+C, Alt+A - add new scratch</li>
 				</ul>
 				In scratches list popup:
@@ -23,7 +23,9 @@
 				    <li>Shift+F6 - rename scratch</li>
 				    <li>Alt+Insert - add new scratch</li>
 				</ul>
-				Please see GitHub page for more details https://github.com/dkandalov/scratch
+				(See also "Main menu -> Tools -> Scratch")
+				<br/>
+				For more details please look at GitHub page https://github.com/dkandalov/scratch
 				</body></html>
 		]]>
 	</description>

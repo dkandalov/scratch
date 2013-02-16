@@ -15,7 +15,8 @@ You can install it from IntelliJ plugin manager. Should be compatible with Intel
 How to use?
 ===========
  - Alt+C, Alt+C - open default scratch
- - Alt+C, Alt+S - open list of all scratches
+ (it can be 'last opened' or 'topmost in scratches list'; see "Tools -> Scratch -> Default Scratch")
+ - Alt+C, Alt+S - open list with all scratches
  - Alt+C, Alt+A - add new scratch
 
 In scratches list popup:
@@ -27,7 +28,7 @@ In scratches list popup:
 (* - shortcuts are copied from "Delete", "Rename" and "Generate" actions; i.e.
 if you have changed keyboard layout, your own shortcuts should work as well.)
 
-Some of these actions are also in "Main menu -> Tools -> Scratch".
+Some of these actions are also in "Tools -> Scratch".
 
 
 "Hidden" features
