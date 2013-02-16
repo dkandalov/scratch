@@ -14,10 +14,7 @@ import java.util.List;
 import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.holdingOnTo;
 
-/**
- * User: dima
- * Date: 11/02/2013
- */
+
 public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 	private final FileTypeManager fileTypeManager;
 	private final Project project;

@@ -5,10 +5,6 @@ import org.junit.Test;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-/**
- * User: dima
- * Date: 12/02/2013
- */
 public class ScratchTest {
 	@Test public void creatingScratches() {
 		Scratch scratch = Scratch.createFrom("scratch.txt");

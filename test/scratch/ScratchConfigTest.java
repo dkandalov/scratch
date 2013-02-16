@@ -9,10 +9,6 @@ import static scratch.ScratchConfig.DEFAULT_CONFIG;
 import static scratch.ScratchConfig.DOWN;
 import static scratch.ScratchConfig.UP;
 
-/**
- * User: dima
- * Date: 14/02/2013
- */
 public class ScratchConfigTest {
 
 	private final Scratch scratch1 = Scratch.createFrom("scratch1.txt");

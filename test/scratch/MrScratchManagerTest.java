@@ -19,10 +19,6 @@ import static scratch.Answer.yes;
 import static scratch.ScratchConfig.AppendType;
 
 
-/**
- * User: dima
- * Date: 09/02/2013
- */
 public class MrScratchManagerTest {
 
 	private static final UserDataHolder USER_DATA = new UserDataHolderBase();

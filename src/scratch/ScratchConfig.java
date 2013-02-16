@@ -11,10 +11,7 @@ import static java.util.Collections.unmodifiableList;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 public class ScratchConfig {
 	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<Scratch>emptyList(), false, true, APPEND, APPEND);
 	public static final int UP = -1;

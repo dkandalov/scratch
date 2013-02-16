@@ -22,10 +22,7 @@ import java.util.List;
 import static com.intellij.util.containers.ContainerUtil.findAll;
 import static com.intellij.util.containers.ContainerUtil.map;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 public class FileSystem {
 	private static final Logger LOG = Logger.getInstance(FileSystem.class);
 	private static final String SCRATCH_FOLDER = "";

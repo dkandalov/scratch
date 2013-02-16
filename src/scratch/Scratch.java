@@ -1,9 +1,6 @@
 package scratch;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 public class Scratch {
 	public final String fullNameWithMnemonics;
 	public final String name;

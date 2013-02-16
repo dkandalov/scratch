@@ -16,10 +16,7 @@ import java.util.List;
 
 import static scratch.ScratchConfig.AppendType.APPEND;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 @SuppressWarnings("UnusedDeclaration")
 @State(name = "ScratchConfig", storages = {@Storage(id = "main", file = "$APP_CONFIG$/scratch_config.xml")})
 public class ScratchConfigPersistence implements PersistentStateComponent<ScratchConfigPersistence> {

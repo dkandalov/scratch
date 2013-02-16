@@ -33,10 +33,7 @@ import static scratch.ScratchConfig.AppendType.PREPEND;
 import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.*;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 public class Ide {
 	private final FileSystem fileSystem;
 	private final ScratchLog log;

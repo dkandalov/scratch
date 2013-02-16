@@ -14,10 +14,7 @@ import java.util.List;
 import static com.intellij.notification.NotificationType.INFORMATION;
 import static com.intellij.notification.NotificationType.WARNING;
 
-/**
- * User: dima
- * Date: 14/02/2013
- */
+
 public class ScratchLog {
 	private static final Logger LOG = Logger.getInstance(ScratchLog.class);
 

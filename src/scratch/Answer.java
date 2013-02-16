@@ -1,9 +1,6 @@
 package scratch;
 
-/**
- * User: dima
- * Date: 14/02/2013
- */
+
 public class Answer {
 	public final String explanation;
 	public final boolean isYes;

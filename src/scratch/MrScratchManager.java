@@ -13,10 +13,7 @@ import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.*;
 
-/**
- * User: dima
- * Date: 10/02/2013
- */
+
 public class MrScratchManager {
 	private final Ide ide;
 	private final ScratchLog log;

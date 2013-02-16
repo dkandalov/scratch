@@ -22,9 +22,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import java.util.Arrays;
 
-/**
- * @author Dmitry Kandalov
- */
 @State(name = "ScratchData", storages = {@Storage(id = "main", file = "$APP_CONFIG$/scratch.xml")})
 public class ScratchOldData implements PersistentStateComponent<ScratchOldData> {
 	private static final int SIZE = 5;
