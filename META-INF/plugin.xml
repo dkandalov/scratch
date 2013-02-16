@@ -52,23 +52,23 @@
 	<actions>
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
-            <action id="Scratch.OpenDefaultScratch" class="scratch.ide.Actions$OpenDefaultScratchAction"
+            <action id="Scratch.OpenDefaultScratch" class="scratch.ide.Actions$OpenDefaultScratch"
                     text="Open Default Scratch" description="Opens default scratch editor" icon="/fileTypes/text.png">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
             </action>
-            <action id="Scratch.OpenScratchList" class="scratch.ide.Actions$OpenScratchListAction"
+            <action id="Scratch.OpenScratchList" class="scratch.ide.Actions$OpenScratchList"
                     text="Open Scratch List" description="Opens list of all scratch editors" icon="/actions/copy.png">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
             </action>
             <separator/>
-            <action id="Scratch.NewScratch" class="scratch.ide.Actions$NewScratchAction"
+            <action id="Scratch.NewScratch" class="scratch.ide.Actions$NewScratch"
                     text="New Scratch" description="Creates new scratch">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
             </action>
-            <action id="Scratch.RenameScratch" class="scratch.ide.Actions$RenameScratchAction"
+            <action id="Scratch.RenameScratch" class="scratch.ide.Actions$RenameScratch"
                     text="Rename Scratch" description="Renames scratch">
             </action>
-            <action id="Scratch.DeleteScratch" class="scratch.ide.Actions$DeleteScratchAction"
+            <action id="Scratch.DeleteScratch" class="scratch.ide.Actions$DeleteScratch"
                     text="Delete Scratch" description="Deletes scratch">
             </action>
             <separator/>
@@ -81,7 +81,7 @@
                 </action>
             </group>
 		</group>
-        <action id="ScratchListenClipboardAction" class="scratch.ide.Actions$ScratchListenToClipboardAction"
+        <action id="Scratch.ListenToClipboard" class="scratch.ide.Actions$ListenToClipboard"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
 		</action>
 	</actions>

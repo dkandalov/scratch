@@ -33,7 +33,7 @@ import static scratch.ide.Util.holdingOnTo;
 @SuppressWarnings("ComponentNotRegistered")
 public class Actions {
 
-	public static class DeleteScratchAction extends DumbAwareAction {
+	public static class DeleteScratch extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			VirtualFile scratchFile = getCurrentScratchFile(event);
 			if (scratchFile == null) return;
@@ -47,7 +47,7 @@ public class Actions {
 	}
 
 
-	public static class NewScratchAction extends DumbAwareAction {
+	public static class NewScratch extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			mrScratchManager().userWantsToEnterNewScratchName(holdingOnTo(event.getProject()));
 		}
@@ -58,7 +58,7 @@ public class Actions {
 	}
 
 
-	public static class OpenDefaultScratchAction extends DumbAwareAction {
+	public static class OpenDefaultScratch extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			mrScratchManager().userWantsToOpenDefaultScratch(holdingOnTo(event.getProject()));
 		}
@@ -69,7 +69,7 @@ public class Actions {
 	}
 
 
-	public static class OpenScratchListAction extends DumbAwareAction {
+	public static class OpenScratchList extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
 		}
@@ -80,7 +80,7 @@ public class Actions {
 	}
 
 
-	public static class RenameScratchAction extends DumbAwareAction {
+	public static class RenameScratch extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			VirtualFile scratchFile = getCurrentScratchFile(event);
 			if (scratchFile == null) return;
@@ -94,7 +94,7 @@ public class Actions {
 	}
 
 
-	public static class ScratchListenToClipboardAction extends ToggleAction implements DumbAware {
+	public static class ListenToClipboard extends ToggleAction implements DumbAware {
 		private static final Icon IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png");
 		private static final Icon IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON);
 
@@ -136,6 +136,7 @@ public class Actions {
 			return mrScratchManager().defaultScratchMeaning() == LAST_OPENED;
 		}
 	}
+
 
 	private static VirtualFile getCurrentScratchFile(AnActionEvent event) {
 		VirtualFile currentFile = currentFileIn(event.getProject());
