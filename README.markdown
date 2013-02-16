@@ -32,13 +32,13 @@ Some of these actions are also in "Main menu -> Tools -> Scratch".
 
 "Hidden" features
 =================
- - **Listen to clipboard** and add its content to default scratch. <br/>
+ - **Listen to clipboard and add its content to default scratch**. <br/>
  In "IDE Settings -> Keymap" search for "Listen to clipboard" and assign it a shortcut (Alt+C, Alt+V is recommended :)).
  (Note that you can do similar thing with built-in IntelliJ clipboard.
  E.g. Ctrl+C several words, Ctrl+Shift+V to see clipboard history, select several items.
  If you press Ctrl+C, selected items will be joined with new lines.)
 
- - **Listen to clipboard** append/prepend (default is "APPEND").<br/>
+ - **Listen to clipboard append/prepend** (default is "APPEND").<br/>
  Find folder with IntelliJ preference files ("$HOME/.IntelliJ12/options" on Windows/Linux; "$HOME/Library/Preferences/IntelliJIdea12/options" on OSX).<br/>
  Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
 ```
