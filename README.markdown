@@ -1,3 +1,5 @@
+<img src="https://raw.github.com/dkandalov/scratch/master/screenshot.png" alt="screenshot" title="screenshot" align="right"/>
+
 What is this?
 =============
 
@@ -6,8 +8,8 @@ It quickly opens temporary editor tab.
 <br/>
 Can be useful if you want to type something quickly without having to create new file or switch to another editor.
 
-You can install it from IntelliJ plugin manager
-(just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository).
+You can install it from IntelliJ plugin manager. Should be compatible with IntelliJ 11 upwards.
+(Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
 
 
 How to use?
@@ -47,10 +49,11 @@ if you have changed keyboard layout, your own shortcuts should work as well.)
   Restart IntelliJ.
 
  - **Location of scratch folder**.<br/>
- Primary motivation for this is that IntelliJ data like caches and preferences can be a part of roaming profile (at least on Windows).
+ Primary motivation for this is that IntelliJ data like caches and preferences can be a part of roaming profile by default (at least on Windows).
+ In other words your data and scratches might end up on other computer.
  Edit "scratch_config.xml" to add the following line:
 ```
-<option name="scratchesFolderPath" value="/safe/place/to/store/stuff/"/>
+<option name="scratchesFolderPath" value="/safe/place/to/store/my/stuff/"/>
 ```
  Restart IntelliJ.
 

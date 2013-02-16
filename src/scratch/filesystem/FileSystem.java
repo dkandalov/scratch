@@ -39,6 +39,11 @@ import static com.intellij.util.containers.ContainerUtil.map;
 
 public class FileSystem {
 	private static final Logger LOG = Logger.getInstance(FileSystem.class);
+
+	/**
+	 * Use UTF-8 to be compatible with old version of plugin.
+	 */
+	private static final Charset CHARSET = Charset.forName("UTF8");
 	private static final String SCRATCH_FOLDER = "";
 
 	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
@@ -118,7 +123,7 @@ public class FileSystem {
 					if (scratchesFolder == null) return false;
 
 					VirtualFile scratchFile = scratchesFolder.createChildData(FileSystem.this, fileName);
-					scratchFile.setBinaryContent(text.getBytes(Charset.forName("UTF8")));
+					scratchFile.setBinaryContent(text.getBytes(CHARSET));
 
 					return true;
 				} catch (IOException e) {
