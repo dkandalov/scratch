@@ -326,9 +326,9 @@ public class MrScratchManagerTest {
 				scratch("scratch.java")
 		)));
 
-		mrScratchManager.userWantsToEnterNewScratchName(null);
+		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
 
-		verify(ide).openNewScratchDialog("scratch2.txt", null);
+		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(USER_DATA));
 	}
 
 	@Test public void canCreateNewScratch_when_nameIsUnique() {
