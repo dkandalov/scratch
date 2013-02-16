@@ -55,4 +55,5 @@ public class ScratchListPopupStep extends BaseListPopupStep<Scratch> {
 	@Override public boolean isAutoSelectionEnabled() {
 		return false;
 	}
+
 }

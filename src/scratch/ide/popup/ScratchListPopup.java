@@ -48,6 +48,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	private static final String DELETE_ACTION_ID = "$Delete";
 	private static final String GENERATE_ACTION_ID = "Generate";
 	private static final String RENAME_ACTION_ID = "RenameElement";
+	private static final int MY_MAX_ROW_COUNT = 20;
 
 	private MyList myList;
 
@@ -57,16 +58,15 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	private PopupModelWithMovableItems myListModel;
 
 	private int myIndexForShowingChild = -1;
-	private int myMaxRowCount = 20;
 	private boolean myAutoHandleBeforeShow;
 
 
-	public ScratchListPopup(@NotNull ListPopupStep aStep, int maxRowCount) {
+	public ScratchListPopup(@NotNull ListPopupStep aStep) {
 		super(aStep);
-		if (maxRowCount != -1){
-			myMaxRowCount = maxRowCount;
-		}
+		registerActions();
+	}
 
+	private void registerActions() {
 		List<KeyStroke> keyStrokes;
 
 		keyStrokes = copyKeyStrokesFromAction(GENERATE_ACTION_ID, KeyStroke.getKeyStroke("ctrl N"));
@@ -149,10 +149,6 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		return result;
 	}
 
-	public ScratchListPopup(@NotNull ListPopupStep aStep) {
-		this(aStep, -1);
-	}
-
 	@Nullable private Scratch selectedScratch() {
 		int selectedIndex = getSelectedIndex();
 		if (selectedIndex == -1) return null;
@@ -173,7 +169,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		myList.addMouseMotionListener(myMouseMotionListener);
 		myList.addMouseListener(myMouseListener);
 
-		myList.setVisibleRowCount(Math.min(myMaxRowCount, myListModel.getSize()));
+		myList.setVisibleRowCount(Math.min(MY_MAX_ROW_COUNT, myListModel.getSize()));
 
 		boolean shouldShow = super.beforeShow();
 		if (myAutoHandleBeforeShow) {
@@ -291,7 +287,6 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		}
 		myList.setSelectionMode(isMultiSelectionEnabled() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
 
-		myList.setSelectedIndex(0);
 		Insets padding = UIUtil.getListViewportPadding();
 		myList.setBorder(new EmptyBorder(padding));
 

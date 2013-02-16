@@ -31,9 +31,7 @@ import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
 import static scratch.ide.ScratchComponent.mrScratchManager;
-import static scratch.ide.Util.NO_ICON;
-import static scratch.ide.Util.hasFocusInEditor;
-import static scratch.ide.Util.takeProjectFrom;
+import static scratch.ide.Util.*;
 
 /**
  * User: dima
@@ -42,6 +40,8 @@ import static scratch.ide.Util.takeProjectFrom;
 public class Ide {
 	private final FileSystem fileSystem;
 	private final ScratchLog log;
+
+	public int scratchListIndex;
 
 
 	public Ide(FileSystem fileSystem, ScratchLog log) {
@@ -55,7 +55,9 @@ public class Ide {
 
 	public void displayScratchesListPopup(List<Scratch> scratches, final UserDataHolder userDataHolder) {
 		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
+		popupStep.setDefaultOptionIndex(scratchListIndex);
 		ScratchListPopup popup = new ScratchListPopup(popupStep) {
+
 			@Override protected void onNewScratch() {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override public void run() {
@@ -78,6 +80,11 @@ public class Ide {
 
 			@Override protected void onScratchMoved(Scratch scratch, int shift) {
 				mrScratchManager().userMovedScratch(scratch, shift);
+			}
+
+			@Override public void dispose() {
+				scratchListIndex = getSelectedIndex();
+				super.dispose();
 			}
 		};
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
