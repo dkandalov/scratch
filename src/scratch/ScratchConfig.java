@@ -7,14 +7,16 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.map;
+import static java.util.Collections.unmodifiableList;
 import static scratch.ScratchConfig.AppendType.APPEND;
+import static scratch.ScratchConfig.AppendType.PREPEND;
 
 /**
  * User: dima
  * Date: 10/02/2013
  */
 public class ScratchConfig {
-	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<Scratch>emptyList(), false, true, APPEND);
+	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(Collections.<Scratch>emptyList(), false, true, APPEND, APPEND);
 	public static final int UP = -1;
 	public static final int DOWN = 1;
 
@@ -24,21 +26,30 @@ public class ScratchConfig {
 	public final boolean needMigration;
 	public final boolean listenToClipboard;
 	public final AppendType clipboardAppendType;
+	private final AppendType newScratchAppendType;
 
-	private ScratchConfig(List<Scratch> scratches, boolean listenToClipboard, boolean needMigration, AppendType clipboardAppendType) {
-		this.scratches = Collections.unmodifiableList(scratches);
+	private ScratchConfig(List<Scratch> scratches, boolean listenToClipboard, boolean needMigration,
+	                      AppendType clipboardAppendType, AppendType newScratchAppendType) {
+		this.newScratchAppendType = newScratchAppendType;
+		this.scratches = unmodifiableList(scratches);
 		this.listenToClipboard = listenToClipboard;
 		this.needMigration = needMigration;
 		this.clipboardAppendType = clipboardAppendType;
 	}
 
 	public ScratchConfig with(List<Scratch> newScratches) {
-		return new ScratchConfig(newScratches, listenToClipboard, needMigration, clipboardAppendType);
+		return new ScratchConfig(newScratches, listenToClipboard, needMigration, clipboardAppendType, newScratchAppendType);
 	}
 
-	public ScratchConfig append(Scratch scratch) {
+	public ScratchConfig add(Scratch scratch) {
 		ArrayList<Scratch> newScratches = new ArrayList<Scratch>(scratches);
-		newScratches.add(scratch);
+		if (newScratchAppendType == APPEND) {
+			newScratches.add(scratch);
+		} else if (newScratchAppendType == PREPEND) {
+			newScratches.add(0, scratch);
+		} else {
+			throw new IllegalStateException();
+		}
 		return this.with(newScratches);
 	}
 
@@ -53,7 +64,7 @@ public class ScratchConfig {
 			@Override public Scratch fun(Scratch it) {
 				return it.equals(scratch) ? newScratch : it;
 			}
-		}), listenToClipboard, needMigration, clipboardAppendType);
+		}), listenToClipboard, needMigration, clipboardAppendType, newScratchAppendType);
 	}
 
 	public ScratchConfig move(final Scratch scratch, int shift) {
@@ -69,15 +80,19 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig needsMigration(boolean value) {
-		return new ScratchConfig(scratches, listenToClipboard, value, clipboardAppendType);
+		return new ScratchConfig(scratches, listenToClipboard, value, clipboardAppendType, newScratchAppendType);
 	}
 
 	public ScratchConfig listenToClipboard(boolean value) {
-		return new ScratchConfig(scratches, value, needMigration, clipboardAppendType);
+		return new ScratchConfig(scratches, value, needMigration, clipboardAppendType, newScratchAppendType);
 	}
 
-	public ScratchConfig with(AppendType appendType) {
-		return new ScratchConfig(scratches, listenToClipboard, needMigration, appendType);
+	public ScratchConfig withClipboard(AppendType appendType) {
+		return new ScratchConfig(scratches, listenToClipboard, needMigration, appendType, newScratchAppendType);
+	}
+
+	public ScratchConfig withNewScratch(AppendType appendType) {
+		return new ScratchConfig(scratches, listenToClipboard, needMigration, clipboardAppendType, appendType);
 	}
 
 	@Override public String toString() {

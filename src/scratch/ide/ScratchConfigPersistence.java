@@ -27,6 +27,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	private boolean isListenToClipboard = false;
 	private List<String> fullScratchNamesOrdered = new ArrayList<String>();
 	private ScratchConfig.AppendType clipboardAppendType = APPEND;
+	private ScratchConfig.AppendType newScratchAppendType = APPEND;
 	public String scratchesFolderPath = null;
 
 	public static ScratchConfigPersistence getInstance() {
@@ -42,7 +43,8 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 						return Scratch.createFrom(it);
 					}
 				}))
-				.with(clipboardAppendType);
+				.withClipboard(clipboardAppendType)
+				.withNewScratch(newScratchAppendType);
 	}
 
 	public void updateFrom(ScratchConfig config) {
@@ -103,8 +105,17 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		this.scratchesFolderPath = scratchesFolderPath;
 	}
 
+	public ScratchConfig.AppendType getNewScratchAppendType() {
+		return newScratchAppendType;
+	}
+
+	public void setNewScratchAppendType(ScratchConfig.AppendType newScratchAppendType) {
+		this.newScratchAppendType = newScratchAppendType;
+	}
+
 	@SuppressWarnings("RedundantIfStatement")
-	@Override public boolean equals(Object o) {
+	@Override
+	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
@@ -115,15 +126,21 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		if (clipboardAppendType != that.clipboardAppendType) return false;
 		if (fullScratchNamesOrdered != null ? !fullScratchNamesOrdered.equals(that.fullScratchNamesOrdered) : that.fullScratchNamesOrdered != null)
 			return false;
+		if (newScratchAppendType != that.newScratchAppendType) return false;
+		if (scratchesFolderPath != null ? !scratchesFolderPath.equals(that.scratchesFolderPath) : that.scratchesFolderPath != null)
+			return false;
 
 		return true;
 	}
 
-	@Override public int hashCode() {
+	@Override
+	public int hashCode() {
 		int result = (isNeedMigration ? 1 : 0);
 		result = 31 * result + (isListenToClipboard ? 1 : 0);
 		result = 31 * result + (fullScratchNamesOrdered != null ? fullScratchNamesOrdered.hashCode() : 0);
 		result = 31 * result + (clipboardAppendType != null ? clipboardAppendType.hashCode() : 0);
+		result = 31 * result + (newScratchAppendType != null ? newScratchAppendType.hashCode() : 0);
+		result = 31 * result + (scratchesFolderPath != null ? scratchesFolderPath.hashCode() : 0);
 		return result;
 	}
 }

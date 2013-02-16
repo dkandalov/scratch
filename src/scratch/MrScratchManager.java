@@ -153,7 +153,7 @@ public class MrScratchManager {
 
 	public void userWantsToListenToClipboard(boolean value) {
 		updateConfig(config.listenToClipboard(value));
-		log.userWantsToListenToClipboard(value);
+		log.listeningToClipboard(value);
 	}
 
 	public void clipboardListenerWantsToAddTextToScratch(String clipboardText) {
@@ -207,7 +207,7 @@ public class MrScratchManager {
 		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
-			updateConfig(config.append(scratch));
+			updateConfig(config.add(scratch));
 			ide.openScratch(scratch, userDataHolder);
 		} else {
 			log.failedToCreate(scratch);

@@ -15,3 +15,8 @@ Initial version of this plugin was written in 2009 during lunch time and immedia
 There have been virtually no new functionality added since then. In a way it's a good thing because
 I think it does what it should do and nothing else. Another good thing is that over 3 years
 it took about 20 hours to support this plugin but I use it every day. Huge payoff.
+
+
+<option name="newScratchAppendType" value="PREPEND" />
+<option name="newScratchAppendType" value="PREPEND" />
+

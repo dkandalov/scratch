@@ -30,6 +30,7 @@ public class Actions {
 		}
 	}
 
+
 	public static class NewScratchAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			mrScratchManager().userWantsToEnterNewScratchName(holdingOnTo(event.getProject()));
@@ -39,6 +40,7 @@ public class Actions {
 			event.getPresentation().setEnabled(event.getProject() != null);
 		}
 	}
+
 
 	public static class OpenDefaultScratchAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
@@ -50,6 +52,7 @@ public class Actions {
 		}
 	}
 
+
 	public static class OpenScratchListAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
 			mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.getProject()));
@@ -59,6 +62,7 @@ public class Actions {
 			event.getPresentation().setEnabled(event.getProject() != null);
 		}
 	}
+
 
 	public static class RenameScratchAction extends DumbAwareAction {
 		@Override public void actionPerformed(AnActionEvent event) {
@@ -72,6 +76,7 @@ public class Actions {
 			event.getPresentation().setEnabled(getCurrentScratchFile(event) != null);
 		}
 	}
+
 
 	public static class ScratchListenToClipboardAction extends ToggleAction implements DumbAware {
 		private static final Icon IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png");

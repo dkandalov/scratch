@@ -238,7 +238,7 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToListenToClipboard(true);
 
 		verify(ide).persistConfig(defaultConfig.listenToClipboard(true));
-		verify(log).userWantsToListenToClipboard(true);
+		verify(log).listeningToClipboard(true);
 	}
 
 
@@ -363,14 +363,34 @@ public class MrScratchManagerTest {
 	}
 
 	@Test public void creatingNewScratch_when_scratchIsCreatedSuccessfully() {
-		mrScratchManager = scratchManagerWith(defaultConfig);
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
+				scratch("scratch0.txt")
+		)));
 		when(fileSystem.createEmptyFile(anyString())).thenReturn(true);
 
 		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", USER_DATA);
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
 		verify(ide).persistConfig(eq(defaultConfig.with(list(
+				scratch("scratch0.txt"),
 				scratch("&scratch.txt")
+		))));
+		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
+		verifyNoMoreInteractions(ide, fileSystem);
+	}
+
+	@Test public void creatingNewScratch_when_scratchIsCreatedSuccessfully_andShouldBePrependedToListOfScratches() {
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
+				scratch("scratch0.txt")
+		)).withNewScratch(AppendType.PREPEND));
+		when(fileSystem.createEmptyFile(anyString())).thenReturn(true);
+
+		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", USER_DATA);
+
+		verify(fileSystem).createEmptyFile("scratch.txt");
+		verify(ide).persistConfig(eq(defaultConfig.with(list(
+				scratch("&scratch.txt"),
+				scratch("scratch0.txt")
 		))));
 		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
 		verifyNoMoreInteractions(ide, fileSystem);

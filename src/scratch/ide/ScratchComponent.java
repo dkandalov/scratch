@@ -51,6 +51,9 @@ public class ScratchComponent implements ApplicationComponent {
 		}
 
 		new Ide.ClipboardListener(mrScratchManager).startListening();
+
+		if (config.listenToClipboard)
+			log.listeningToClipboard(true);
 	}
 
 	@NotNull

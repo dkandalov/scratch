@@ -29,7 +29,7 @@ public class ScratchLog {
 		LOG.info("Migrated scratches to physical files");
 	}
 
-	public void userWantsToListenToClipboard(boolean isListening) {
+	public void listeningToClipboard(boolean isListening) {
 		if (isListening)
 			notifyUser("Scratch", "Started listening to clipboard", INFORMATION);
 		else
