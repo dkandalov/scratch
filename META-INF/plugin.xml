@@ -10,7 +10,7 @@
     <description>
 		<![CDATA[<html><body>
 				Quickly opens temporary IntelliJ text editor tab.
-				<br/><br/>
+				<br/>
 				<ul>
 					<li>Alt+C, Alt+C - open default scratch</li>
 					<li>Alt+C, Alt+S - open list of all scratches</li>
@@ -23,7 +23,7 @@
 				    <li>Shift+F6 - rename scratch</li>
 				    <li>Alt+Insert - add new scratch</li>
 				</ul>
-				Please see GitHub page for more details https://github.com/dkandalov/scratch.
+				Please see GitHub page for more details https://github.com/dkandalov/scratch
 				</body></html>
 		]]>
 	</description>
@@ -50,25 +50,34 @@
 	<actions>
 		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
 			<add-to-group anchor="last" group-id="ToolsMenu"/>
-            <action id="Scratch.OpenDefaultScratch" class="scratch.ide.Actions$OpenDefaultScratchAction" text="Open Scratch"
-                    description="Opens default scratch editor" icon="/fileTypes/text.png">
+            <action id="Scratch.OpenDefaultScratch" class="scratch.ide.Actions$OpenDefaultScratchAction"
+                    text="Open Default Scratch" description="Opens default scratch editor" icon="/fileTypes/text.png">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
             </action>
-            <action id="Scratch.OpenScratchList" class="scratch.ide.Actions$OpenScratchListAction" text="Open Scratch List"
-                    description="Opens list of all scratch editors" icon="/actions/copy.png">
+            <action id="Scratch.OpenScratchList" class="scratch.ide.Actions$OpenScratchListAction"
+                    text="Open Scratch List" description="Opens list of all scratch editors" icon="/actions/copy.png">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
             </action>
             <separator/>
-            <action id="Scratch.NewScratch" class="scratch.ide.Actions$NewScratchAction" text="New Scratch"
-                    description="Creates new scratch">
+            <action id="Scratch.NewScratch" class="scratch.ide.Actions$NewScratchAction"
+                    text="New Scratch" description="Creates new scratch">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt a"/>
             </action>
-            <action id="Scratch.RenameScratch" class="scratch.ide.Actions$RenameScratchAction" text="Rename Scratch"
-                    description="Renames scratch">
+            <action id="Scratch.RenameScratch" class="scratch.ide.Actions$RenameScratchAction"
+                    text="Rename Scratch" description="Renames scratch">
             </action>
-            <action id="Scratch.DeleteScratch" class="scratch.ide.Actions$DeleteScratchAction" text="Delete Scratch"
-                    description="Deletes scratch">
+            <action id="Scratch.DeleteScratch" class="scratch.ide.Actions$DeleteScratchAction"
+                    text="Delete Scratch" description="Deletes scratch">
             </action>
+            <separator/>
+            <group id="Scratch.DefaultScratch" text="Default Scratch" popup="true">
+                <action id="Scratch.DefaultScratchIsLastOpened" class="scratch.ide.Actions$MakeDefaultScratchBeLastOpened"
+                        text="Is Last Opened" description="Last opened scratch is 'default scratch'">
+                </action>
+                <action id="Scratch.DefaultScratchIsTopmost" class="scratch.ide.Actions$MakeDefaultScratchBeTopmost"
+                        text="Is Topmost" description="Topmost scratch in scratches list is 'default scratch'">
+                </action>
+            </group>
 		</group>
         <action id="ScratchListenClipboardAction" class="scratch.ide.Actions$ScratchListenToClipboardAction"
 				text="Listen To Clipboard" description="Appends clipboard content to default scratch">

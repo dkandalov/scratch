@@ -23,6 +23,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 
 import javax.swing.*;
 
+import static scratch.ScratchConfig.DefaultScratchMeaning;
+import static scratch.ScratchConfig.DefaultScratchMeaning.*;
 import static scratch.ide.ScratchComponent.fileSystem;
 import static scratch.ide.ScratchComponent.mrScratchManager;
 import static scratch.ide.Util.currentFileIn;
@@ -108,6 +110,30 @@ public class Actions {
 		@Override public void update(AnActionEvent event) {
 			super.update(event);
 			event.getPresentation().setIcon(isSelected(event) ? IS_ON_ICON : IS_OFF_ICON);
+		}
+	}
+
+	public static class MakeDefaultScratchBeTopmost extends ToggleAction implements DumbAware {
+
+		@Override public void setSelected(AnActionEvent event, boolean enabled) {
+			DefaultScratchMeaning meaning = (enabled ? TOPMOST : LAST_OPENED);
+			mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning);
+		}
+
+		@Override public boolean isSelected(AnActionEvent event) {
+			return mrScratchManager().defaultScratchMeaning() == TOPMOST;
+		}
+	}
+
+	public static class MakeDefaultScratchBeLastOpened extends ToggleAction implements DumbAware {
+
+		@Override public void setSelected(AnActionEvent event, boolean enabled) {
+			DefaultScratchMeaning meaning = (enabled ? LAST_OPENED : TOPMOST);
+			mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning);
+		}
+
+		@Override public boolean isSelected(AnActionEvent event) {
+			return mrScratchManager().defaultScratchMeaning() == LAST_OPENED;
 		}
 	}
 

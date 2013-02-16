@@ -42,7 +42,7 @@ public class ScratchComponent implements ApplicationComponent {
 		ScratchConfigPersistence configPersistence = ScratchConfigPersistence.getInstance();
 		ScratchConfig config = configPersistence.asConfig();
 
-		fileSystem = new FileSystem(configPersistence.scratchesFolderPath);
+		fileSystem = new FileSystem(configPersistence.getScratchesFolderPath());
 		Ide ide = new Ide(fileSystem, log);
 		mrScratchManager = new MrScratchManager(ide, fileSystem, config, log);
 

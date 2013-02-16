@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.*;
+import static scratch.ScratchConfig.DefaultScratchMeaning;
+import static scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED;
+import static scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST;
 
 
 public class MrScratchManager {
@@ -98,25 +101,44 @@ public class MrScratchManager {
 	}
 
 	public void userWantsToOpenScratch(Scratch scratch, UserDataHolder userDataHolder) {
-		if (fileSystem.scratchFileExists(scratch.asFileName()))
+		if (fileSystem.scratchFileExists(scratch.asFileName())) {
+			updateConfig(config.withLastOpenedScratch(scratch));
 			ide.openScratch(scratch, userDataHolder);
-		else
+		} else {
 			log.failedToOpen(scratch);
+		}
 	}
 
 	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
 		if (config.scratches.isEmpty()) {
 			log.failedToOpenDefaultScratch();
+			return;
+		}
+
+		Scratch scratch;
+		if (config.defaultScratchMeaning == TOPMOST) {
+			scratch = config.scratches.get(0);
+		} else if (config.defaultScratchMeaning == LAST_OPENED) {
+			scratch = (config.lastOpenedScratch != null ? config.lastOpenedScratch : config.scratches.get(0));
 		} else {
-			Scratch scratch = config.scratches.get(0);
-			if (fileSystem.scratchFileExists(scratch.asFileName())) {
-				ide.openScratch(scratch, userDataHolder);
-			} else {
-				log.failedToOpenDefaultScratch();
-			}
+			throw new IllegalStateException();
+		}
+
+		if (fileSystem.scratchFileExists(scratch.asFileName())) {
+			updateConfig(config.withLastOpenedScratch(scratch));
+			ide.openScratch(scratch, userDataHolder);
+		} else {
+			log.failedToOpenDefaultScratch();
 		}
 	}
 
+	public void userWantsToChangeMeaningOfDefaultScratch(DefaultScratchMeaning value) {
+		updateConfig(config.withDefaultScratchMeaning(value));
+	}
+
+	public DefaultScratchMeaning defaultScratchMeaning() {
+		return config.defaultScratchMeaning;
+	}
 
 	public void userWantsToEditScratchName(final String scratchFileName) {
 		Scratch scratch = findByFileName(scratchFileName);
@@ -218,7 +240,7 @@ public class MrScratchManager {
 		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
-			updateConfig(config.add(scratch));
+			updateConfig(config.add(scratch).withLastOpenedScratch(scratch));
 			ide.openScratch(scratch, userDataHolder);
 		} else {
 			log.failedToCreate(scratch);
@@ -255,6 +277,7 @@ public class MrScratchManager {
 	}
 
 	private void updateConfig(ScratchConfig newConfig) {
+		if (config.equals(newConfig)) return;
 		config = newConfig;
 		ide.persistConfig(config);
 	}

@@ -50,7 +50,7 @@ public class Scratch {
 	}
 
 	@Override public String toString() {
-		return "{fullNameWithMnemonics='" + fullNameWithMnemonics + "'";
+		return "{fullNameWithMnemonics='" + fullNameWithMnemonics + "'}";
 	}
 
 	@SuppressWarnings("RedundantIfStatement")

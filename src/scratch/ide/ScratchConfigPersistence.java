@@ -19,7 +19,6 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 import scratch.Scratch;
@@ -28,7 +27,7 @@ import scratch.ScratchConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-import static scratch.ScratchConfig.AppendType.APPEND;
+import static com.intellij.util.containers.ContainerUtil.map;
 
 
 @SuppressWarnings("UnusedDeclaration")
@@ -37,9 +36,11 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	private boolean isNeedMigration = true;
 	private boolean isListenToClipboard = false;
 	private List<String> fullScratchNamesOrdered = new ArrayList<String>();
-	private ScratchConfig.AppendType clipboardAppendType = APPEND;
-	private ScratchConfig.AppendType newScratchAppendType = APPEND;
-	public String scratchesFolderPath = null;
+	private String lastOpenedScratch;
+	private ScratchConfig.AppendType clipboardAppendType;
+	private ScratchConfig.AppendType newScratchAppendType;
+	private ScratchConfig.DefaultScratchMeaning defaultScratchMeaning;
+	private String scratchesFolderPath = null;
 
 	public static ScratchConfigPersistence getInstance() {
 		return ServiceManager.getService(ScratchConfigPersistence.class);
@@ -49,11 +50,13 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		return ScratchConfig.DEFAULT_CONFIG
 				.needsMigration(isNeedMigration)
 				.listenToClipboard(isListenToClipboard)
-				.with(ContainerUtil.map(fullScratchNamesOrdered, new Function<String, Scratch>() {
+				.with(map(fullScratchNamesOrdered, new Function<String, Scratch>() {
 					@Override public Scratch fun(String it) {
 						return Scratch.createFrom(it);
 					}
 				}))
+				.withLastOpenedScratch(lastOpenedScratch == null ? null : Scratch.createFrom(lastOpenedScratch))
+				.withDefaultScratchMeaning(defaultScratchMeaning)
 				.withClipboard(clipboardAppendType)
 				.withNewScratch(newScratchAppendType);
 	}
@@ -61,11 +64,13 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	public void updateFrom(ScratchConfig config) {
 		isNeedMigration = config.needMigration;
 		isListenToClipboard = config.listenToClipboard;
-		fullScratchNamesOrdered = new ArrayList<String>(ContainerUtil.map(config.scratches, new Function<Scratch, String>() {
-					@Override public String fun(Scratch it) {
-						return it.fullNameWithMnemonics;
-					}
+		fullScratchNamesOrdered = new ArrayList<String>(map(config.scratches, new Function<Scratch, String>() {
+			@Override public String fun(Scratch it) {
+				return it.fullNameWithMnemonics;
+			}
 		}));
+		lastOpenedScratch = (config.lastOpenedScratch == null ? null : config.lastOpenedScratch.fullNameWithMnemonics);
+		defaultScratchMeaning = config.defaultScratchMeaning;
 	}
 
 	public List<String> getFullScratchNamesOrdered() {
@@ -124,9 +129,24 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		this.newScratchAppendType = newScratchAppendType;
 	}
 
+	public ScratchConfig.DefaultScratchMeaning getDefaultScratchMeaning() {
+		return defaultScratchMeaning;
+	}
+
+	public void setDefaultScratchMeaning(ScratchConfig.DefaultScratchMeaning defaultScratchMeaning) {
+		this.defaultScratchMeaning = defaultScratchMeaning;
+	}
+
+	public String getLastOpenedScratch() {
+		return lastOpenedScratch;
+	}
+
+	public void setLastOpenedScratch(String lastOpenedScratch) {
+		this.lastOpenedScratch = lastOpenedScratch;
+	}
+
 	@SuppressWarnings("RedundantIfStatement")
-	@Override
-	public boolean equals(Object o) {
+	@Override public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
@@ -135,7 +155,10 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		if (isListenToClipboard != that.isListenToClipboard) return false;
 		if (isNeedMigration != that.isNeedMigration) return false;
 		if (clipboardAppendType != that.clipboardAppendType) return false;
+		if (defaultScratchMeaning != that.defaultScratchMeaning) return false;
 		if (fullScratchNamesOrdered != null ? !fullScratchNamesOrdered.equals(that.fullScratchNamesOrdered) : that.fullScratchNamesOrdered != null)
+			return false;
+		if (lastOpenedScratch != null ? !lastOpenedScratch.equals(that.lastOpenedScratch) : that.lastOpenedScratch != null)
 			return false;
 		if (newScratchAppendType != that.newScratchAppendType) return false;
 		if (scratchesFolderPath != null ? !scratchesFolderPath.equals(that.scratchesFolderPath) : that.scratchesFolderPath != null)
@@ -144,13 +167,14 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		return true;
 	}
 
-	@Override
-	public int hashCode() {
+	@Override public int hashCode() {
 		int result = (isNeedMigration ? 1 : 0);
 		result = 31 * result + (isListenToClipboard ? 1 : 0);
 		result = 31 * result + (fullScratchNamesOrdered != null ? fullScratchNamesOrdered.hashCode() : 0);
+		result = 31 * result + (lastOpenedScratch != null ? lastOpenedScratch.hashCode() : 0);
 		result = 31 * result + (clipboardAppendType != null ? clipboardAppendType.hashCode() : 0);
 		result = 31 * result + (newScratchAppendType != null ? newScratchAppendType.hashCode() : 0);
+		result = 31 * result + (defaultScratchMeaning != null ? defaultScratchMeaning.hashCode() : 0);
 		result = 31 * result + (scratchesFolderPath != null ? scratchesFolderPath.hashCode() : 0);
 		return result;
 	}
