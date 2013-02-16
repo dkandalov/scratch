@@ -30,23 +30,29 @@ if you have changed keyboard layout, your own shortcuts should work as well.)
 =================
  - **Listen to clipboard** and add its content to default scratch. <br/>
  In "IDE Settings -> Keymap" search for "Listen to clipboard" and assign it a shortcut (Alt+C, Alt+V is recommended :)).
+
  - **Listen to clipboard** append/prepend (default is "APPEND").<br/>
- Find folder with IntelliJ preference files ("$HOME/.IntelliJ12/options" on Windows/Linux; "$HOME/Library/Preferences/IntelliJIdea12/options" on OSX).
+ Find folder with IntelliJ preference files ("$HOME/.IntelliJ12/options" on Windows/Linux; "$HOME/Library/Preferences/IntelliJIdea12/options" on OSX).<br/>
  Edit "scratch_config.xml" to add the following line:
 ```
 <option name="clipboardAppendType" value="PREPEND"/>
 ```
+ Restart IntelliJ.
+
  - **Append/prepend new scratch to scratches list** (default is "APPEND").
  Edit "scratch_config.xml" to add the following line:
 ```
 <option name="newScratchAppendType" value="PREPEND"/>
 ```
+  Restart IntelliJ.
+
  - **Location of scratch folder**.<br/>
  Primary motivation for this is that IntelliJ data like caches and preferences can be a part of roaming profile (at least on Windows).
  Edit "scratch_config.xml" to add the following line:
 ```
 <option name="scratchesFolderPath" value="/safe/place/to/store/stuff/"/>
 ```
+ Restart IntelliJ.
 
 
 Thanks to Vojtech Krasa for insisting on new features and making me update this plugin.
