@@ -27,6 +27,8 @@ In scratches list popup:
 (* - shortcuts are copied from "Delete", "Rename" and "Generate" actions; i.e.
 if you have changed keyboard layout, your own shortcuts should work as well.)
 
+Some of these actions are also in "Main menu -> Tools -> Scratch".
+
 
 "Hidden" features
 =================
