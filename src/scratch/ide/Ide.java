@@ -185,8 +185,10 @@ public class Ide {
 
 
 	/**
-	 *  Ignore for now that it's possible to turn on clipboard listener and forget about it
+	 *  Note that it's possible to turn on clipboard listener and forget about it
 	 *  with it appending all clipboard contents to scratch forever.
+	 *
+	 *  Assume that notification on plugin start is good enough to remind user about clipboard listener.
 	 */
 	public static class ClipboardListener {
 		private static final Logger LOG = Logger.getInstance(ClipboardListener.class);

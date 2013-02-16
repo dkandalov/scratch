@@ -1,4 +1,4 @@
-<img src="https://raw.github.com/dkandalov/scratch/master/screenshot.png" alt="screenshot" title="screenshot" align="right"/>
+<img src="https://github.com/dkandalov/scratch/blob/proper-rewrite/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 
 What is this?
 =============
@@ -32,30 +32,30 @@ if you have changed keyboard layout, your own shortcuts should work as well.)
 =================
  - **Listen to clipboard** and add its content to default scratch. <br/>
  In "IDE Settings -> Keymap" search for "Listen to clipboard" and assign it a shortcut (Alt+C, Alt+V is recommended :)).
+ (Note that you can do similar thing with built-in IntelliJ clipboard.
+ E.g. Ctrl+C several words, Ctrl+Shift+V to see clipboard history, select several items.
+ If you press Ctrl+C, selected items will be joined with new lines.)
 
  - **Listen to clipboard** append/prepend (default is "APPEND").<br/>
  Find folder with IntelliJ preference files ("$HOME/.IntelliJ12/options" on Windows/Linux; "$HOME/Library/Preferences/IntelliJIdea12/options" on OSX).<br/>
- Edit "scratch_config.xml" to add the following line:
+ Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
 ```
 <option name="clipboardAppendType" value="PREPEND"/>
 ```
- Restart IntelliJ.
 
  - **Append/prepend new scratch to scratches list** (default is "APPEND").
- Edit "scratch_config.xml" to add the following line:
+ Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
 ```
 <option name="newScratchAppendType" value="PREPEND"/>
 ```
-  Restart IntelliJ.
 
  - **Location of scratch folder**.<br/>
  Primary motivation for this is that IntelliJ data like caches and preferences can be a part of roaming profile by default (at least on Windows).
  In other words your data and scratches might end up on other computer.
- Edit "scratch_config.xml" to add the following line:
+ Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
 ```
 <option name="scratchesFolderPath" value="/safe/place/to/store/my/stuff/"/>
 ```
- Restart IntelliJ.
 
 
 Thanks to Vojtech Krasa for insisting on new features and making me update this plugin.
