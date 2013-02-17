@@ -124,7 +124,11 @@ public class MrScratchManager {
 		if (config.defaultScratchMeaning == TOPMOST) {
 			scratch = config.scratches.get(0);
 		} else if (config.defaultScratchMeaning == LAST_OPENED) {
-			scratch = (config.lastOpenedScratch != null ? config.lastOpenedScratch : config.scratches.get(0));
+			if (config.lastOpenedScratch != null && fileSystem.scratchFileExists(config.lastOpenedScratch.asFileName())){
+				scratch = config.lastOpenedScratch;
+			} else {
+				scratch = config.scratches.get(0);
+			}
 		} else {
 			throw new IllegalStateException();
 		}
