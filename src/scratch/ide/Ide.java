@@ -52,7 +52,8 @@ public class Ide {
 	private final FileSystem fileSystem;
 	private final ScratchLog log;
 
-	public int scratchListIndex;
+	private int scratchListSelectedIndex;
+	private ScratchListPopup popup;
 
 
 	public Ide(FileSystem fileSystem, ScratchLog log) {
@@ -66,8 +67,8 @@ public class Ide {
 
 	public void displayScratchesListPopup(List<Scratch> scratches, final UserDataHolder userDataHolder) {
 		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
-		popupStep.setDefaultOptionIndex(scratchListIndex);
-		ScratchListPopup popup = new ScratchListPopup(popupStep) {
+		popupStep.setDefaultOptionIndex(scratchListSelectedIndex);
+		popup = new ScratchListPopup(popupStep) {
 
 			@Override protected void onNewScratch() {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -94,7 +95,8 @@ public class Ide {
 			}
 
 			@Override public void dispose() {
-				scratchListIndex = getSelectedIndex();
+				scratchListSelectedIndex = getSelectedIndex();
+				if (popup == this) popup = null; // should not happen, but in case it can to avoid "dead" reference
 				super.dispose();
 			}
 		};
@@ -181,6 +183,8 @@ public class Ide {
 		if (userAnswer == Messages.NO) return;
 
 		mrScratchManager().userWantsToDeleteScratch(scratch);
+
+		if (popup != null) popup.delete(scratch);
 	}
 
 

@@ -61,6 +61,15 @@ class PopupModelWithMovableItems extends AbstractListModel {
 		return newIndex;
 	}
 
+	public void deleteItem(final Object item) {
+		final int i = myOriginalList.indexOf(item);
+		if (i >= 0) {
+			myOriginalList.remove(i);
+			rebuildLists();
+			fireContentsChanged(this, 0, myFilteredList.size());
+		}
+	}
+
 	@Nullable
 	public Object get(final int i) {
 		if (i >= 0 && i < myFilteredList.size()) {
