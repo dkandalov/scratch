@@ -103,6 +103,10 @@ public class Ide {
 		popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder));
 	}
 
+	public int getScratchListSelectedIndex() {
+		return scratchListSelectedIndex;
+	}
+
 	public void openScratch(Scratch scratch, UserDataHolder userDataHolder) {
 		Project project = takeProjectFrom(userDataHolder);
 

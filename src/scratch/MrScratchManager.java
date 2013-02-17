@@ -122,7 +122,7 @@ public class MrScratchManager {
 
 		Scratch scratch;
 		if (config.defaultScratchMeaning == TOPMOST) {
-			scratch = config.scratches.get(0);
+			scratch = config.scratches.get(config.scratches.size()>ide.getScratchListSelectedIndex()?ide.getScratchListSelectedIndex():0);
 		} else if (config.defaultScratchMeaning == LAST_OPENED) {
 			scratch = (config.lastOpenedScratch != null ? config.lastOpenedScratch : config.scratches.get(0));
 		} else {
