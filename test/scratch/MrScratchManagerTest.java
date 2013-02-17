@@ -260,7 +260,7 @@ public class MrScratchManagerTest {
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
-		verify(log).failedToOpenDefaultScratch();
+		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
 		verifyNoMoreInteractions(ide, fileSystem, log);
 	}
 

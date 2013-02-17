@@ -116,7 +116,7 @@ public class MrScratchManager {
 
 	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
 		if (config.scratches.isEmpty()) {
-			log.failedToOpenDefaultScratch();
+			userWantsToEnterNewScratchName(userDataHolder);
 			return;
 		}
 
