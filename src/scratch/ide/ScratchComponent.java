@@ -52,6 +52,7 @@ public class ScratchComponent implements ApplicationComponent {
 		}
 
 		new Ide.ClipboardListener(mrScratchManager).startListening();
+		new Ide.OpenEditorTracker(mrScratchManager, fileSystem).startTracking();
 
 		if (config.listenToClipboard)
 			log.listeningToClipboard(true);

@@ -81,7 +81,6 @@ public class MrScratchManager {
 
 	public void userWantsToOpenScratch(Scratch scratch, UserDataHolder userDataHolder) {
 		if (fileSystem.scratchFileExists(scratch.asFileName())) {
-			updateConfig(config.withLastOpenedScratch(scratch));
 			ide.openScratch(scratch, userDataHolder);
 		} else {
 			log.failedToOpen(scratch);
@@ -115,7 +114,6 @@ public class MrScratchManager {
 
 	private void openTopmostScratch(UserDataHolder userDataHolder) {
 		Scratch scratch = config.scratches.get(0);
-		updateConfig(config.withLastOpenedScratch(scratch));
 		ide.openScratch(scratch, userDataHolder);
 	}
 
@@ -127,10 +125,19 @@ public class MrScratchManager {
 		return config.defaultScratchMeaning;
 	}
 
-	public void userWantsToEditScratchName(final String scratchFileName) {
+	public void userOpenedScratch(String scratchFileName) {
 		Scratch scratch = findByFileName(scratchFileName);
-		if (scratch != null)
+		if (scratch != null) {
+			updateConfig(config.withLastOpenedScratch(scratch));
+		}
+	}
+
+
+	public void userWantsToEditScratchName(String scratchFileName) {
+		Scratch scratch = findByFileName(scratchFileName);
+		if (scratch != null) {
 			userWantsToEditScratchName(scratch);
+		}
 	}
 
 	public void userWantsToEditScratchName(Scratch scratch) {
@@ -227,7 +234,7 @@ public class MrScratchManager {
 		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
-			updateConfig(config.add(scratch).withLastOpenedScratch(scratch));
+			updateConfig(config.add(scratch));
 			ide.openScratch(scratch, userDataHolder);
 		} else {
 			log.failedToCreate(scratch);

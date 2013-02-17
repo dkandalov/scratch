@@ -198,7 +198,6 @@ public class MrScratchManagerTest {
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 		verify(ide).openScratch(eq(scratch), same(USER_DATA));
-		verify(ide).persistConfig(config.withLastOpenedScratch(scratch));
 	}
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
@@ -227,7 +226,6 @@ public class MrScratchManagerTest {
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
 		verify(ide).openScratch(eq(scratch1), same(USER_DATA));
-		verify(ide).persistConfig(eq(config.withLastOpenedScratch(scratch1)));
 	}
 
 	@Test public void openingDefaultScratch_when_itCanBeOpened_and_configured_asLastOpened() {
@@ -266,6 +264,15 @@ public class MrScratchManagerTest {
 
 		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
 		verifyNoMoreInteractions(ide, log);
+	}
+
+	@Test public void shouldUpdateConfig_when_scratchIsOpened() {
+		ScratchConfig config = defaultConfig.with(list(scratch("scratch&1.txt"), scratch("scratch&2.txt")));
+		mrScratchManager = scratchManagerWith(config);
+
+		mrScratchManager.userOpenedScratch("scratch2.txt");
+
+		verify(ide).persistConfig(config.withLastOpenedScratch(scratch("scratch&2.txt")));
 	}
 
 
@@ -430,7 +437,7 @@ public class MrScratchManagerTest {
 		verify(ide).persistConfig(eq(defaultConfig.with(list(
 				scratch("scratch0.txt"),
 				scratch("&scratch.txt")
-		)).withLastOpenedScratch(scratch("&scratch.txt"))));
+		))));
 		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
 		verifyNoMoreInteractions(ide, fileSystem);
 	}
@@ -448,7 +455,7 @@ public class MrScratchManagerTest {
 		verify(ide).persistConfig(eq(config.with(list(
 				scratch("&scratch.txt"),
 				scratch("scratch0.txt")
-		)).withLastOpenedScratch(scratch("&scratch.txt"))));
+		))));
 		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
 		verifyNoMoreInteractions(ide, fileSystem);
 	}

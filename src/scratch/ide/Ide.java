@@ -18,13 +18,18 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerAdapter;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.messages.MessageBusConnection;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
@@ -40,7 +45,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
+import static com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
@@ -230,4 +238,40 @@ public class Ide {
 		}
 	}
 
+	public static class OpenEditorTracker {
+		private final MrScratchManager mrScratchManager;
+		private final FileSystem fileSystem;
+		// use WeakHashMap "just in case" to avoid keeping project references
+		private final Map<Project, MessageBusConnection> connectionsByProject = new WeakHashMap<Project, MessageBusConnection>();
+
+		public OpenEditorTracker(MrScratchManager mrScratchManager, FileSystem fileSystem) {
+			this.mrScratchManager = mrScratchManager;
+			this.fileSystem = fileSystem;
+		}
+
+		public OpenEditorTracker startTracking() {
+			ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
+				@Override public void projectOpened(Project project) {
+					MessageBusConnection connection = project.getMessageBus().connect();
+					connection.subscribe(FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
+						@Override public void selectionChanged(FileEditorManagerEvent event) {
+							VirtualFile virtualFile = event.getNewFile();
+							if (virtualFile == null) return;
+
+							if (fileSystem.isScratch(virtualFile)) {
+								mrScratchManager.userOpenedScratch(virtualFile.getName());
+							}
+						}
+					});
+					connectionsByProject.put(project, connection);
+				}
+
+				@Override public void projectClosed(Project project) {
+					MessageBusConnection connection = connectionsByProject.remove(project);
+					if (connection != null) connection.disconnect();
+				}
+			});
+			return this;
+		}
+	}
 }
