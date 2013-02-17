@@ -245,6 +245,22 @@ public class MrScratchManagerTest {
 		verifyNoMoreInteractions(ide);
 	}
 
+	@Test public void openingDefaultScratch_when_itIsLastOpened_but_doesNotExist() {
+		Scratch scratch1 = scratch("scratch1.txt");
+		Scratch scratch2 = scratch("scratch2.txt");
+		ScratchConfig config = defaultConfig
+				.with(list(scratch1, scratch2))
+				.withDefaultScratchMeaning(LAST_OPENED)
+				.withLastOpenedScratch(scratch2);
+		mrScratchManager = scratchManagerWith(config);
+		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName()));
+		when(fileSystem.scratchFileExists(scratch1.asFileName())).thenReturn(true);
+
+		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+
+		verify(ide).openScratch(eq(scratch1), same(USER_DATA));
+	}
+
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
 		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
@@ -276,15 +292,31 @@ public class MrScratchManagerTest {
 	}
 
 
-	@Test public void appendingClipboardTextToDefaultScratch() {
-		Scratch scratch = scratch("scratch.txt");
-		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
-		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
+	@Test public void appendingClipboardTextTo_TopmostScratch() {
+		Scratch scratch1 = scratch("scratch1.txt");
+		Scratch scratch2 = scratch("scratch2.txt");
+		mrScratchManager = scratchManagerWith(defaultConfig
+				.with(list(scratch1, scratch2))
+				.withDefaultScratchMeaning(TOPMOST));
+		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
 
 		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");
 
-		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).addTextTo(eq(scratch), eq("clipboard text"), any(AppendType.class));
+		verify(ide).addTextTo(eq(scratch1), eq("clipboard text"), any(AppendType.class));
+	}
+
+	@Test public void appendingClipboardTextTo_LastOpenedScratch() {
+		Scratch scratch1 = scratch("scratch1.txt");
+		Scratch scratch2 = scratch("scratch2.txt");
+		mrScratchManager = scratchManagerWith(defaultConfig
+				.with(list(scratch1, scratch2))
+				.withDefaultScratchMeaning(LAST_OPENED)
+				.withLastOpenedScratch(scratch2));
+		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
+
+		mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text");
+
+		verify(ide).addTextTo(eq(scratch2), eq("clipboard text"), any(AppendType.class));
 	}
 
 	@Test public void appendingClipboardTextToDefaultScratch_when_scratchListIsEmpty() {

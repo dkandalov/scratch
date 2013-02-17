@@ -194,7 +194,7 @@ public class Ide {
 
 	/**
 	 *  Note that it's possible to turn on clipboard listener and forget about it
-	 *  with it appending all clipboard contents to scratch forever.
+	 *  with it appending clipboard content to default scratch forever.
 	 *
 	 *  Assume that notification on plugin start is good enough to remind user about clipboard listener.
 	 */

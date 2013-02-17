@@ -8,7 +8,7 @@ It quickly opens temporary editor tab.
 <br/>
 Can be useful if you want to type something quickly without having to create new file or switch to another editor.
 
-You can install it from IntelliJ plugin manager. Should be compatible with IntelliJ 11 upwards.
+You can install it from IntelliJ plugin manager. It should be compatible with IntelliJ 11 upwards.
 (Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
 
 
@@ -20,13 +20,13 @@ How to use?
  - Alt+C, Alt+A - add new scratch
 
 In scratches list popup:
- - Alt+Up/Down - move scratches
+ - Alt+Up/Down - move scratch
  - Delete* - delete scratch
  - Shift+F6* - rename scratch
  - Alt+Insert* - add new scratch
 
 (* - shortcuts are copied from "Delete", "Rename" and "Generate" actions; i.e.
-if you have changed keyboard layout, your own shortcuts should work as well.)
+if you have changed keyboard layout, your own shortcuts should work as well)
 
 Some of these actions are also in "Tools -> Scratch" menu.
 
@@ -53,12 +53,13 @@ Some of these actions are also in "Tools -> Scratch" menu.
 ```
 
  - **Location of scratch folder**.<br/>
- Primary motivation for this is that IntelliJ data like caches and preferences can be a part of roaming profile by default (at least on Windows).
- In other words your data and scratches might end up on other computer.
- Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
+ Primary motivation for this was that IntelliJ data like caches and preferences can be a part of roaming profile by default (at least on Windows).
+ In other words all your caches, preferences and scratches might end up on another computer.
+ If it bothers you, it's probably better to reconfigure IntelliJ to store files somewhere else.
+ You can also reconfigure just scratches folder. Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
 ```
 <option name="scratchesFolderPath" value="/safe/place/to/store/my/stuff/"/>
 ```
 
 
-Thanks to [Vojtěch Krása](https://github.com/krasa) for insisting on new features and making me update this plugin.
+Thanks to [Vojtěch Krása](https://github.com/krasa) for insisting on new features, making me update this plugin and testing it.

@@ -27,8 +27,6 @@ import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.*;
 import static scratch.ScratchConfig.DefaultScratchMeaning;
-import static scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED;
-import static scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST;
 
 
 public class MrScratchManager {
@@ -95,26 +93,7 @@ public class MrScratchManager {
 			return;
 		}
 
-		if (config.defaultScratchMeaning == TOPMOST) {
-			openTopmostScratch(userDataHolder);
-		} else if (config.defaultScratchMeaning == LAST_OPENED) {
-			openLastOpenedScratch(userDataHolder);
-		} else {
-			throw new IllegalStateException();
-		}
-	}
-
-	private void openLastOpenedScratch(UserDataHolder userDataHolder) {
-		if (config.lastOpenedScratch != null && fileSystem.scratchFileExists(config.lastOpenedScratch.asFileName())) {
-			ide.openScratch(config.lastOpenedScratch, userDataHolder);
-		} else {
-			openTopmostScratch(userDataHolder);
-		}
-	}
-
-	private void openTopmostScratch(UserDataHolder userDataHolder) {
-		Scratch scratch = config.scratches.get(0);
-		ide.openScratch(scratch, userDataHolder);
+		ide.openScratch(getDefaultScratch(), userDataHolder);
 	}
 
 	public void userWantsToChangeMeaningOfDefaultScratch(DefaultScratchMeaning value) {
@@ -187,7 +166,7 @@ public class MrScratchManager {
 		if (config.scratches.isEmpty()) {
 			log.failedToOpenDefaultScratch();
 		} else {
-			Scratch scratch = config.scratches.get(0);
+			Scratch scratch = getDefaultScratch();
 			if (fileSystem.scratchFileExists(scratch.asFileName())) {
 				ide.addTextTo(scratch, clipboardText, config.clipboardAppendType);
 			} else {
@@ -288,7 +267,22 @@ public class MrScratchManager {
 
 		List<Scratch> scratches = concat(oldScratches, newScratches);
 		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
-			updateConfig(config.with(scratches));
+			ScratchConfig newConfig = config.with(scratches);
+			if (!scratches.contains(config.lastOpenedScratch)) {
+				newConfig = newConfig.withLastOpenedScratch(null);
+			}
+			updateConfig(newConfig);
+		}
+	}
+
+	private Scratch getDefaultScratch() {
+		switch (config.defaultScratchMeaning) {
+			case TOPMOST:
+				return config.scratches.get(0);
+			case LAST_OPENED:
+				return config.lastOpenedScratch != null ? config.lastOpenedScratch : config.scratches.get(0);
+			default:
+				throw new IllegalStateException();
 		}
 	}
 
