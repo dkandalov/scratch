@@ -21,6 +21,7 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
 import scratch.ide.ScratchLog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.list;
@@ -220,6 +221,7 @@ public class MrScratchManagerTest {
 				.withDefaultScratchMeaning(TOPMOST)
 				.withLastOpenedScratch(scratch2);
 		mrScratchManager = scratchManagerWith(config);
+		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName(), scratch2.asFileName()));
 		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
@@ -236,6 +238,7 @@ public class MrScratchManagerTest {
 				.withDefaultScratchMeaning(LAST_OPENED)
 				.withLastOpenedScratch(scratch2);
 		mrScratchManager = scratchManagerWith(config);
+		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName(), scratch2.asFileName()));
 		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
@@ -246,22 +249,23 @@ public class MrScratchManagerTest {
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
-		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
+		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
-		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 
-		verify(log).failedToOpenDefaultScratch();
-		verifyNoMoreInteractions(ide, fileSystem, log);
+		verify(ide).persistConfig(defaultConfig);
+		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
+		verifyNoMoreInteractions(ide, log);
 	}
 
 	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
 		mrScratchManager = scratchManagerWith(defaultConfig);
+		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
 
 		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
 
 		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
-		verifyNoMoreInteractions(ide, fileSystem, log);
+		verifyNoMoreInteractions(ide, log);
 	}
 
 

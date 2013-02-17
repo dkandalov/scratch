@@ -107,6 +107,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
 				if (scratch != null) {
+					ScratchListPopup.this.dispose();
 					onScratchDelete(scratch);
 				}
 			}

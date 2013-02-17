@@ -75,34 +75,8 @@ public class MrScratchManager {
 
 
 	public void userWantsToSeeScratchesList(UserDataHolder userDataHolder) {
-		final List<String> fileNames = fileSystem.listScratchFiles();
-
-		final List<Scratch> oldScratches = findAll(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return fileNames.contains(it.asFileName());
-			}
-		});
-		Condition<String> whichAreNewFiles = new Condition<String>() {
-			@Override public boolean value(final String fileName) {
-				return !exists(oldScratches, new Condition<Scratch>() {
-					@Override public boolean value(Scratch scratch) {
-						return fileName.equals(scratch.asFileName());
-					}
-				});
-			}
-		};
-		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
-		List<Scratch> newScratches = map(newFileNames, new Function<String, Scratch>() {
-			@Override public Scratch fun(String it) {
-				return Scratch.createFrom(it);
-			}
-		});
-
-		List<Scratch> scratches = concat(oldScratches, newScratches);
-		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
-			updateConfig(config.with(scratches));
-		}
-		ide.displayScratchesListPopup(scratches, userDataHolder);
+		syncScratchesWithFileSystem();
+		ide.displayScratchesListPopup(config.scratches, userDataHolder);
 	}
 
 	public void userWantsToOpenScratch(Scratch scratch, UserDataHolder userDataHolder) {
@@ -115,6 +89,8 @@ public class MrScratchManager {
 	}
 
 	public void userWantsToOpenDefaultScratch(UserDataHolder userDataHolder) {
+		syncScratchesWithFileSystem();
+
 		if (config.scratches.isEmpty()) {
 			userWantsToEnterNewScratchName(userDataHolder);
 			return;
@@ -139,12 +115,8 @@ public class MrScratchManager {
 
 	private void openTopmostScratch(UserDataHolder userDataHolder) {
 		Scratch scratch = config.scratches.get(0);
-		if (fileSystem.scratchFileExists(scratch.asFileName())) {
-			updateConfig(config.withLastOpenedScratch(scratch));
-			ide.openScratch(scratch, userDataHolder);
-		} else {
-			log.failedToOpenDefaultScratch();
-		}
+		updateConfig(config.withLastOpenedScratch(scratch));
+		ide.openScratch(scratch, userDataHolder);
 	}
 
 	public void userWantsToChangeMeaningOfDefaultScratch(DefaultScratchMeaning value) {
@@ -282,6 +254,36 @@ public class MrScratchManager {
 		}
 	}
 
+
+	private void syncScratchesWithFileSystem() {
+		final List<String> fileNames = fileSystem.listScratchFiles();
+
+		final List<Scratch> oldScratches = findAll(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return fileNames.contains(it.asFileName());
+			}
+		});
+		Condition<String> whichAreNewFiles = new Condition<String>() {
+			@Override public boolean value(final String fileName) {
+				return !exists(oldScratches, new Condition<Scratch>() {
+					@Override public boolean value(Scratch scratch) {
+						return fileName.equals(scratch.asFileName());
+					}
+				});
+			}
+		};
+		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
+		List<Scratch> newScratches = map(newFileNames, new Function<String, Scratch>() {
+			@Override public Scratch fun(String it) {
+				return Scratch.createFrom(it);
+			}
+		});
+
+		List<Scratch> scratches = concat(oldScratches, newScratches);
+		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
+			updateConfig(config.with(scratches));
+		}
+	}
 
 	private boolean isUniqueScratchName(final String name) {
 		return !exists(config.scratches, new Condition<Scratch>() {
