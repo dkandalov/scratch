@@ -317,12 +317,12 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			}
 		});
 
-		registerAction("handleSelection2", KeyEvent.VK_RIGHT, 0, new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				handleSelect(false);
-			}
-		});
+//		registerAction("handleSelection2", KeyEvent.VK_RIGHT, 0, new AbstractAction() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				handleSelect(false);
+//			}
+//		});
 
 		registerAction("goBack2", KeyEvent.VK_LEFT, 0, new AbstractAction() {
 			@Override
