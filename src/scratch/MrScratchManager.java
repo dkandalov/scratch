@@ -120,19 +120,25 @@ public class MrScratchManager {
 			return;
 		}
 
-		Scratch scratch;
 		if (config.defaultScratchMeaning == TOPMOST) {
-			scratch = config.scratches.get(0);
+			openTopmostScratch(userDataHolder);
 		} else if (config.defaultScratchMeaning == LAST_OPENED) {
-			if (config.lastOpenedScratch != null && fileSystem.scratchFileExists(config.lastOpenedScratch.asFileName())){
-				scratch = config.lastOpenedScratch;
-			} else {
-				scratch = config.scratches.get(0);
-			}
+			openLastOpenedScratch(userDataHolder);
 		} else {
 			throw new IllegalStateException();
 		}
+	}
 
+	private void openLastOpenedScratch(UserDataHolder userDataHolder) {
+		if (config.lastOpenedScratch != null && fileSystem.scratchFileExists(config.lastOpenedScratch.asFileName())) {
+			ide.openScratch(config.lastOpenedScratch, userDataHolder);
+		} else {
+			openTopmostScratch(userDataHolder);
+		}
+	}
+
+	private void openTopmostScratch(UserDataHolder userDataHolder) {
+		Scratch scratch = config.scratches.get(0);
 		if (fileSystem.scratchFileExists(scratch.asFileName())) {
 			updateConfig(config.withLastOpenedScratch(scratch));
 			ide.openScratch(scratch, userDataHolder);
