@@ -30,6 +30,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
+import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
@@ -185,8 +186,8 @@ public class Ide {
 
 	public void showDeleteDialogFor(Scratch scratch) {
 		String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
-		int userAnswer = Messages.showYesNoDialog(message, "Delete Scratch", NO_ICON);
-		if (userAnswer == Messages.NO) return;
+		int userAnswer = Messages.showOkCancelDialog(message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
+		if (userAnswer != Messages.OK) return;
 
 		mrScratchManager().userWantsToDeleteScratch(scratch);
 	}
