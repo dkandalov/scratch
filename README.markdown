@@ -6,7 +6,7 @@ What is this?
 This is a plugin for IntelliJ IDEA (and other IntelliJ IDEs).
 It quickly opens temporary editor tab.
 <br/>
-Can be useful if you want to type something quickly without having to create new file or switch to another editor.
+Can be useful if you want to type something without having to create new file or switch to another editor.
 
 You can install it from IntelliJ plugin manager. It should be compatible with IntelliJ 11 upwards.
 (Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
