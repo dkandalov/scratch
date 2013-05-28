@@ -1,7 +1,6 @@
 <img src="https://github.com/dkandalov/scratch/blob/proper-rewrite/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 
-What is this?
-=============
+### What is this?
 
 This is a plugin for IntelliJ IDEA (and other IntelliJ IDEs).
 It quickly opens temporary editor tab.
@@ -12,8 +11,7 @@ You can install it from IntelliJ plugin manager. It should be compatible with In
 (Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
 
 
-How to use?
-===========
+### How to use?
  - Alt+C, Alt+C - open default scratch
  (it can be 'last opened' or 'topmost in scratches list'; see "Tools -> Scratch -> Default Scratch")
  - Alt+C, Alt+S - open list with all scratches
@@ -31,8 +29,7 @@ if you have changed keyboard layout, your own shortcuts should work as well)
 Some of these actions are also in "Tools -> Scratch" menu.
 
 
-"Hidden" features
-=================
+### "Hidden" features
  - **Listen to clipboard and add its content to default scratch**. <br/>
  In "IDE Settings -> Keymap" search for "Listen to clipboard" and assign it a shortcut (Alt+C, Alt+V is recommended :)).
  (Note that you can do similar thing with built-in IntelliJ clipboard.
