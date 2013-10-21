@@ -3,7 +3,13 @@
 ### What is this?
 
 This is a plugin for IntelliJ IDEA (and other IntelliJ IDEs).
-It quickly opens temporary editor tab.
+It quickly opens a temporary editor tab. Temporary here means that the content of the tab
+is not saved to a file in your project, so your directory will not get cluttered.
+<br/>
+The Scratch plugin saves the contents of the temporary editor tab internally: after restarting
+IntelliJ IDEA you will still have access to the content.
+<br/>
+The Scratch plugin can offer you multiple temporary editor tabs, one of which can be made the default.
 <br/>
 Can be useful if you want to type something without having to create new file or switch to another editor.
 
