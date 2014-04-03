@@ -60,6 +60,7 @@ import static scratch.ide.popup.ScratchListElementRenderer.NextStep;
 @SuppressWarnings("unchecked")
 public abstract class ScratchListPopup extends WizardPopup implements ListPopup {
 	private static final String DELETE_ACTION_ID = "$Delete";
+	private static final String DELETE_NO_PROMPT_ACTION_ID = "$DeleteNoPrompt";
 	private static final String GENERATE_ACTION_ID = "Generate";
 	private static final String RENAME_ACTION_ID = "RenameElement";
 	private static final int MY_MAX_ROW_COUNT = 20;
@@ -113,6 +114,17 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			}
 		});
 
+        keyStrokes = copyKeyStrokesFromAction(DELETE_NO_PROMPT_ACTION_ID, KeyStroke.getKeyStroke("ctrl DELETE"));
+        registerAction("deleteScratchWithoutPrompt", keyStrokes, new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent event) {
+                Scratch scratch = selectedScratch();
+                if (scratch != null) {
+                    onScratchDeleteWithoutPrompt(scratch);
+                    delete(scratch);
+                }
+            }
+        });
+
 		registerAction("moveScratchUp", KeyStroke.getKeyStroke("alt UP"), new AbstractAction() {
 			@Override public void actionPerformed(ActionEvent event) {
 				Scratch scratch = selectedScratch();
@@ -138,6 +150,8 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	protected void onRenameScratch(Scratch scratch) {}
 
 	protected void onScratchDelete(Scratch scratch) {}
+
+    protected void onScratchDeleteWithoutPrompt(Scratch scratch) {}
 
 	protected void onScratchMoved(Scratch scratch, int down) {}
 
