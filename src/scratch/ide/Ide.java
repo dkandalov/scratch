@@ -98,6 +98,10 @@ public class Ide {
 				mrScratchManager().userAttemptedToDeleteScratch(scratch);
 			}
 
+            @Override protected void onScratchDeleteWithoutPrompt(Scratch scratch) {
+                mrScratchManager().userWantsToDeleteScratch(scratch);
+            }
+
 			@Override protected void onScratchMoved(Scratch scratch, int shift) {
 				mrScratchManager().userMovedScratch(scratch, shift);
 			}
