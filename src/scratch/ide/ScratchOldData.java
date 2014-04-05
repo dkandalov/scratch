@@ -82,7 +82,7 @@ public class ScratchOldData implements PersistentStateComponent<ScratchOldData> 
 
 	@Override
 	public int hashCode() {
-		return scratchTexts == null ? 0 : Arrays.hashCode(scratchTexts);
+		return Arrays.hashCode(scratchTexts);
 	}
 
 	public static class XmlUtil {

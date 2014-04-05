@@ -168,13 +168,13 @@ public class ScratchConfig {
 		if (lastOpenedScratch != null ? !lastOpenedScratch.equals(that.lastOpenedScratch) : that.lastOpenedScratch != null)
 			return false;
 		if (newScratchAppendType != that.newScratchAppendType) return false;
-		if (scratches != null ? !scratches.equals(that.scratches) : that.scratches != null) return false;
+		if (!scratches.equals(that.scratches)) return false;
 
 		return true;
 	}
 
 	@Override public int hashCode() {
-		int result = scratches != null ? scratches.hashCode() : 0;
+		int result = scratches.hashCode();
 		result = 31 * result + (lastOpenedScratch != null ? lastOpenedScratch.hashCode() : 0);
 		result = 31 * result + (needMigration ? 1 : 0);
 		result = 31 * result + (listenToClipboard ? 1 : 0);

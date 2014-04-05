@@ -106,11 +106,11 @@ class PopupModelWithMovableItems extends AbstractListModel {
 		}
 	}
 
-	public int getSize() {
+	@Override public int getSize() {
 		return myFilteredList.size();
 	}
 
-	public Object getElementAt(int index) {
+	@Override public Object getElementAt(int index) {
 		if (index >= myFilteredList.size()) {
 			return null;
 		}

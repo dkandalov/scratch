@@ -16,6 +16,7 @@ package scratch.ide.popup;
 
 import com.intellij.openapi.ui.popup.ListItemDescriptor;
 import com.intellij.openapi.ui.popup.ListPopupStep;
+import com.intellij.openapi.ui.popup.MnemonicNavigationFilter;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.popup.list.GroupedItemsListRenderer;
@@ -67,7 +68,8 @@ class ScratchListElementRenderer extends GroupedItemsListRenderer {
 		myTextLabel.setEnabled(isSelectable);
 
 		if (step.isMnemonicsNavigationEnabled()) {
-			final int pos = step.getMnemonicNavigationFilter().getMnemonicPos(value);
+			MnemonicNavigationFilter<Object> navigationFilter = step.getMnemonicNavigationFilter();
+			final int pos = (navigationFilter == null ? -1 : navigationFilter.getMnemonicPos(value));
 			if (pos != -1) {
 				String text = myTextLabel.getText();
 				text = text.substring(0, pos) + text.substring(pos + 1);
