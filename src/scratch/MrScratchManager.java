@@ -23,6 +23,7 @@ import scratch.ide.Ide;
 import scratch.ide.ScratchLog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.intellij.util.containers.ContainerUtil.*;
@@ -45,6 +46,21 @@ public class MrScratchManager {
 	public void migrate(List<String> scratchTexts) {
 		if (!fileSystem.listScratchFiles().isEmpty()) {
 			log.willNotMigrateBecauseTargetFolderIsNotEmpty();
+			return;
+		}
+		boolean allEmpty = !ContainerUtil.exists(scratchTexts, new Condition<String>() {
+			@Override public boolean value(String s) {
+				return !s.isEmpty();
+			}
+		});
+		if (allEmpty) {
+			List<Scratch> scratches = Arrays.asList(
+					Scratch.createFrom("&scratch.txt"),
+					Scratch.createFrom("scratch&2.txt"),
+					Scratch.createFrom("scratch&3.xml"),
+					Scratch.createFrom("scratch&4.xml")
+			);
+			updateConfig(config.with(scratches).needsMigration(false));
 			return;
 		}
 
