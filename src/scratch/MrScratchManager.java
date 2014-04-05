@@ -60,6 +60,9 @@ public class MrScratchManager {
 					Scratch.createFrom("scratch&3.xml"),
 					Scratch.createFrom("scratch&4.xml")
 			);
+			for (Scratch scratch : scratches) {
+				fileSystem.createEmptyFile(scratch.asFileName());
+			}
 			updateConfig(config.with(scratches).needsMigration(false));
 			return;
 		}
