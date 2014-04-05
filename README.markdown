@@ -24,10 +24,11 @@ You can install it from IntelliJ plugin manager. It should be compatible with In
  - Alt+C, Alt+A - add new scratch
 
 In scratches list popup:
- - Alt+Up/Down - move scratch
- - Delete* - delete scratch
- - Shift+F6* - rename scratch
  - Alt+Insert* - add new scratch
+ - Alt+Up/Down - move scratch
+ - Shift+F6* - rename scratch
+ - Delete* - delete scratch
+ - Ctrl+Delete - delete scratch without prompt
 
 (* - shortcuts are copied from "Delete", "Rename" and "Generate" actions; i.e.
 if you have changed keyboard layout, your own shortcuts should work as well)
