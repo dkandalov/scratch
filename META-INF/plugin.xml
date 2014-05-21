@@ -35,7 +35,7 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
-            <li>1.02 - make scratches always editable (even though they are outside of project root)</li>
+            <li>1.02 - make scratches always editable (even if they are outside of project root)</li>
             <li>1.0 - file types, uses physical files, add/rename/delete/move scratches</li>
             <li>0.17 - fix for UTF-8</li>
             <li>0.16 - fixed reference to icon</li>
