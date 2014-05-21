@@ -21,6 +21,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessProvider;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -32,6 +33,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scratch.Answer;
 import scratch.MrScratchManager;
@@ -256,14 +258,15 @@ public class Ide {
 
 		public OpenEditorTracker startTracking() {
 			ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
-				@Override public void projectOpened(Project project) {
+				@Override public void projectOpened(final Project project) {
 					MessageBusConnection connection = project.getMessageBus().connect();
 					connection.subscribe(FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
-						@Override public void selectionChanged(FileEditorManagerEvent event) {
+						@Override public void selectionChanged(@NotNull FileEditorManagerEvent event) {
 							VirtualFile virtualFile = event.getNewFile();
 							if (virtualFile == null) return;
 
 							if (fileSystem.isScratch(virtualFile)) {
+                                NonProjectFileWritingAccessProvider.allowAccess(project, virtualFile);
 								mrScratchManager.userOpenedScratch(virtualFile.getName());
 							}
 						}

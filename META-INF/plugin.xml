@@ -1,11 +1,13 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>1.01</version>
+	<version>1.02</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
-    <!-- since IntelliJ11 (http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges) -->
-	<idea-version since-build="111.0"/>
+    <!-- (see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges) -->
+    <!-- 111.0 since IntelliJ11 -->
+    <!-- 136.0 since IntelliJ14 EAP (in which NonProjectFileWritingAccessProvider was added) -->
+	<idea-version since-build="136.0"/>
 
     <description>
 		<![CDATA[<html><body>
@@ -33,10 +35,10 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
+            <li>1.02 - make scratches always editable (even though they are outside of project root)</li>
             <li>1.0 - file types, uses physical files, add/rename/delete/move scratches</li>
             <li>0.17 - fix for UTF-8</li>
             <li>0.16 - fixed reference to icon</li>
-            <li>0.15 - NPE if there are no open projects</li>
         </ul>
         </body></html>
         ]]>
