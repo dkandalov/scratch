@@ -28,6 +28,7 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerAdapter;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.NotNullLazyKey;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
@@ -47,11 +48,13 @@ import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import static com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER;
+import static com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessProvider.AccessStatus.ALLOWED;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
@@ -259,20 +262,21 @@ public class Ide {
 		public OpenEditorTracker startTracking() {
 			ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
 				@Override public void projectOpened(final Project project) {
-					MessageBusConnection connection = project.getMessageBus().connect();
-					connection.subscribe(FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
-						@Override public void selectionChanged(@NotNull FileEditorManagerEvent event) {
-							VirtualFile virtualFile = event.getNewFile();
-							if (virtualFile == null) return;
+                    MessageBusConnection connection = project.getMessageBus().connect();
+                    connection.subscribe(FILE_EDITOR_MANAGER, new FileEditorManagerAdapter() {
+                        @Override
+                        public void selectionChanged(@NotNull FileEditorManagerEvent event) {
+                            VirtualFile virtualFile = event.getNewFile();
+                            if (virtualFile == null) return;
 
-							if (fileSystem.isScratch(virtualFile)) {
-                                NonProjectFileWritingAccessProvider.allowAccess(project, virtualFile);
-								mrScratchManager.userOpenedScratch(virtualFile.getName());
-							}
-						}
-					});
-					connectionsByProject.put(project, connection);
-				}
+                            if (fileSystem.isScratch(virtualFile)) {
+                                allowAccessToNonProjectFile_HACK(virtualFile, project);
+                                mrScratchManager.userOpenedScratch(virtualFile.getName());
+                            }
+                        }
+                    });
+                    connectionsByProject.put(project, connection);
+                }
 
 				@Override public void projectClosed(Project project) {
 					MessageBusConnection connection = connectionsByProject.remove(project);
@@ -281,5 +285,33 @@ public class Ide {
 			});
 			return this;
 		}
-	}
+
+        private static void allowAccessToNonProjectFile_HACK(VirtualFile virtualFile, Project project) {
+            try {
+                Field field = findAccessStatusField();
+                if (field == null) return;
+
+                field.setAccessible(true);
+                @SuppressWarnings("unchecked")
+                NotNullLazyKey<Map<VirtualFile, NonProjectFileWritingAccessProvider.AccessStatus>, Project> map =
+                        (NotNullLazyKey<Map<VirtualFile, NonProjectFileWritingAccessProvider.AccessStatus>, Project>) field.get(null);
+
+                map.getValue(project).put(virtualFile, ALLOWED);
+
+            } catch (IllegalAccessException ignore) {
+            }
+        }
+
+        private static Field findAccessStatusField() {
+            try {
+                return NonProjectFileWritingAccessProvider.class.getDeclaredField("ACCESS_STATUS");
+            } catch (NoSuchFieldException e) {
+                // searching by type because field name might be obfuscated (e.g. seen in PhpStorm)
+                for (Field field : NonProjectFileWritingAccessProvider.class.getDeclaredFields()) {
+                    if (field.getType().equals(NotNullLazyKey.class)) return field;
+                }
+                return null;
+            }
+        }
+    }
 }
