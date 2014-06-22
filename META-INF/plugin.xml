@@ -1,13 +1,13 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>1.04</version>
+	<version>1.05</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges) -->
     <!-- 111.0 since IntelliJ11 -->
     <!-- 136.0 since IntelliJ14 EAP (in which NonProjectFileWritingAccessProvider was added) -->
-	<idea-version since-build="136.0"/>
+	<idea-version since-build="111.0"/>
 
     <description>
 		<![CDATA[<html><body>
