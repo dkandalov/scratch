@@ -14,13 +14,13 @@
 
 package scratch.ide;
 
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ApplicationComponent;
 import org.jetbrains.annotations.NotNull;
 import scratch.MrScratchManager;
 import scratch.ScratchConfig;
 import scratch.filesystem.FileSystem;
 
+import static com.intellij.openapi.application.ApplicationManager.getApplication;
 import static java.util.Arrays.asList;
 
 public class ScratchComponent implements ApplicationComponent {
@@ -29,11 +29,11 @@ public class ScratchComponent implements ApplicationComponent {
 	private FileSystem fileSystem;
 
 	public static MrScratchManager mrScratchManager() {
-		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).mrScratchManager;
+		return getApplication().getComponent(ScratchComponent.class).mrScratchManager;
 	}
 
 	public static FileSystem fileSystem() {
-		return ApplicationManager.getApplication().getComponent(ScratchComponent.class).fileSystem;
+		return getApplication().getComponent(ScratchComponent.class).fileSystem;
 	}
 
 	@Override
@@ -47,8 +47,12 @@ public class ScratchComponent implements ApplicationComponent {
 		mrScratchManager = new MrScratchManager(ide, fileSystem, config, log);
 
 		if (config.needMigration) {
-			ScratchOldData scratchOldData = ScratchOldData.getInstance();
-			mrScratchManager.migrate(asList(scratchOldData.getScratchTextInternal()));
+            getApplication().invokeLater(new Runnable() {
+                @Override public void run() {
+                    ScratchOldData scratchOldData = ScratchOldData.getInstance();
+                    mrScratchManager.migrate(asList(scratchOldData.getScratchTextInternal()));
+                }
+            });
 		}
 
 		new Ide.ClipboardListener(mrScratchManager).startListening();
