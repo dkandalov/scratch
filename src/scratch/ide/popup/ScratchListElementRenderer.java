@@ -19,7 +19,6 @@ import com.intellij.openapi.ui.popup.ListPopupStep;
 import com.intellij.openapi.ui.popup.MnemonicNavigationFilter;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.ColorUtil;
-import com.intellij.ui.popup.list.GroupedItemsListRenderer;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
