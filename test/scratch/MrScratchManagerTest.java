@@ -82,13 +82,13 @@ public class MrScratchManagerTest {
 		mrScratchManager.migrate(scratches);
 
 		verify(ide).persistConfig(eq(defaultConfig
-				.with(list(
-						scratch("&scratch.txt"),
-						scratch("scratch&2.txt"),
-						scratch("scratch&3.txt"),
-						scratch("scratch&4.txt"),
-						scratch("scratch&5.txt")))
-				.needsMigration(false)
+						.with(list(
+								scratch("&scratch.txt"),
+								scratch("scratch&2.txt"),
+								scratch("scratch&3.txt"),
+								scratch("scratch&4.txt"),
+								scratch("scratch&5.txt")))
+						.needsMigration(false)
 		));
 	}
 
@@ -119,12 +119,12 @@ public class MrScratchManagerTest {
 		mrScratchManager.migrate(scratches);
 
 		verify(ide).persistConfig(eq(defaultConfig
-				.with(list(
-						scratch("&scratch.txt"),
-						scratch("scratch&2.txt"),
-						scratch("scratch&5.txt")
-				))
-				.needsMigration(false)
+						.with(list(
+								scratch("&scratch.txt"),
+								scratch("scratch&2.txt"),
+								scratch("scratch&5.txt")
+						))
+						.needsMigration(false)
 		));
 	}
 
@@ -415,15 +415,37 @@ public class MrScratchManagerTest {
 		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(USER_DATA));
 	}
 
+	/**
+	 * The names which have an extension different from the default (txt) should not influence the
+	 * default scratch name counter
+	 */
 	@Test public void enteringNewScratchName_when_thereAreExistingScratches() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
+				scratch("scratch1.txt"),
+				scratch("scratch.txt")
+		)));
+
+		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
+
+		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(USER_DATA));
+	}
+
+	/**
+	 * The scratches with names which have an extension different from the default (txt) should not influence the
+	 * default scratch name counter
+	 */
+	@Test public void enteringNewScratchName_when_thereAreExistingScratchesNonTxtScratches() {
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
+				scratch("scratch3.js"),
+				scratch("scratch2.xml"),
+				scratch("scratch1.xml"),
 				scratch("scratch1.java"),
 				scratch("scratch.java")
 		)));
 
 		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
 
-		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(USER_DATA));
+		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(USER_DATA));
 	}
 
 	@Test public void canCreateNewScratch_when_nameIsUnique() {
@@ -437,13 +459,24 @@ public class MrScratchManagerTest {
 		verifyNoMoreInteractions(ide, fileSystem);
 	}
 
-	@Test public void canCreateNewScratch_when_thereIsScratchWithSameName() {
+	@Test public void canCreateNewScratch_when_thereIsScratchWithSameNameAndExtension() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
 
 		Answer answer = mrScratchManager.checkIfUserCanCreateScratchWithName("&scratch.txt");
 		assertTrue(answer.isNo);
 
 		verifyZeroInteractions(ide, fileSystem);
+	}
+
+	@Test public void canCreateNewScratch_when_thereIsScratchWithSameNameButDifferentExtension() {
+		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
+		when(fileSystem.isValidScratchName(anyString())).thenReturn(yes());
+
+		Answer answer = mrScratchManager.checkIfUserCanCreateScratchWithName("&scratch.js");
+		assertTrue(answer.isYes);
+
+		verify(fileSystem).isValidScratchName("scratch.js");
+		verifyNoMoreInteractions(ide, fileSystem);
 	}
 
 	@Test public void canCreateNewScratch_when_fileNameIsIncorrect() {

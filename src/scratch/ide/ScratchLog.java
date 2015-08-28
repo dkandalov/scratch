@@ -34,7 +34,7 @@ public class ScratchLog {
 	private static final String TITLE = "Scratch Plugin";
 
 	public void failedToRename(Scratch scratch) {
-		notifyUser("", "Failed to rename scratch: " + scratch.name, WARNING);
+		notifyUser("", "Failed to rename scratch: " + scratch.asFileName(), WARNING);
 	}
 
 	public void migratedScratchesToFiles() {
@@ -63,15 +63,15 @@ public class ScratchLog {
 	}
 
 	public void failedToOpen(Scratch scratch) {
-		notifyUser("", "Failed to open scratch: '" + scratch.name + "'", WARNING);
+		notifyUser("", "Failed to open scratch: '" + scratch.asFileName() + "'", WARNING);
 	}
 
 	public void failedToCreate(Scratch scratch) {
-		notifyUser("", "Failed to create scratch: '" + scratch.name + "'", WARNING);
+		notifyUser("", "Failed to create scratch: '" + scratch.asFileName() + "'", WARNING);
 	}
 
 	public void failedToDelete(Scratch scratch) {
-		notifyUser("", "Failed to delete scratch: '" + scratch.name + "'", WARNING);
+		notifyUser("", "Failed to delete scratch: '" + scratch.asFileName() + "'", WARNING);
 	}
 
 	public void failedToFindVirtualFileFor(Scratch scratch) {

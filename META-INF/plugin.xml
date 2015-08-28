@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>1.06</version>
+	<version>1.07</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges) -->
@@ -35,6 +35,7 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
+            <li>1.07 - allow creating scratches with the same name but different extensions</li>
             <li>1.03 - make scratches always editable (even if they are outside of project root)</li>
             <li>1.0 - file types, uses physical files, add/rename/delete/move scratches</li>
             <li>0.17 - fix for UTF-8</li>
