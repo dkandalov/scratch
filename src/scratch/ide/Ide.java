@@ -194,7 +194,7 @@ public class Ide {
 	}
 
 	public void showDeleteDialogFor(Scratch scratch) {
-		String message = "Do you want to delete '" + scratch.name + "'?\n(This operation cannot be undone)";
+		String message = "Do you want to delete '" + scratch.asFileName() + "'?\n(This operation cannot be undone)";
 		int userAnswer = Messages.showOkCancelDialog(message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
 		if (userAnswer != Messages.OK) return;
 

@@ -149,8 +149,11 @@ public class MrScratchManager {
 		if (scratch.asFileName().equals(renamedScratch.asFileName())) return Answer.yes();
 
 		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return !it.equals(scratch) && it.name.equals(renamedScratch.name);
+			@Override
+			public boolean value(Scratch it) {
+				return !it.equals(scratch)
+						&& it.name.equals(renamedScratch.name)
+						&& it.extension.equals(renamedScratch.extension);
 			}
 		});
 		if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name");
@@ -200,14 +203,15 @@ public class MrScratchManager {
 
 
 	public void userWantsToEnterNewScratchName(UserDataHolder userDataHolder) {
-		String name = "scratch";
-		if (isUniqueScratchName(name)) {
-			ide.openNewScratchDialog(name + ".txt", userDataHolder);
+		String defaultName = "scratch";
+		String defaultExtension = "txt";
+		if (isUniqueScratchName(defaultName, defaultExtension)) {
+			ide.openNewScratchDialog(defaultName + "." + defaultExtension, userDataHolder);
 			return;
 		}
 		for (int i = 1; i < 100; i++) {
-			if (isUniqueScratchName(name + i)) {
-				ide.openNewScratchDialog(name + i + ".txt", userDataHolder);
+			if (isUniqueScratchName(defaultName + i, defaultExtension)) {
+				ide.openNewScratchDialog(defaultName + i + "." + defaultExtension, userDataHolder);
 				return;
 			}
 		}
@@ -218,12 +222,8 @@ public class MrScratchManager {
 
 		final Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
 
-		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return it.name.equals(scratch.name);
-			}
-		});
-		if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name");
+		if (!isUniqueScratchName(scratch.name, scratch.extension))
+			return Answer.no("There is already a scratch with this name");
 
 		return fileSystem.isValidScratchName(scratch.asFileName());
 	}
@@ -305,10 +305,10 @@ public class MrScratchManager {
 		}
 	}
 
-	private boolean isUniqueScratchName(final String name) {
+	private boolean isUniqueScratchName(final String name, final String extension) {
 		return !exists(config.scratches, new Condition<Scratch>() {
 			@Override public boolean value(Scratch it) {
-				return it.name.equals(name);
+				return it.name.equals(name) && it.extension.equals(extension);
 			}
 		});
 	}
