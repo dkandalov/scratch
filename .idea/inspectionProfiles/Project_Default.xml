@@ -70,7 +70,7 @@
       <option name="myAdditionalJavadocTags" value="" />
     </inspection_tool>
     <inspection_tool class="JpaDataSourceORMInspection" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="QuirksModeInspectionTool" level="WARNING" enabled="true">
+    <inspection_tool class="QuirksModeInspectionTool" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="IE50" value="false" />
       <option name="IE55" value="false" />
       <option name="IE6" value="true" />
