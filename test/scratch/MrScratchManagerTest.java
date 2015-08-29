@@ -36,6 +36,7 @@ import static scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED;
 import static scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST;
 
 
+@SuppressWarnings("Duplicates")
 public class MrScratchManagerTest {
 	private static final UserDataHolder someUserData = new UserDataHolderBase();
 
@@ -414,10 +415,6 @@ public class MrScratchManagerTest {
 		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(someUserData));
 	}
 
-	/**
-	 * The names which have an extension different from the default (txt) should not influence the
-	 * default scratch name counter
-	 */
 	@Test public void enteringNewScratchName_when_thereAreExistingScratches() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
 				scratch("scratch1.txt"),
@@ -429,11 +426,7 @@ public class MrScratchManagerTest {
 		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(someUserData));
 	}
 
-	/**
-	 * The scratches with names which have an extension different from the default (txt) should not influence the
-	 * default scratch name counter
-	 */
-	@Test public void enteringNewScratchName_when_thereAreExistingScratchesNonTxtScratches() {
+	@Test public void enteringNewScratchName_when_thereAreExistingNonTxtScratches() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(
 				scratch("scratch3.js"),
 				scratch("scratch2.xml"),
@@ -444,7 +437,7 @@ public class MrScratchManagerTest {
 
 		mrScratchManager.userWantsToEnterNewScratchName(someUserData);
 
-		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(someUserData));
+		verify(ide).openNewScratchDialog(eq("scratch4.txt"), eq(someUserData));
 	}
 
 	@Test public void canCreateNewScratch_when_nameIsUnique() {

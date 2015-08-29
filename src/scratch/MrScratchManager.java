@@ -200,16 +200,15 @@ public class MrScratchManager {
 		return config.listenToClipboard;
 	}
 
-
 	public void userWantsToEnterNewScratchName(UserDataHolder userDataHolder) {
 		String defaultName = "scratch";
 		String defaultExtension = "txt";
-		if (isUniqueScratchName(defaultName, defaultExtension)) {
+		if (isUniqueScratchName(defaultName)) {
 			ide.openNewScratchDialog(defaultName + "." + defaultExtension, userDataHolder);
 			return;
 		}
 		for (int i = 1; i < 100; i++) {
-			if (isUniqueScratchName(defaultName + i, defaultExtension)) {
+			if (isUniqueScratchName(defaultName + i)) {
 				ide.openNewScratchDialog(defaultName + i + "." + defaultExtension, userDataHolder);
 				return;
 			}
@@ -302,6 +301,14 @@ public class MrScratchManager {
 			default:
 				throw new IllegalStateException();
 		}
+	}
+
+	private boolean isUniqueScratchName(final String name) {
+		return !exists(config.scratches, new Condition<Scratch>() {
+			@Override public boolean value(Scratch it) {
+				return it.name.equals(name);
+			}
+		});
 	}
 
 	private boolean isUniqueScratchName(final String name, final String extension) {
