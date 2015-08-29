@@ -498,7 +498,10 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 	public void delete(Scratch scratch) {
 		myListModel.deleteItem(scratch);
-	}
+        if (myListModel.getSize() > 0) {
+            ListScrollingUtil.selectItem(myList, myListModel.getSize() - 1);
+        }
+    }
 
 	public static class ScratchNameValidator implements InputValidatorEx {
 		private final Scratch scratch;
