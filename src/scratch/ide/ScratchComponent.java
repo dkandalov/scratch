@@ -15,6 +15,8 @@
 package scratch.ide;
 
 import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 import scratch.MrScratchManager;
 import scratch.ScratchConfig;
@@ -71,4 +73,10 @@ public class ScratchComponent implements ApplicationComponent {
 	@Override
 	public void disposeComponent() {
 	}
+
+    public static class FileWritingAccessExtension implements NonProjectFileWritingAccessExtension {
+        @Override public boolean isWritable(@NotNull VirtualFile virtualFile) {
+            return fileSystem().isScratch(virtualFile);
+        }
+    }
 }

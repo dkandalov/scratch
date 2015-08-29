@@ -95,5 +95,6 @@
                             serviceImplementation="scratch.ide.ScratchOldData"/>
 		<applicationService serviceInterface="scratch.ide.ScratchConfigPersistence"
                             serviceImplementation="scratch.ide.ScratchConfigPersistence"/>
+        <nonProjectFileWritingAccessExtension implementation="scratch.ide.ScratchComponent$FileWritingAccessExtension"/>
 	</extensions>
 </idea-plugin>

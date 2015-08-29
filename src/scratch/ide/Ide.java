@@ -21,14 +21,12 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerAdapter;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessProvider;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.project.ProjectManagerAdapter;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.NotNullLazyKey;
 import com.intellij.openapi.util.UserDataHolder;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBusConnection;
@@ -48,13 +46,11 @@ import javax.swing.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
 import static com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER;
-import static com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessProvider.AccessStatus.ALLOWED;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static scratch.ScratchConfig.AppendType.APPEND;
 import static scratch.ScratchConfig.AppendType.PREPEND;
@@ -260,8 +256,6 @@ public class Ide {
 		}
 
 		public OpenEditorTracker startTracking() {
-            // TODO The correct way to prevent the warning from appearing for some files, is to extend NonProjectFileWritingAccessExtension.
-            // https://github.com/dkandalov/scratch/commit/46f05236b959eeaeb481005aa98cedb8c4c0d3d8?diff=unified
 			ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
 				@Override public void projectOpened(final Project project) {
                     MessageBusConnection connection = project.getMessageBus().connect();
@@ -272,7 +266,6 @@ public class Ide {
                             if (virtualFile == null) return;
 
                             if (fileSystem.isScratch(virtualFile)) {
-                                allowAccessToNonProjectFile_HACK(virtualFile, project);
                                 mrScratchManager.userOpenedScratch(virtualFile.getName());
                             }
                         }
@@ -287,33 +280,5 @@ public class Ide {
 			});
 			return this;
 		}
-
-        private static void allowAccessToNonProjectFile_HACK(VirtualFile virtualFile, Project project) {
-            try {
-                Field field = findAccessStatusField();
-                if (field == null) return;
-
-                field.setAccessible(true);
-                @SuppressWarnings("unchecked")
-                NotNullLazyKey<Map<VirtualFile, NonProjectFileWritingAccessProvider.AccessStatus>, Project> map =
-                        (NotNullLazyKey<Map<VirtualFile, NonProjectFileWritingAccessProvider.AccessStatus>, Project>) field.get(null);
-
-                map.getValue(project).put(virtualFile, ALLOWED);
-
-            } catch (IllegalAccessException ignore) {
-            }
-        }
-
-        private static Field findAccessStatusField() {
-            try {
-                return NonProjectFileWritingAccessProvider.class.getDeclaredField("ACCESS_STATUS");
-            } catch (NoSuchFieldException e) {
-                // searching by type because field name might be obfuscated (e.g. seen in PhpStorm)
-                for (Field field : NonProjectFileWritingAccessProvider.class.getDeclaredFields()) {
-                    if (field.getType().equals(NotNullLazyKey.class)) return field;
-                }
-                return null;
-            }
-        }
     }
 }
