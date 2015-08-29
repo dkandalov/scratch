@@ -38,13 +38,13 @@ import static com.intellij.util.containers.ContainerUtil.map;
 
 
 public class FileSystem {
-	private static final Logger LOG = Logger.getInstance(FileSystem.class);
+	private static final Logger log = Logger.getInstance(FileSystem.class);
 
 	/**
 	 * Use UTF-8 to be compatible with old version of plugin.
 	 */
-	private static final Charset CHARSET = Charset.forName("UTF8");
-	private static final String SCRATCH_FOLDER = "";
+	private static final Charset charset = Charset.forName("UTF8");
+	private static final String scratchFolder = "";
 
 	private final VirtualFileManager fileManager = VirtualFileManager.getInstance();
 	private final Condition<VirtualFile> canBeScratch = new Condition<VirtualFile>() {
@@ -64,7 +64,7 @@ public class FileSystem {
 	}
 
 	public List<String> listScratchFiles() {
-		VirtualFile virtualFile = virtualFileBy(SCRATCH_FOLDER);
+		VirtualFile virtualFile = virtualFileBy(scratchFolder);
 		if (virtualFile == null || !virtualFile.exists()) {
 			return Collections.emptyList();
 		}
@@ -102,7 +102,7 @@ public class FileSystem {
 					virtualFile.rename(this, newFileName);
 					return true;
 				} catch (IOException e) {
-					LOG.warn(e);
+					log.warn(e);
 					return false;
 				}
 			}
@@ -119,15 +119,15 @@ public class FileSystem {
 				try {
 					ensureExists(new File(scratchesFolderPath));
 
-					VirtualFile scratchesFolder = virtualFileBy(SCRATCH_FOLDER);
+					VirtualFile scratchesFolder = virtualFileBy(scratchFolder);
 					if (scratchesFolder == null) return false;
 
 					VirtualFile scratchFile = scratchesFolder.createChildData(FileSystem.this, fileName);
-					scratchFile.setBinaryContent(text.getBytes(CHARSET));
+					scratchFile.setBinaryContent(text.getBytes(charset));
 
 					return true;
 				} catch (IOException e) {
-					LOG.warn(e);
+					log.warn(e);
 					return false;
 				}
 			}
@@ -144,7 +144,7 @@ public class FileSystem {
 					virtualFile.delete(FileSystem.this);
 					return true;
 				} catch (IOException e) {
-					LOG.warn(e);
+					log.warn(e);
 					return false;
 				}
 			}
@@ -156,7 +156,7 @@ public class FileSystem {
 	}
 
 	public boolean isScratch(final VirtualFile virtualFile) {
-		VirtualFile scratchFolder = virtualFileBy(SCRATCH_FOLDER);
+		VirtualFile scratchFolder = virtualFileBy(FileSystem.scratchFolder);
 		return scratchFolder != null && ContainerUtil.exists(scratchFolder.getChildren(), new Condition<VirtualFile>() {
 			@Override public boolean value(VirtualFile it) {
 				return it.equals(virtualFile);

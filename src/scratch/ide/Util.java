@@ -48,8 +48,10 @@ public class Util {
 	@Nullable public static Editor getSelectedEditor() {
 		IdeFrame frame = IdeFocusManager.findInstance().getLastFocusedFrame();
 		if (frame == null) return null;
+        Project project = frame.getProject();
+        if (project == null) return null;
 
-		FileEditorManager instance = FileEditorManager.getInstance(frame.getProject());
+        FileEditorManager instance = FileEditorManager.getInstance(project);
 		return instance.getSelectedTextEditor();
 	}
 

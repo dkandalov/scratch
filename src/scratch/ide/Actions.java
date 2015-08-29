@@ -20,6 +20,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.DumbAwareAction;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -107,7 +108,7 @@ public class Actions {
 			return mrScratchManager().shouldListenToClipboard();
 		}
 
-		@Override public void update(AnActionEvent event) {
+		@Override public void update(@NotNull AnActionEvent event) {
 			super.update(event);
 			event.getPresentation().setIcon(isSelected(event) ? IS_ON_ICON : IS_OFF_ICON);
 		}

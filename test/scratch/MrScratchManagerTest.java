@@ -37,8 +37,7 @@ import static scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST;
 
 
 public class MrScratchManagerTest {
-
-	private static final UserDataHolder USER_DATA = new UserDataHolderBase();
+	private static final UserDataHolder someUserData = new UserDataHolderBase();
 
 	private final ScratchLog log = mock(ScratchLog.class);
 	private final Ide ide = mock(Ide.class);
@@ -137,14 +136,14 @@ public class MrScratchManagerTest {
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch.txt", "scratch2.java", "scratch3.html"));
 
-		mrScratchManager.userWantsToSeeScratchesList(USER_DATA);
+		mrScratchManager.userWantsToSeeScratchesList(someUserData);
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
 				scratch("scratch.txt"),
 				scratch("scratch2.java"),
 				scratch("scratch3.html")
-		)), same(USER_DATA));
+		)), same(someUserData));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
@@ -156,14 +155,14 @@ public class MrScratchManagerTest {
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch3.html", "scratch.txt"));
 
-		mrScratchManager.userWantsToSeeScratchesList(USER_DATA);
+		mrScratchManager.userWantsToSeeScratchesList(someUserData);
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).displayScratchesListPopup(eq(list(
 				scratch("scratch.txt"),
 				scratch("scratch2.java"),
 				scratch("scratch3.html")
-		)), same(USER_DATA));
+		)), same(someUserData));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
@@ -173,7 +172,7 @@ public class MrScratchManagerTest {
 		)));
 		when(fileSystem.listScratchFiles()).thenReturn(list("scratch2.java", "scratch.txt"));
 
-		mrScratchManager.userWantsToSeeScratchesList(USER_DATA);
+		mrScratchManager.userWantsToSeeScratchesList(someUserData);
 
 		verify(fileSystem).listScratchFiles();
 		verify(ide).persistConfig(eq(defaultConfig.with(list(
@@ -183,7 +182,7 @@ public class MrScratchManagerTest {
 		verify(ide).displayScratchesListPopup(eq(list(
 				scratch("scratch.txt"),
 				scratch("scratch2.java")
-		)), same(USER_DATA));
+		)), same(someUserData));
 		verifyNoMoreInteractions(fileSystem, ide);
 	}
 
@@ -194,10 +193,10 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(config);
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true);
 
-		mrScratchManager.userWantsToOpenScratch(scratch, USER_DATA);
+		mrScratchManager.userWantsToOpenScratch(scratch, someUserData);
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
-		verify(ide).openScratch(eq(scratch), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch), same(someUserData));
 	}
 
 	@Test public void openingScratch_when_scratchFileDoesNotExist() {
@@ -205,7 +204,7 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch)));
 		when(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false);
 
-		mrScratchManager.userWantsToOpenScratch(scratch, USER_DATA);
+		mrScratchManager.userWantsToOpenScratch(scratch, someUserData);
 
 		verify(fileSystem).scratchFileExists(eq("scratch.txt"));
 		verify(log).failedToOpen(eq(scratch));
@@ -223,9 +222,9 @@ public class MrScratchManagerTest {
 		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName(), scratch2.asFileName()));
 		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
 
-		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
-		verify(ide).openScratch(eq(scratch1), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch1), same(someUserData));
 	}
 
 	@Test public void openingDefaultScratch_when_itCanBeOpened_and_configured_asLastOpened() {
@@ -239,9 +238,9 @@ public class MrScratchManagerTest {
 		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName(), scratch2.asFileName()));
 		when(fileSystem.scratchFileExists(anyString())).thenReturn(true);
 
-		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
-		verify(ide).openScratch(eq(scratch2), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch2), same(someUserData));
 		verifyNoMoreInteractions(ide);
 	}
 
@@ -256,19 +255,19 @@ public class MrScratchManagerTest {
 		when(fileSystem.listScratchFiles()).thenReturn(list(scratch1.asFileName()));
 		when(fileSystem.scratchFileExists(scratch1.asFileName())).thenReturn(true);
 
-		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
-		verify(ide).openScratch(eq(scratch1), same(USER_DATA));
+		verify(ide).openScratch(eq(scratch1), same(someUserData));
 	}
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
 		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
 
-		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
 		verify(ide).persistConfig(defaultConfig);
-		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
+		verify(ide).openNewScratchDialog(anyString(), same(someUserData));
 		verifyNoMoreInteractions(ide, log);
 	}
 
@@ -276,9 +275,9 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(defaultConfig);
 		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
 
-		mrScratchManager.userWantsToOpenDefaultScratch(USER_DATA);
+		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
-		verify(ide).openNewScratchDialog(anyString(), same(USER_DATA));
+		verify(ide).openNewScratchDialog(anyString(), same(someUserData));
 		verifyNoMoreInteractions(ide, log);
 	}
 
@@ -410,9 +409,9 @@ public class MrScratchManagerTest {
 	@Test public void enteringNewScratchName_when_noScratchesExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig);
 
-		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
+		mrScratchManager.userWantsToEnterNewScratchName(someUserData);
 
-		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(USER_DATA));
+		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(someUserData));
 	}
 
 	/**
@@ -425,9 +424,9 @@ public class MrScratchManagerTest {
 				scratch("scratch.txt")
 		)));
 
-		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
+		mrScratchManager.userWantsToEnterNewScratchName(someUserData);
 
-		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(USER_DATA));
+		verify(ide).openNewScratchDialog(eq("scratch2.txt"), eq(someUserData));
 	}
 
 	/**
@@ -443,9 +442,9 @@ public class MrScratchManagerTest {
 				scratch("scratch.java")
 		)));
 
-		mrScratchManager.userWantsToEnterNewScratchName(USER_DATA);
+		mrScratchManager.userWantsToEnterNewScratchName(someUserData);
 
-		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(USER_DATA));
+		verify(ide).openNewScratchDialog(eq("scratch.txt"), eq(someUserData));
 	}
 
 	@Test public void canCreateNewScratch_when_nameIsUnique() {
@@ -496,14 +495,14 @@ public class MrScratchManagerTest {
 		)));
 		when(fileSystem.createEmptyFile(anyString())).thenReturn(true);
 
-		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", USER_DATA);
+		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", someUserData);
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
 		verify(ide).persistConfig(eq(defaultConfig.with(list(
 				scratch("scratch0.txt"),
 				scratch("&scratch.txt")
 		))));
-		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
+		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(someUserData));
 		verifyNoMoreInteractions(ide, fileSystem);
 	}
 
@@ -514,14 +513,14 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(config);
 		when(fileSystem.createEmptyFile(anyString())).thenReturn(true);
 
-		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", USER_DATA);
+		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", someUserData);
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
 		verify(ide).persistConfig(eq(config.with(list(
 				scratch("&scratch.txt"),
 				scratch("scratch0.txt")
 		))));
-		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(USER_DATA));
+		verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(someUserData));
 		verifyNoMoreInteractions(ide, fileSystem);
 	}
 
@@ -529,7 +528,7 @@ public class MrScratchManagerTest {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("&scratch.txt"))));
 		when(fileSystem.createEmptyFile(anyString())).thenReturn(false);
 
-		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", USER_DATA);
+		mrScratchManager.userWantsToAddNewScratch("&scratch.txt", someUserData);
 
 		verify(fileSystem).createEmptyFile("scratch.txt");
 		verify(log).failedToCreate(scratch("&scratch.txt"));

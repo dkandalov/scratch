@@ -260,6 +260,8 @@ public class Ide {
 		}
 
 		public OpenEditorTracker startTracking() {
+            // TODO The correct way to prevent the warning from appearing for some files, is to extend NonProjectFileWritingAccessExtension.
+            // https://github.com/dkandalov/scratch/commit/46f05236b959eeaeb481005aa98cedb8c4c0d3d8?diff=unified
 			ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
 				@Override public void projectOpened(final Project project) {
                     MessageBusConnection connection = project.getMessageBus().connect();

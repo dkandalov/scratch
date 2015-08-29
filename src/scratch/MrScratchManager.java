@@ -149,8 +149,7 @@ public class MrScratchManager {
 		if (scratch.asFileName().equals(renamedScratch.asFileName())) return Answer.yes();
 
 		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
-			@Override
-			public boolean value(Scratch it) {
+			@Override public boolean value(Scratch it) {
 				return !it.equals(scratch)
 						&& it.name.equals(renamedScratch.name)
 						&& it.extension.equals(renamedScratch.extension);

@@ -30,22 +30,22 @@ import static com.intellij.notification.NotificationType.WARNING;
 
 
 public class ScratchLog {
-	private static final Logger LOG = Logger.getInstance(ScratchLog.class);
-	private static final String TITLE = "Scratch Plugin";
+	private static final Logger log = Logger.getInstance(ScratchLog.class);
+	private static final String title = "Scratch Plugin";
 
 	public void failedToRename(Scratch scratch) {
 		notifyUser("", "Failed to rename scratch: " + scratch.asFileName(), WARNING);
 	}
 
 	public void migratedScratchesToFiles() {
-		LOG.info("Migrated scratches to physical files");
+		log.info("Migrated scratches to physical files");
 	}
 
 	public void listeningToClipboard(boolean isListening) {
 		if (isListening)
-			notifyUser(TITLE, "Started listening to clipboard", INFORMATION);
+			notifyUser(title, "Started listening to clipboard", INFORMATION);
 		else
-			notifyUser(TITLE, "Stopped listening to clipboard", INFORMATION);
+			notifyUser(title, "Stopped listening to clipboard", INFORMATION);
 	}
 
 	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
@@ -55,7 +55,7 @@ public class ScratchLog {
 	}
 
 	public void willNotMigrateBecauseTargetFolderIsNotEmpty() {
-		notifyUser(TITLE, "Old scratches data won't be save because scratches folder is not empty", WARNING);
+		notifyUser(title, "Old scratches data won't be save because scratches folder is not empty", WARNING);
 	}
 
 	public void failedToOpenDefaultScratch() {
@@ -75,11 +75,11 @@ public class ScratchLog {
 	}
 
 	public void failedToFindVirtualFileFor(Scratch scratch) {
-		LOG.warn("Failed to find virtual file for '" + scratch.asFileName() + "'");
+		log.warn("Failed to find virtual file for '" + scratch.asFileName() + "'");
 	}
 
 	private static void notifyUser(String title, String message, NotificationType notificationType) {
-		String groupDisplayId = TITLE;
+		String groupDisplayId = ScratchLog.title;
 		Notification notification = new Notification(groupDisplayId, title, message, notificationType);
 		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
 	}
