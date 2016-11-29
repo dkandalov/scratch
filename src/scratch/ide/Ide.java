@@ -14,7 +14,9 @@
 
 package scratch.ide;
 
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -42,7 +44,6 @@ import scratch.filesystem.FileSystem;
 import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
-import javax.swing.*;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
@@ -76,14 +77,21 @@ public class Ide {
 	public void displayScratchesListPopup(List<Scratch> scratches, final UserDataHolder userDataHolder) {
 		ScratchListPopupStep popupStep = new ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder));
 		popupStep.setDefaultOptionIndex(scratchListSelectedIndex);
-		ScratchListPopup popup = new ScratchListPopup(popupStep) {
 
+		Application application = ApplicationManager.getApplication();
+		ScratchListPopup popup = new ScratchListPopup(popupStep) {
 			@Override protected void onNewScratch() {
-				SwingUtilities.invokeLater(() -> mrScratchManager().userWantsToEnterNewScratchName(userDataHolder));
+				application.invokeAndWait(
+						() -> mrScratchManager().userWantsToEnterNewScratchName(userDataHolder),
+						ModalityState.current()
+				);
 			}
 
 			@Override protected void onRenameScratch(final Scratch scratch) {
-				SwingUtilities.invokeLater(() -> mrScratchManager().userWantsToEditScratchName(scratch));
+				application.invokeAndWait(
+						() -> mrScratchManager().userWantsToEditScratchName(scratch),
+						ModalityState.current()
+				);
 			}
 
 			@Override protected void onScratchDelete(Scratch scratch) {
