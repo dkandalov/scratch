@@ -14,7 +14,6 @@
 
 package scratch;
 
-import com.intellij.util.Function;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import static scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST;
 
 public class ScratchConfig {
 	public static final ScratchConfig DEFAULT_CONFIG = new ScratchConfig(
-			Collections.<Scratch>emptyList(), null, false, true, APPEND, APPEND, TOPMOST);
+			Collections.emptyList(), null, false, true, APPEND, APPEND, TOPMOST);
 	public static final int UP = -1;
 	public static final int DOWN = 1;
 
@@ -64,7 +63,7 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig add(Scratch scratch) {
-		ArrayList<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		ArrayList<Scratch> newScratches = new ArrayList<>(scratches);
 		if (newScratchAppendType == APPEND) {
 			newScratches.add(scratch);
 		} else if (newScratchAppendType == PREPEND) {
@@ -76,17 +75,13 @@ public class ScratchConfig {
 	}
 
 	public ScratchConfig without(Scratch scratch) {
-		ArrayList<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		ArrayList<Scratch> newScratches = new ArrayList<>(scratches);
 		newScratches.remove(scratch);
 		return this.with(newScratches);
 	}
 
 	public ScratchConfig replace(final Scratch scratch, final Scratch newScratch) {
-		List<Scratch> scratchList = map(scratches, new Function<Scratch, Scratch>() {
-			@Override public Scratch fun(Scratch it) {
-				return it.equals(scratch) ? newScratch : it;
-			}
-		});
+		List<Scratch> scratchList = map(scratches, it -> it.equals(scratch) ? newScratch : it);
 		Scratch lastOpened = (scratch.equals(lastOpenedScratch) ? newScratch : lastOpenedScratch);
 		return new ScratchConfig(scratchList, lastOpened, listenToClipboard, needMigration, clipboardAppendType, newScratchAppendType, defaultScratchMeaning);
 	}
@@ -97,7 +92,7 @@ public class ScratchConfig {
 		if (newIndex < 0) newIndex += scratches.size();
 		if (newIndex >= scratches.size()) newIndex -= scratches.size();
 
-		List<Scratch> newScratches = new ArrayList<Scratch>(scratches);
+		List<Scratch> newScratches = new ArrayList<>(scratches);
 		newScratches.remove(oldIndex);
 		newScratches.add(newIndex, scratch);
 		return this.with(newScratches);

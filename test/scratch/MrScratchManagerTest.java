@@ -263,7 +263,7 @@ public class MrScratchManagerTest {
 
 	@Test public void openingDefaultScratch_when_scratchFileDoesNotExist() {
 		mrScratchManager = scratchManagerWith(defaultConfig.with(list(scratch("scratch.txt"))));
-		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
+		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<>());
 
 		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
@@ -274,7 +274,7 @@ public class MrScratchManagerTest {
 
 	@Test public void openingDefaultScratch_when_scratchListIsEmpty() {
 		mrScratchManager = scratchManagerWith(defaultConfig);
-		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<String>());
+		when(fileSystem.listScratchFiles()).thenReturn(new ArrayList<>());
 
 		mrScratchManager.userWantsToOpenDefaultScratch(someUserData);
 
@@ -571,7 +571,7 @@ public class MrScratchManagerTest {
 	}
 
 	private static Scratch scratch(String fullNameWithMnemonics) {
-		return Scratch.createFrom(fullNameWithMnemonics);
+		return Scratch.create(fullNameWithMnemonics);
 	}
 
 	private MrScratchManager scratchManagerWith(ScratchConfig config) {

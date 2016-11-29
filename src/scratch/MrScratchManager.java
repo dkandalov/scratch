@@ -55,10 +55,10 @@ public class MrScratchManager {
 		});
 		if (allEmpty) {
 			List<Scratch> scratches = Arrays.asList(
-					Scratch.createFrom("&scratch.txt"),
-					Scratch.createFrom("scratch&2.txt"),
-					Scratch.createFrom("scratch&3.xml"),
-					Scratch.createFrom("scratch&4.xml")
+					Scratch.create("&scratch.txt"),
+					Scratch.create("scratch&2.txt"),
+					Scratch.create("scratch&3.xml"),
+					Scratch.create("scratch&4.xml")
 			);
 			for (Scratch scratch : scratches) {
 				fileSystem.createEmptyFile(scratch.asFileName());
@@ -72,7 +72,7 @@ public class MrScratchManager {
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
-			Scratch scratch = Scratch.createFrom(scratchName + ".txt");
+			Scratch scratch = Scratch.create(scratchName + ".txt");
 
 			boolean wasCreated = fileSystem.createFile(scratch.asFileName(), scratchTexts.get(i - 1));
 			if (wasCreated) {
@@ -145,7 +145,7 @@ public class MrScratchManager {
 	public Answer checkIfUserCanRename(final Scratch scratch, String fullNameWithMnemonics) {
 		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
 
-		final Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
+		final Scratch renamedScratch = Scratch.create(fullNameWithMnemonics);
 		if (scratch.asFileName().equals(renamedScratch.asFileName())) return Answer.yes();
 
 		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
@@ -163,7 +163,7 @@ public class MrScratchManager {
 	public void userWantsToRename(Scratch scratch, String fullNameWithMnemonics) {
 		if (scratch.fullNameWithMnemonics.equals(fullNameWithMnemonics)) return;
 
-		Scratch renamedScratch = Scratch.createFrom(fullNameWithMnemonics);
+		Scratch renamedScratch = Scratch.create(fullNameWithMnemonics);
 		boolean wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName());
 		if (wasRenamed) {
 			updateConfig(config.replace(scratch, renamedScratch));
@@ -218,7 +218,7 @@ public class MrScratchManager {
 	public Answer checkIfUserCanCreateScratchWithName(String fullNameWithMnemonics) {
 		if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty");
 
-		final Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
+		final Scratch scratch = Scratch.create(fullNameWithMnemonics);
 
 		if (!isUniqueScratchName(scratch.name, scratch.extension))
 			return Answer.no("There is already a scratch with this name");
@@ -227,7 +227,7 @@ public class MrScratchManager {
 	}
 
 	public void userWantsToAddNewScratch(String fullNameWithMnemonics, UserDataHolder userDataHolder) {
-		Scratch scratch = Scratch.createFrom(fullNameWithMnemonics);
+		Scratch scratch = Scratch.create(fullNameWithMnemonics);
 		boolean wasCreated = fileSystem.createEmptyFile(scratch.asFileName());
 		if (wasCreated) {
 			updateConfig(config.add(scratch));
@@ -278,7 +278,7 @@ public class MrScratchManager {
 		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
 		List<Scratch> newScratches = map(newFileNames, new Function<String, Scratch>() {
 			@Override public Scratch fun(String it) {
-				return Scratch.createFrom(it);
+				return Scratch.create(it);
 			}
 		});
 

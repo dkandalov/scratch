@@ -20,7 +20,7 @@ public class Scratch {
 	public final String name;
 	public final String extension;
 
-	public static Scratch createFrom(String fullNameWithMnemonics) {
+	public static Scratch create(String fullNameWithMnemonics) {
 		return new Scratch(
 				fullNameWithMnemonics,
 				extractNameFrom(fullNameWithMnemonics),

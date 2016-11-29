@@ -20,7 +20,6 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.Function;
 import scratch.Scratch;
 
 import java.util.List;
@@ -50,7 +49,7 @@ public class ScratchLog {
 
 	public void failedToMigrateScratchesToFiles(List<Integer> scratchIndexes) {
 		String title = "Failed to migrated scratches to physical files. ";
-		String message = "Failed scratches: " + join(scratchIndexes, ", ");
+		String message = "Failed scratches: " + join(scratchIndexes);
 		notifyUser(title, message, WARNING);
 	}
 
@@ -84,11 +83,7 @@ public class ScratchLog {
 		ApplicationManager.getApplication().getMessageBus().syncPublisher(Notifications.TOPIC).notify(notification);
 	}
 
-	private static <T> String join(List<T> values, String separator) {
-		return StringUtil.join(values, new Function<T, String>() {
-			@Override public String fun(T it) {
-				return it.toString();
-			}
-		}, separator);
+	private static <T> String join(List<T> values) {
+		return StringUtil.join(values, Object::toString, ", ");
 	}
 }

@@ -49,11 +49,9 @@ public class ScratchComponent implements ApplicationComponent {
 		mrScratchManager = new MrScratchManager(ide, fileSystem, config, log);
 
 		if (config.needMigration) {
-            getApplication().invokeLater(new Runnable() {
-                @Override public void run() {
-                    ScratchOldData scratchOldData = ScratchOldData.getInstance();
-                    mrScratchManager.migrate(asList(scratchOldData.getScratchTextInternal()));
-                }
+            getApplication().invokeLater(() -> {
+                ScratchOldData scratchOldData = ScratchOldData.getInstance();
+                mrScratchManager.migrate(asList(scratchOldData.getScratchTextInternal()));
             });
 		}
 

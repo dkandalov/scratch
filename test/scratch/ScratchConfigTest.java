@@ -25,9 +25,9 @@ import static scratch.ScratchConfig.UP;
 
 public class ScratchConfigTest {
 
-	private final Scratch scratch1 = Scratch.createFrom("scratch1.txt");
-	private final Scratch scratch2 = Scratch.createFrom("scratch2.txt");
-	private final Scratch scratch3 = Scratch.createFrom("scratch3.txt");
+	private final Scratch scratch1 = Scratch.create("scratch1.txt");
+	private final Scratch scratch2 = Scratch.create("scratch2.txt");
+	private final Scratch scratch3 = Scratch.create("scratch3.txt");
 	private final ScratchConfig config = DEFAULT_CONFIG.with(list(scratch1, scratch2, scratch3));
 
 	@Test public void movingTopScratchToBottom() {

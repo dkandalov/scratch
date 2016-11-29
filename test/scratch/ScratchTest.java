@@ -21,19 +21,19 @@ import static org.junit.Assert.assertThat;
 
 public class ScratchTest {
 	@Test public void creatingScratches() {
-		Scratch scratch = Scratch.createFrom("scratch.txt");
+		Scratch scratch = Scratch.create("scratch.txt");
 		assertThat(scratch.name, equalTo("scratch"));
 		assertThat(scratch.extension, equalTo("txt"));
 
-		scratch = Scratch.createFrom("&scratch.txt");
+		scratch = Scratch.create("&scratch.txt");
 		assertThat(scratch.name, equalTo("scratch"));
 		assertThat(scratch.extension, equalTo("txt"));
 
-		scratch = Scratch.createFrom("scratch.t&xt");
+		scratch = Scratch.create("scratch.t&xt");
 		assertThat(scratch.name, equalTo("scratch"));
 		assertThat(scratch.extension, equalTo("txt"));
 
-		scratch = Scratch.createFrom("scratch");
+		scratch = Scratch.create("scratch");
 		assertThat(scratch.name, equalTo("scratch"));
 		assertThat(scratch.extension, equalTo(""));
 	}

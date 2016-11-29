@@ -29,7 +29,7 @@ import java.util.List;
 class PopupModelWithMovableItems extends AbstractListModel {
 
 	private final List<Object> myOriginalList;
-	private final List<Object> myFilteredList = new ArrayList<Object>();
+	private final List<Object> myFilteredList = new ArrayList<>();
 
 	private final ElementFilter myFilter;
 	private final ListPopupStep myStep;
@@ -42,7 +42,7 @@ class PopupModelWithMovableItems extends AbstractListModel {
 		myFilter = filter;
 		myStep = step;
 		mySpeedSearch = speedSearch;
-		myOriginalList = new ArrayList<Object>(step.getValues());
+		myOriginalList = new ArrayList<>(step.getValues());
 		rebuildLists();
 	}
 

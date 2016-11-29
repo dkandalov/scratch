@@ -18,7 +18,6 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.util.Function;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jetbrains.annotations.Nullable;
 import scratch.Scratch;
@@ -35,7 +34,7 @@ import static com.intellij.util.containers.ContainerUtil.map;
 public class ScratchConfigPersistence implements PersistentStateComponent<ScratchConfigPersistence> {
 	private boolean isNeedMigration = true;
 	private boolean isListenToClipboard = false;
-	private List<String> fullScratchNamesOrdered = new ArrayList<String>();
+	private List<String> fullScratchNamesOrdered = new ArrayList<>();
 	private String lastOpenedScratch;
 	private ScratchConfig.AppendType clipboardAppendType;
 	private ScratchConfig.AppendType newScratchAppendType;
@@ -50,12 +49,8 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 		return ScratchConfig.DEFAULT_CONFIG
 				.needsMigration(isNeedMigration)
 				.listenToClipboard(isListenToClipboard)
-				.with(map(fullScratchNamesOrdered, new Function<String, Scratch>() {
-					@Override public Scratch fun(String it) {
-						return Scratch.createFrom(it);
-					}
-				}))
-				.withLastOpenedScratch(lastOpenedScratch == null ? null : Scratch.createFrom(lastOpenedScratch))
+				.with(map(fullScratchNamesOrdered, Scratch::create))
+				.withLastOpenedScratch(lastOpenedScratch == null ? null : Scratch.create(lastOpenedScratch))
 				.withDefaultScratchMeaning(defaultScratchMeaning)
 				.withClipboard(clipboardAppendType)
 				.withNewScratch(newScratchAppendType);
@@ -64,11 +59,7 @@ public class ScratchConfigPersistence implements PersistentStateComponent<Scratc
 	public void updateFrom(ScratchConfig config) {
 		isNeedMigration = config.needMigration;
 		isListenToClipboard = config.listenToClipboard;
-		fullScratchNamesOrdered = new ArrayList<String>(map(config.scratches, new Function<Scratch, String>() {
-			@Override public String fun(Scratch it) {
-				return it.fullNameWithMnemonics;
-			}
-		}));
+		fullScratchNamesOrdered = new ArrayList<>(map(config.scratches, it -> it.fullNameWithMnemonics));
 		lastOpenedScratch = (config.lastOpenedScratch == null ? null : config.lastOpenedScratch.fullNameWithMnemonics);
 		defaultScratchMeaning = config.defaultScratchMeaning;
 	}

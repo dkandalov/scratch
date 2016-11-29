@@ -43,7 +43,6 @@ import scratch.ide.popup.ScratchListPopup;
 import scratch.ide.popup.ScratchListPopupStep;
 
 import javax.swing.*;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
@@ -80,19 +79,11 @@ public class Ide {
 		ScratchListPopup popup = new ScratchListPopup(popupStep) {
 
 			@Override protected void onNewScratch() {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override public void run() {
-						mrScratchManager().userWantsToEnterNewScratchName(userDataHolder);
-					}
-				});
+				SwingUtilities.invokeLater(() -> mrScratchManager().userWantsToEnterNewScratchName(userDataHolder));
 			}
 
 			@Override protected void onRenameScratch(final Scratch scratch) {
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override public void run() {
-						mrScratchManager().userWantsToEditScratchName(scratch);
-					}
-				});
+				SwingUtilities.invokeLater(() -> mrScratchManager().userWantsToEditScratchName(scratch));
 			}
 
 			@Override protected void onScratchDelete(Scratch scratch) {
@@ -157,25 +148,23 @@ public class Ide {
 		if (document == null) return;
 		if (hasFocusInEditor(document)) return;
 
-		ApplicationManager.getApplication().runWriteAction(new Runnable() {
-			@Override public void run() {
-				String text = document.getText();
-				String newText;
-				if (appendType == APPEND) {
-					if (text.endsWith("\n")) {
-						newText = text + clipboardText;
-					} else {
-						newText = text + "\n" + clipboardText;
-					}
-				} else if (appendType == PREPEND) {
-					newText = clipboardText + "\n" + text;
+		ApplicationManager.getApplication().runWriteAction(() -> {
+			String text = document.getText();
+			String newText;
+			if (appendType == APPEND) {
+				if (text.endsWith("\n")) {
+					newText = text + clipboardText;
 				} else {
-					throw new IllegalStateException();
+					newText = text + "\n" + clipboardText;
 				}
-
-				document.setText(newText);
-				FileDocumentManager.getInstance().saveDocument(document);
+			} else if (appendType == PREPEND) {
+				newText = clipboardText + "\n" + text;
+			} else {
+				throw new IllegalStateException();
 			}
+
+			document.setText(newText);
+			FileDocumentManager.getInstance().saveDocument(document);
 		});
 	}
 
@@ -214,31 +203,26 @@ public class Ide {
 		}
 
 		public void startListening() {
-			CopyPasteManager.getInstance().addContentChangedListener(new CopyPasteManager.ContentChangedListener() {
-				@Override
-				public void contentChanged(@Nullable Transferable oldTransferable, Transferable newTransferable) {
-					if (!mrScratchManager.shouldListenToClipboard()) return;
+			CopyPasteManager.getInstance().addContentChangedListener((oldTransferable, newTransferable) -> {
+				if (!mrScratchManager.shouldListenToClipboard()) return;
 
-					try {
-						String oldClipboard = null;
-						if (oldTransferable != null) {
-							Object transferData = oldTransferable.getTransferData(stringFlavor);
-							oldClipboard = (transferData == null ? null : transferData.toString());
-						}
-						String clipboard = null;
-						if (newTransferable != null) {
-							Object transferData = newTransferable.getTransferData(stringFlavor);
-							clipboard = (transferData == null ? null : transferData.toString());
-						}
-						if (clipboard == null || StringUtils.equals(oldClipboard, clipboard)) return;
-
-						mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard);
-
-					} catch (UnsupportedFlavorException e) {
-						LOG.info(e);
-					} catch (IOException e) {
-						LOG.info(e);
+				try {
+					String oldClipboard = null;
+					if (oldTransferable != null) {
+						Object transferData = oldTransferable.getTransferData(stringFlavor);
+						oldClipboard = (transferData == null ? null : transferData.toString());
 					}
+					String clipboard = null;
+					if (newTransferable != null) {
+						Object transferData = newTransferable.getTransferData(stringFlavor);
+						clipboard = (transferData == null ? null : transferData.toString());
+					}
+					if (clipboard == null || StringUtils.equals(oldClipboard, clipboard)) return;
+
+					mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard);
+
+				} catch (UnsupportedFlavorException | IOException e) {
+					LOG.info(e);
 				}
 			});
 		}
@@ -248,7 +232,7 @@ public class Ide {
 		private final MrScratchManager mrScratchManager;
 		private final FileSystem fileSystem;
 		// use WeakHashMap "just in case" to avoid keeping project references
-		private final Map<Project, MessageBusConnection> connectionsByProject = new WeakHashMap<Project, MessageBusConnection>();
+		private final Map<Project, MessageBusConnection> connectionsByProject = new WeakHashMap<>();
 
 		public OpenEditorTracker(MrScratchManager mrScratchManager, FileSystem fileSystem) {
 			this.mrScratchManager = mrScratchManager;
