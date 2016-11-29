@@ -1,13 +1,12 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>1.07</version>
+	<version>1.08</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
-    <!-- (see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges) -->
-    <!-- 111.0 since IntelliJ11 -->
-    <!-- 136.0 since IntelliJ14 EAP (in which NonProjectFileWritingAccessProvider was added) -->
-	<idea-version since-build="136.0"/>
+    <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
+    <!-- 163.0 since 2016.3 (in which SwingUtilities.invokeLater throws exception with "any" modal mode) -->
+	<idea-version since-build="163.0"/>
 
     <description>
 		<![CDATA[<html><body>
