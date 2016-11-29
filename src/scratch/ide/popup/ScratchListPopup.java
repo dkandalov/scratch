@@ -29,7 +29,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.statistics.StatisticsInfo;
 import com.intellij.psi.statistics.StatisticsManager;
 import com.intellij.ui.JBListWithHintProvider;
-import com.intellij.ui.ListScrollingUtil;
+import com.intellij.ui.ScrollingUtil;
 import com.intellij.ui.SeparatorWithText;
 import com.intellij.ui.popup.ClosableByLeftArrow;
 import com.intellij.ui.popup.WizardPopup;
@@ -163,13 +163,13 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	}
 
 	private static List<KeyStroke> copyKeyStrokesFromAction(String actionId, KeyStroke defaultKeyStroke) {
-		List<KeyStroke> result = new ArrayList<KeyStroke>();
+		List<KeyStroke> result = new ArrayList<>();
 		Shortcut[] shortcuts = KeymapManager.getInstance().getActiveKeymap().getShortcuts(actionId);
 		for (Shortcut shortcut : shortcuts) {
 			if (!(shortcut instanceof KeyboardShortcut)) continue;
 
 			KeyboardShortcut keyboardShortcut = (KeyboardShortcut) shortcut;
-			if (keyboardShortcut.getSecondKeyStroke() == null && keyboardShortcut.getFirstKeyStroke() != null) {
+			if (keyboardShortcut.getSecondKeyStroke() == null) {
 				result.add(keyboardShortcut.getFirstKeyStroke());
 			}
 		}
@@ -219,7 +219,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 		final int defaultIndex = listStep.getDefaultOptionIndex();
 		if (defaultIndex >= 0 && defaultIndex < myList.getModel().getSize()) {
-			ListScrollingUtil.selectItem(myList, defaultIndex);
+			ScrollingUtil.selectItem(myList, defaultIndex);
 			selected = true;
 		}
 
@@ -256,7 +256,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			}
 
 			if (mostUsedValue > 0) {
-				ListScrollingUtil.selectItem(myList, mostUsedValue);
+				ScrollingUtil.selectItem(myList, mostUsedValue);
 				return true;
 			}
 		}
@@ -313,12 +313,12 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		if (myStep.getTitle() != null) {
 			myList.getAccessibleContext().setAccessibleName(myStep.getTitle());
 		}
-		myList.setSelectionMode(isMultiSelectionEnabled() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
+		myList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		Insets padding = UIUtil.getListViewportPadding();
 		myList.setBorder(new EmptyBorder(padding));
 
-		ListScrollingUtil.installActions(myList);
+		ScrollingUtil.installActions(myList);
 
 		myList.setCellRenderer(getListElementRenderer());
 
@@ -352,10 +352,6 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 		myList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
 		return myList;
-	}
-
-	private boolean isMultiSelectionEnabled() {
-		return false; // TODO remove
 	}
 
 	private boolean isClosableByLeftArrow() {
@@ -429,9 +425,9 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			return false;
 		}
 
-		final Object[] selectedValues = myList.getSelectedValues();
+		final List<Object> selectedValues = myList.getSelectedValuesList();
 		final ListPopupStep<Object> listStep = getListStep();
-		if (!listStep.isSelectable(selectedValues[0])) return false;
+		if (!listStep.isSelectable(selectedValues.get(0))) return false;
 
 		disposeChildren();
 
@@ -445,11 +441,11 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 		valuesSelected(selectedValues);
 
-		final PopupStep nextStep = listStep.onChosen(selectedValues[0], handleFinalChoices);
-		return handleNextStep(nextStep, selectedValues.length == 1 ? selectedValues[0] : null, e);
+		final PopupStep nextStep = listStep.onChosen(selectedValues.get(0), handleFinalChoices);
+		return handleNextStep(nextStep, selectedValues.size() == 1 ? selectedValues.get(0) : null, e);
 	}
 
-	private void valuesSelected(final Object[] values) {
+	private void valuesSelected(final List<Object> values) {
 		final String filter = getSpeedSearch().getFilter();
 		if (!StringUtil.isEmpty(filter)) {
 			for (Object value : values) {
@@ -499,7 +495,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	public void delete(Scratch scratch) {
 		myListModel.deleteItem(scratch);
         if (myListModel.getSize() > 0) {
-            ListScrollingUtil.selectItem(myList, myListModel.getSize() - 1);
+	        ScrollingUtil.selectItem(myList, myListModel.getSize() - 1);
         }
     }
 
@@ -534,9 +530,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 			int index = myList.locationToIndex(point);
 
 			if (index != myLastSelectedIndex) {
-				if (!isMultiSelectionEnabled() || !UIUtil.isSelectionButtonDown(e) && myList.getSelectedIndices().length <= 1) {
-					myList.setSelectedIndex(index);
-				}
+				myList.setSelectedIndex(index);
 				restartTimer();
 				myLastSelectedIndex = index;
 			}
@@ -553,7 +547,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (!isActionClick(e) || isMultiSelectionEnabled() && UIUtil.isSelectionButtonDown(e)) return;
+			if (!isActionClick(e)) return;
 			IdeEventQueue.getInstance().blockNextEvents(e); // sometimes, after popup close, MOUSE_RELEASE event delivers to other components
 			final Object selectedValue = myList.getSelectedValue();
 			final ListPopupStep<Object> listStep = getListStep();
@@ -621,7 +615,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 				return myList.getSelectedValue();
 			}
 			if (PlatformDataKeys.SELECTED_ITEMS.is(dataId)){
-				return myList.getSelectedValues();
+				return myList.getSelectedValuesList();
 			}
 			return null;
 		}

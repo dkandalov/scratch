@@ -20,6 +20,7 @@ import com.intellij.openapi.application.PathManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.util.containers.ContainerUtil;
@@ -74,7 +75,7 @@ public class FileSystem {
 	public Answer isValidScratchName(String fileName) {
 		boolean hasPathChars = fileName.contains("/") || fileName.contains("\\");
 		boolean hasWildcards = fileName.contains("*") || fileName.contains("?");
-		if (hasPathChars || hasWildcards || isHidden(fileName) || !VirtualFile.isValidName(fileName)) {
+		if (hasPathChars || hasWildcards || isHidden(fileName) || !LocalFileSystem.getInstance().isValidName(fileName)) {
 			return Answer.no("Not a valid file name");
 		} else if (new File(scratchesFolderPath + fileName).exists()) {
 			return Answer.no("There is existing file with this name");
