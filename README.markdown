@@ -13,7 +13,7 @@ The Scratch plugin can offer you multiple temporary editor tabs, one of which ca
 <br/>
 Can be useful if you want to type something without having to create new file or switch to another editor.
 
-You can install it from IntelliJ plugin manager. It should be compatible with IntelliJ 11 upwards.
+You can install it from IntelliJ plugin manager.
 (Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
 
 
