@@ -1,4 +1,4 @@
-<img src="https://github.com/dkandalov/scratch/blob/proper-rewrite/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
+<img src="https://github.com/dkandalov/scratch/blob/master/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 
 ### Scratch Plugin
 
