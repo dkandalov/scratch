@@ -10,9 +10,6 @@ The default scratch tab can be quickly opened with a shortcut.
 
 Contents of the temporary editor tabs are stored outside of the project, so your directory will not get cluttered.
 
-You can install it from IntelliJ plugin manager.
-(Just in case [this is plugin page](http://plugins.jetbrains.com/plugin/?null&pluginId=4428) in plugin repository.)
-
 Note that since IJ14 there are [built-in scratches](https://blog.jetbrains.com/idea/2014/09/intellij-idea-14-eap-138-2210-brings-scratch-files-and-better-mercurial-integration/) 
 with similar functionality which unfortunately still don't have actions to open "default" scratch and show list of available scratches.    
 At some point this plugin might be reimplemented as additional actions on top of built-in scratches.
@@ -52,7 +49,7 @@ Some of these actions are also in `Tools -> Scratch` menu.
 ```
 
  - **Append/prepend new scratch to scratches list** (default is "APPEND").
- Edit "scratch_config.xml" to add the following line (works after IntelliJ restart):
+ Edit `scratch_config.xml` to add the following line (works after IntelliJ restart):
 ```
 <option name="newScratchAppendType" value="PREPEND"/>
 ```
