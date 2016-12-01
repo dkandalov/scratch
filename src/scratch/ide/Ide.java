@@ -95,7 +95,7 @@ public class Ide {
 			}
 
 			@Override protected void onScratchDelete(Scratch scratch) {
-				mrScratchManager().userAttemptedToDeleteScratch(scratch);
+				mrScratchManager().userAttemptedToDeleteScratch(scratch, userDataHolder);
 			}
 
             @Override protected void onScratchDeleteWithoutPrompt(Scratch scratch) {
@@ -186,12 +186,16 @@ public class Ide {
 		}
 	}
 
-	public void showDeleteDialogFor(Scratch scratch) {
-		String message = "Do you want to delete '" + scratch.asFileName() + "'?\n(This operation cannot be undone)";
-		int userAnswer = Messages.showOkCancelDialog(message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
-		if (userAnswer != Messages.OK) return;
+	public void showDeleteDialogFor(Scratch scratch, UserDataHolder userDataHolder) {
+		// Message dialog is displayed inside invokeLater() because otherwise on OSX
+		// "delete" event will be propagated to editor and will remove a character.
+		ApplicationManager.getApplication().invokeLater(() -> {
+			String message = "Do you want to delete '" + scratch.asFileName() + "'?\n(This operation cannot be undone)";
+			int userAnswer = Messages.showOkCancelDialog(takeProjectFrom(userDataHolder), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon());
+			if (userAnswer != Messages.OK) return;
 
-		mrScratchManager().userWantsToDeleteScratch(scratch);
+			mrScratchManager().userWantsToDeleteScratch(scratch);
+		});
 	}
 
 

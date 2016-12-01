@@ -155,10 +155,10 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 
 	protected void onScratchMoved(Scratch scratch, int down) {}
 
-	private void registerAction(@NonNls String aActionName, List<KeyStroke> keyStrokes, Action aAction) {
+	private void registerAction(@NonNls String actionName, List<KeyStroke> keyStrokes, Action action) {
 		for (int i = 0; i < keyStrokes.size(); i++) {
 			KeyStroke keyStroke = keyStrokes.get(i);
-			registerAction(aActionName + i, keyStroke, aAction);
+			registerAction(actionName + i, keyStroke, action);
 		}
 	}
 
@@ -568,8 +568,8 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 	}
 
 	@Override
-	protected void process(KeyEvent aEvent) {
-		myList.processKeyEvent(aEvent);
+	protected void process(KeyEvent event) {
+		myList.processKeyEvent(event);
 	}
 
 	private int getIndexForShowingChild() {

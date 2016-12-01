@@ -228,14 +228,14 @@ public class MrScratchManager {
 	}
 
 
-	public void userAttemptedToDeleteScratch(String scratchFileName) {
+	public void userAttemptedToDeleteScratch(String scratchFileName, UserDataHolder userDataHolder) {
 		Scratch scratch = findByFileName(scratchFileName);
 		if (scratch != null)
-			userAttemptedToDeleteScratch(scratch);
+			userAttemptedToDeleteScratch(scratch, userDataHolder);
 	}
 
-	public void userAttemptedToDeleteScratch(Scratch scratch) {
-		ide.showDeleteDialogFor(scratch);
+	public void userAttemptedToDeleteScratch(Scratch scratch, UserDataHolder userDataHolder) {
+		ide.showDeleteDialogFor(scratch, userDataHolder);
 	}
 
 	public void userWantsToDeleteScratch(Scratch scratch) {

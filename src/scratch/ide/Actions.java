@@ -39,7 +39,7 @@ public class Actions {
 			VirtualFile scratchFile = getCurrentScratchFile(event);
 			if (scratchFile == null) return;
 
-			mrScratchManager().userAttemptedToDeleteScratch(scratchFile.getName());
+			mrScratchManager().userAttemptedToDeleteScratch(scratchFile.getName(), holdingOnTo(event.getProject()));
 		}
 
 		@Override public void update(AnActionEvent event) {
