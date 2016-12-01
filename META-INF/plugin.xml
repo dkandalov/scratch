@@ -34,6 +34,7 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
+            <li>1.08 - fix for exception in IJ 2016.3 when creating new scratch</li>
             <li>1.07 - allow creating scratches with the same name but different extensions</li>
             <li>1.03 - make scratches always editable (even if they are outside of project root)</li>
             <li>1.0 - file types, uses physical files, add/rename/delete/move scratches</li>
