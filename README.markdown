@@ -1,6 +1,6 @@
 <img src="https://github.com/dkandalov/scratch/blob/proper-rewrite/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 
-### What is this?
+### Scratch Plugin
 
 This is a plugin for IntelliJ IDEs for cases when you want to type something without having to create new file or switch to another editor.
 
@@ -27,7 +27,7 @@ In scratches list popup:
  - `Delete`* - delete scratch
  - `Ctrl+Delete` - delete scratch without prompt
 
-* - shortcuts are copied from `Delete`, `Rename` and `Generate` actions, 
+\* - shortcuts are copied from `Delete`, `Rename` and `Generate` actions, 
 i.e. if you have changed keyboard layout, your own shortcuts should work as well.
 
 Some of these actions are also in `Tools -> Scratch` menu.
@@ -63,4 +63,4 @@ Some of these actions are also in `Tools -> Scratch` menu.
 ```
 
 
-Thanks to [Vojtěch Krása](https://github.com/krasa) for insisting on new features, making me update this plugin and testing it.
+Thanks to [Vojtěch Krása](https://github.com/krasa) for making version 1.0 of this plugin happen and testing it.
