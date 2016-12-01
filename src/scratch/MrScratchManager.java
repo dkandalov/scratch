@@ -14,9 +14,7 @@
 
 package scratch;
 
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.UserDataHolder;
-import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import scratch.filesystem.FileSystem;
 import scratch.ide.Ide;
@@ -48,11 +46,7 @@ public class MrScratchManager {
 			log.willNotMigrateBecauseTargetFolderIsNotEmpty();
 			return;
 		}
-		boolean allEmpty = !ContainerUtil.exists(scratchTexts, new Condition<String>() {
-			@Override public boolean value(String s) {
-				return !s.isEmpty();
-			}
-		});
+		boolean allEmpty = !ContainerUtil.exists(scratchTexts, s -> !s.isEmpty());
 		if (allEmpty) {
 			List<Scratch> scratches = Arrays.asList(
 					Scratch.create("&scratch.txt"),
@@ -67,8 +61,8 @@ public class MrScratchManager {
 			return;
 		}
 
-		List<Integer> indexes = new ArrayList<Integer>();
-		List<Scratch> scratches = new ArrayList<Scratch>();
+		List<Integer> indexes = new ArrayList<>();
+		List<Scratch> scratches = new ArrayList<>();
 
 		for (int i = 1; i <= scratchTexts.size(); i++) {
 			String scratchName = (i == 1 ? "&scratch" : "scratch&" + i);
@@ -148,13 +142,9 @@ public class MrScratchManager {
 		final Scratch renamedScratch = Scratch.create(fullNameWithMnemonics);
 		if (scratch.asFileName().equals(renamedScratch.asFileName())) return Answer.yes();
 
-		boolean haveScratchWithSameName = exists(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return !it.equals(scratch)
-						&& it.name.equals(renamedScratch.name)
-						&& it.extension.equals(renamedScratch.extension);
-			}
-		});
+		boolean haveScratchWithSameName = exists(config.scratches, it -> !it.equals(scratch)
+				&& it.name.equals(renamedScratch.name)
+				&& it.extension.equals(renamedScratch.extension));
 		if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name");
 
 		return fileSystem.isValidScratchName(renamedScratch.asFileName());
@@ -259,28 +249,11 @@ public class MrScratchManager {
 
 
 	private void syncScratchesWithFileSystem() {
-		final List<String> fileNames = fileSystem.listScratchFiles();
+		List<String> fileNames = fileSystem.listScratchFiles();
 
-		final List<Scratch> oldScratches = findAll(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return fileNames.contains(it.asFileName());
-			}
-		});
-		Condition<String> whichAreNewFiles = new Condition<String>() {
-			@Override public boolean value(final String fileName) {
-				return !exists(oldScratches, new Condition<Scratch>() {
-					@Override public boolean value(Scratch scratch) {
-						return fileName.equals(scratch.asFileName());
-					}
-				});
-			}
-		};
-		List<String> newFileNames = filter(fileNames, whichAreNewFiles);
-		List<Scratch> newScratches = map(newFileNames, new Function<String, Scratch>() {
-			@Override public Scratch fun(String it) {
-				return Scratch.create(it);
-			}
-		});
+		List<Scratch> oldScratches = findAll(config.scratches, it -> fileNames.contains(it.asFileName()));
+		List<String> newFileNames = filter(fileNames, fileName -> !exists(oldScratches, scratch -> fileName.equals(scratch.asFileName())));
+		List<Scratch> newScratches = map(newFileNames, Scratch::create);
 
 		List<Scratch> scratches = concat(oldScratches, newScratches);
 		if (!newScratches.isEmpty() || oldScratches.size() != config.scratches.size()) {
@@ -304,19 +277,11 @@ public class MrScratchManager {
 	}
 
 	private boolean isUniqueScratchName(final String name) {
-		return !exists(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return it.name.equals(name);
-			}
-		});
+		return !exists(config.scratches, it -> it.name.equals(name));
 	}
 
 	private boolean isUniqueScratchName(final String name, final String extension) {
-		return !exists(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return it.name.equals(name) && it.extension.equals(extension);
-			}
-		});
+		return !exists(config.scratches, it -> it.name.equals(name) && it.extension.equals(extension));
 	}
 
 	private void updateConfig(ScratchConfig newConfig) {
@@ -326,10 +291,6 @@ public class MrScratchManager {
 	}
 
 	private Scratch findByFileName(final String scratchFileName) {
-		return ContainerUtil.find(config.scratches, new Condition<Scratch>() {
-			@Override public boolean value(Scratch it) {
-				return it.asFileName().equals(scratchFileName);
-			}
-		});
+		return ContainerUtil.find(config.scratches, it -> it.asFileName().equals(scratchFileName));
 	}
 }
