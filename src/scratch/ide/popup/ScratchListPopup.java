@@ -615,7 +615,7 @@ public abstract class ScratchListPopup extends WizardPopup implements ListPopup 
 				return myList.getSelectedValue();
 			}
 			if (PlatformDataKeys.SELECTED_ITEMS.is(dataId)){
-				return myList.getSelectedValuesList();
+				return myList.getSelectedValues();
 			}
 			return null;
 		}
