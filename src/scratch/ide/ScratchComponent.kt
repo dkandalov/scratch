@@ -29,7 +29,7 @@ class ScratchComponent: ApplicationComponent {
 
     override fun initComponent() {
         val log = ScratchLog()
-        val configPersistence = ScratchConfigPersistence.getInstance()
+        val configPersistence = ScratchConfigPersistence.instance
         val config = configPersistence.asConfig()
 
         fileSystem = FileSystem(configPersistence.scratchesFolderPath)
@@ -38,7 +38,7 @@ class ScratchComponent: ApplicationComponent {
 
         if (config.needMigration) {
             getApplication().invokeLater {
-                val scratchOldData = ScratchOldData.getInstance()
+                val scratchOldData = ScratchOldData.instance
                 mrScratchManager.migrate(asList(*scratchOldData.scratchTextInternal))
             }
         }

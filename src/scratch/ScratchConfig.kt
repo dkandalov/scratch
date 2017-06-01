@@ -115,7 +115,7 @@ data class ScratchConfig(
             clipboardAppendType, newScratchAppendType, value)
     }
 
-    fun withLastOpenedScratch(value: Scratch): ScratchConfig {
+    fun withLastOpenedScratch(value: Scratch?): ScratchConfig {
         return ScratchConfig(
             scratches, value, listenToClipboard, needMigration,
             clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
