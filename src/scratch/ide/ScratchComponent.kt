@@ -20,7 +20,6 @@ import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension
 import com.intellij.openapi.vfs.VirtualFile
 import scratch.MrScratchManager
 import scratch.filesystem.FileSystem
-import java.util.Arrays.asList
 
 class ScratchComponent: ApplicationComponent {
 
@@ -38,8 +37,7 @@ class ScratchComponent: ApplicationComponent {
 
         if (config.needMigration) {
             getApplication().invokeLater {
-                val scratchOldData = ScratchOldData.instance
-                mrScratchManager.migrate(asList(*scratchOldData.scratchTextInternal))
+                // TODO mrScratchManager.migrateToIdeScratches()
             }
         }
 
