@@ -15,13 +15,13 @@
 package scratch
 
 
-data class Answer(@JvmField val isYes: Boolean, @JvmField val explanation: String?) {
-    @JvmField val isNo = !isYes
+data class Answer( val isYes: Boolean, val explanation: String?) {
+    val isNo = !isYes
 
     override fun toString() = if (isYes) "Yes" else "No($explanation)"
 
     companion object {
-        @JvmStatic fun no(explanation: String) = Answer(false, explanation)
-        @JvmStatic fun yes() = Answer(true, null)
+        fun no(explanation: String) = Answer(false, explanation)
+        fun yes() = Answer(true, null)
     }
 }

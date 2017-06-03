@@ -27,16 +27,16 @@ import com.intellij.openapi.wm.IdeFocusManager
 import javax.swing.Icon
 
 object Util {
-    @JvmField val NO_ICON: Icon? = null
+    val NO_ICON: Icon? = null
     private val PROJECT_KEY = Key.create<Project>("Project")
 
-    @JvmStatic fun holdingOnTo(project: Project?): UserDataHolder {
+    fun holdingOnTo(project: Project?): UserDataHolder {
         val userDataHolder = UserDataHolderBase()
         userDataHolder.putUserData(PROJECT_KEY, project)
         return userDataHolder
     }
 
-    @JvmStatic fun takeProjectFrom(userDataHolder: UserDataHolder): Project? {
+    fun takeProjectFrom(userDataHolder: UserDataHolder): Project? {
         return userDataHolder.getUserData(PROJECT_KEY)
     }
 
@@ -49,12 +49,12 @@ object Util {
             return instance.selectedTextEditor
         }
 
-    @JvmStatic fun currentFileIn(project: Project?): VirtualFile? {
+    fun currentFileIn(project: Project?): VirtualFile? {
         if (project == null) return null
         return (FileEditorManagerEx.getInstance(project) as FileEditorManagerEx).currentFile
     }
 
-    @JvmStatic fun hasFocusInEditor(document: Document): Boolean {
+    fun hasFocusInEditor(document: Document): Boolean {
         val selectedTextEditor = selectedEditor
         return selectedTextEditor != null && selectedTextEditor.document == document
     }

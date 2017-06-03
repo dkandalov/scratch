@@ -61,7 +61,7 @@ class ScratchComponent: ApplicationComponent {
     }
 
     companion object {
-        @JvmStatic fun mrScratchManager() = getApplication().getComponent(ScratchComponent::class.java).mrScratchManager
-        @JvmStatic fun fileSystem() = getApplication().getComponent(ScratchComponent::class.java).fileSystem
+        fun mrScratchManager() = getApplication().getComponent(ScratchComponent::class.java).mrScratchManager
+        fun fileSystem() = getApplication().getComponent(ScratchComponent::class.java).fileSystem
     }
 }

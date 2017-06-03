@@ -22,13 +22,13 @@ import java.util.*
 
 
 data class ScratchConfig(
-    @JvmField val scratches: List<Scratch>,
-    @JvmField val lastOpenedScratch: Scratch?,
-    @JvmField val listenToClipboard: Boolean,
-    @JvmField val needMigration: Boolean,
-    @JvmField val clipboardAppendType: AppendType,
+    val scratches: List<Scratch>,
+    val lastOpenedScratch: Scratch?,
+    val listenToClipboard: Boolean,
+    val needMigration: Boolean,
+    val clipboardAppendType: AppendType,
     private val newScratchAppendType: AppendType,
-    @JvmField val defaultScratchMeaning: DefaultScratchMeaning
+    val defaultScratchMeaning: DefaultScratchMeaning
 ) {
 
     enum class AppendType {
@@ -122,10 +122,10 @@ data class ScratchConfig(
     }
 
     companion object {
-        @JvmField val DEFAULT_CONFIG = ScratchConfig(
+        val DEFAULT_CONFIG = ScratchConfig(
             emptyList<Scratch>(), null, false, true, APPEND, APPEND, TOPMOST
         )
-        @JvmField val UP = -1
-        @JvmField val DOWN = 1
+        val UP = -1
+        val DOWN = 1
     }
 }

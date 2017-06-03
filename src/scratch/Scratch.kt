@@ -16,9 +16,9 @@ package scratch
 
 
 data class Scratch(
-    @JvmField val fullNameWithMnemonics: String,
-    @JvmField val name: String,
-    @JvmField val extension: String
+    val fullNameWithMnemonics: String,
+    val name: String,
+    val extension: String
 ) {
     fun asFileName(): String {
         return name + "." + extension
@@ -27,7 +27,7 @@ data class Scratch(
     override fun toString() = "{fullNameWithMnemonics='$fullNameWithMnemonics'}"
 
     companion object {
-        @JvmStatic fun create(fullNameWithMnemonics: String): Scratch {
+        fun create(fullNameWithMnemonics: String): Scratch {
             return Scratch(
                 fullNameWithMnemonics,
                 extractNameFrom(fullNameWithMnemonics),

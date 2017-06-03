@@ -74,7 +74,7 @@ internal class ScratchListElementRenderer(
     }
 
     companion object {
-        @JvmField val NextStep: Icon? = IconLoader.findIcon("/icons/ide/nextStep.png")
+        val NextStep: Icon? = IconLoader.findIcon("/icons/ide/nextStep.png")
         val NextStepGrayed = IconLoader.getIcon("/icons/ide/nextStepGrayed.png") // 12x12
         val NextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.png") // 12x12
     }

@@ -60,7 +60,7 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
     override fun loadState(state: ScratchConfigPersistence) = XmlSerializerUtil.copyBean(state, this)
 
     companion object {
-        @JvmStatic val instance: ScratchConfigPersistence
+        val instance: ScratchConfigPersistence
             get() = ServiceManager.getService<ScratchConfigPersistence>(ScratchConfigPersistence::class.java)
     }
 }
