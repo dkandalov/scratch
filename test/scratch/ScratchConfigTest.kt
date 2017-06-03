@@ -14,7 +14,6 @@
 
 package scratch
 
-import com.intellij.util.containers.ContainerUtil.list
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
@@ -27,17 +26,17 @@ class ScratchConfigTest {
     private val scratch1 = Scratch.create("scratch1.txt")
     private val scratch2 = Scratch.create("scratch2.txt")
     private val scratch3 = Scratch.create("scratch3.txt")
-    private val config = DEFAULT_CONFIG.with(list(scratch1, scratch2, scratch3))
+    private val config = DEFAULT_CONFIG.with(listOf(scratch1, scratch2, scratch3))
 
     @Test fun movingTopScratchToBottom() {
-        assertThat(config.move(scratch1, UP), equalTo(DEFAULT_CONFIG.with(list(scratch2, scratch3, scratch1))))
+        assertThat(config.move(scratch1, UP), equalTo(DEFAULT_CONFIG.with(listOf(scratch2, scratch3, scratch1))))
     }
 
     @Test fun movingBottomScratchToTop() {
-        assertThat(config.move(scratch3, DOWN), equalTo(DEFAULT_CONFIG.with(list(scratch3, scratch1, scratch2))))
+        assertThat(config.move(scratch3, DOWN), equalTo(DEFAULT_CONFIG.with(listOf(scratch3, scratch1, scratch2))))
     }
 
     @Test fun movingScratchUp() {
-        assertThat(config.move(scratch2, UP), equalTo(DEFAULT_CONFIG.with(list(scratch2, scratch1, scratch3))))
+        assertThat(config.move(scratch2, UP), equalTo(DEFAULT_CONFIG.with(listOf(scratch2, scratch1, scratch3))))
     }
 }

@@ -15,8 +15,6 @@
 package scratch
 
 import com.intellij.openapi.util.UserDataHolder
-import com.intellij.util.containers.ContainerUtil
-import com.intellij.util.containers.ContainerUtil.*
 import scratch.ScratchConfig.DefaultScratchMeaning
 import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
@@ -38,7 +36,7 @@ class MrScratchManager(
             log.willNotMigrateBecauseTargetFolderIsNotEmpty()
             return
         }
-        val allEmpty = !ContainerUtil.exists<String>(scratchTexts, { s -> !s.isEmpty() })
+        val allEmpty = !scratchTexts.any { s -> !s.isEmpty() }
         if (allEmpty) {
             val scratches = Arrays.asList<Scratch>(
                 Scratch.create("&scratch.txt"),
@@ -134,11 +132,11 @@ class MrScratchManager(
         val renamedScratch = Scratch.create(fullNameWithMnemonics)
         if (scratch.asFileName() == renamedScratch.asFileName()) return Answer.yes()
 
-        val haveScratchWithSameName = exists<Scratch>(config.scratches, { it ->
-            it != scratch
-                && it.name == renamedScratch.name
-                && it.extension == renamedScratch.extension
-        })
+        val haveScratchWithSameName = config.scratches.any {
+            it != scratch &&
+            it.name == renamedScratch.name &&
+            it.extension == renamedScratch.extension
+        }
         if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name")
 
         return fileSystem.isValidScratchName(renamedScratch.asFileName())
@@ -245,8 +243,8 @@ class MrScratchManager(
     private fun syncScratchesWithFileSystem() {
         val fileNames = fileSystem.listScratchFiles()
 
-        val oldScratches = findAll<Scratch>(config.scratches, { it -> fileNames.contains(it.asFileName()) })
-        val newFileNames = filter<String>(fileNames, { fileName -> !exists<Scratch>(oldScratches, { scratch -> fileName == scratch.asFileName() }) })
+        val oldScratches = config.scratches.filter { fileNames.contains(it.asFileName()) }
+        val newFileNames = fileNames.filter { fileName -> !oldScratches.any { scratch -> fileName == scratch.asFileName() } }
         val newScratches = newFileNames.map { Scratch.create(it) }
 
         val scratches = oldScratches + newScratches
@@ -269,11 +267,11 @@ class MrScratchManager(
         }
 
     private fun isUniqueScratchName(name: String): Boolean {
-        return !exists<Scratch>(config.scratches, { it.name == name })
+        return config.scratches.none { it.name == name }
     }
 
     private fun isUniqueScratchName(name: String, extension: String): Boolean {
-        return !exists<Scratch>(config.scratches, { it.name == name && it.extension == extension })
+        return config.scratches.none { it.name == name && it.extension == extension }
     }
 
     private fun updateConfig(newConfig: ScratchConfig) {
@@ -283,6 +281,6 @@ class MrScratchManager(
     }
 
     private fun findByFileName(scratchFileName: String): Scratch? {
-        return ContainerUtil.find<Scratch, Scratch>(config.scratches, { it.asFileName() == scratchFileName })
+        return config.scratches.find { it.asFileName() == scratchFileName }
     }
 }

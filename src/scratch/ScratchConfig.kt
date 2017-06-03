@@ -14,7 +14,6 @@
 
 package scratch
 
-import com.intellij.util.containers.ContainerUtil.map
 import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
@@ -65,7 +64,7 @@ data class ScratchConfig(
     }
 
     fun replace(scratch: Scratch, newScratch: Scratch): ScratchConfig {
-        val scratchList = map<Scratch, Scratch>(scratches, { it -> if (it == scratch) newScratch else it })
+        val scratchList = scratches.map { it -> if (it == scratch) newScratch else it }
         val lastOpened = (if (scratch == lastOpenedScratch) newScratch else lastOpenedScratch)
         return ScratchConfig(scratchList, lastOpened, listenToClipboard, needMigration, clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
     }

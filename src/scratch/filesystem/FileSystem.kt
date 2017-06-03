@@ -22,7 +22,6 @@ import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
-import com.intellij.util.containers.ContainerUtil
 import scratch.Answer
 import java.io.File
 import java.io.IOException
@@ -139,7 +138,7 @@ class FileSystem(scratchesFolderPath: String?) {
 
     fun isScratch(virtualFile: VirtualFile): Boolean {
         val scratchFolder = virtualFileBy(FileSystem.scratchFolder)
-        return scratchFolder != null && ContainerUtil.exists(scratchFolder.children) { it -> it == virtualFile }
+        return scratchFolder != null && scratchFolder.children.any { it == virtualFile }
     }
 
     companion object {
