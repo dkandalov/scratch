@@ -253,7 +253,7 @@ class MrScratchManager(
         if (!newScratches.isEmpty() || oldScratches.size != config.scratches.size) {
             var newConfig = config.with(scratches)
             if (!scratches.contains(config.lastOpenedScratch)) {
-                newConfig = newConfig.withLastOpenedScratch(null!!)
+                newConfig = newConfig.withLastOpenedScratch(null)
             }
             updateConfig(newConfig)
         }
@@ -262,7 +262,7 @@ class MrScratchManager(
     private val defaultScratch: Scratch
         get() {
             when (config.defaultScratchMeaning) {
-                TOPMOST -> return config.scratches.get(0)
+                TOPMOST -> return config.scratches[0]
                 LAST_OPENED -> return config.lastOpenedScratch ?: config.scratches[0]
                 else -> throw IllegalStateException()
             }

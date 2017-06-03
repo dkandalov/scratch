@@ -19,22 +19,23 @@ import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.ColorUtil
 import com.intellij.ui.popup.list.GroupedItemsListRenderer
 import com.intellij.util.ui.UIUtil
+import scratch.Scratch
 import javax.swing.Icon
 import javax.swing.JList
 
-fun <T> createListItemDescriptor(myPopup: ScratchListPopup) = object: ListItemDescriptor<T> {
-    override fun getTextFor(value: T) = myPopup.listStep.getTextFor(value)
-    override fun getTooltipFor(value: T) = null
-    override fun getIconFor(value: T) = myPopup.listStep.getIconFor(value)
-    override fun hasSeparatorAboveOf(value: T) = myPopup.listModel.isSeparatorAboveOf(value)
-    override fun getCaptionAboveOf(value: T) = myPopup.listModel.getCaptionAboveOf(value)
+fun createListItemDescriptor(myPopup: ScratchListPopup) = object: ListItemDescriptor<Scratch> {
+    override fun getTextFor(value: Scratch) = myPopup.listStep.getTextFor(value)
+    override fun getTooltipFor(value: Scratch) = null
+    override fun getIconFor(value: Scratch) = myPopup.listStep.getIconFor(value)
+    override fun hasSeparatorAboveOf(value: Scratch) = myPopup.listModel.isSeparatorAboveOf(value)
+    override fun getCaptionAboveOf(value: Scratch) = myPopup.listModel.getCaptionAboveOf(value)
 }
 
-internal class ScratchListElementRenderer<T>(
+internal class ScratchListElementRenderer(
     private val myPopup: ScratchListPopup
-): GroupedItemsListRenderer<T>(createListItemDescriptor(myPopup)) {
+): GroupedItemsListRenderer<Scratch>(createListItemDescriptor(myPopup)) {
 
-    override fun customizeComponent(list: JList<out T>, value: T, isSelected: Boolean) {
+    override fun customizeComponent(list: JList<out Scratch>, value: Scratch, isSelected: Boolean) {
         val step = myPopup.listStep
         val isSelectable = step.isSelectable(value)
         myTextLabel.isEnabled = isSelectable
