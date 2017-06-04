@@ -17,12 +17,15 @@ package scratch.ide
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.*
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditorManagerEvent
+import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.project.ProjectManagerAdapter
+import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.ui.InputValidatorEx
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.UserDataHolder
@@ -180,7 +183,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     /**
      * Note that it's possible to turn on clipboard listener and forget about it
      * with it appending clipboard content to default scratch forever.
-
+     *
      * Assume that notification on plugin start is good enough to remind user about clipboard listener.
      */
     class ClipboardListener(private val mrScratchManager: MrScratchManager) {
@@ -215,10 +218,11 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         private val connectionsByProject = WeakHashMap<Project, MessageBusConnection>()
 
         fun startTracking(): OpenEditorTracker {
-            ProjectManager.getInstance().addProjectManagerListener(object: ProjectManagerAdapter() {
-                override fun projectOpened(project: Project?) {
-                    val connection = project!!.messageBus.connect()
-                    connection.subscribe<FileEditorManagerListener>(FILE_EDITOR_MANAGER, object: FileEditorManagerAdapter() {
+            val messageBus = ApplicationManager.getApplication().messageBus
+            messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+                override fun projectOpened(project: Project) {
+                    val connection = project.messageBus.connect()
+                    connection.subscribe<FileEditorManagerListener>(FILE_EDITOR_MANAGER, object: FileEditorManagerListener {
                         override fun selectionChanged(event: FileEditorManagerEvent) {
                             val virtualFile = event.newFile ?: return
 
@@ -230,7 +234,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
                     connectionsByProject.put(project, connection)
                 }
 
-                override fun projectClosed(project: Project?) {
+                override fun projectClosed(project: Project) {
                     connectionsByProject.remove(project)?.disconnect()
                 }
             })
