@@ -28,7 +28,7 @@ import scratch.Scratch
 class ScratchLog {
 
     fun failedToRename(scratch: Scratch) {
-        notifyUser("", "Failed to rename scratch: " + scratch.asFileName(), WARNING)
+        notifyUser("", "Failed to rename scratch: " + scratch.fileName, WARNING)
     }
 
     fun migratedScratchesToFiles() {
@@ -57,19 +57,19 @@ class ScratchLog {
     }
 
     fun failedToOpen(scratch: Scratch) {
-        notifyUser("", "Failed to open scratch: '" + scratch.asFileName() + "'", WARNING)
+        notifyUser("", "Failed to open scratch: '" + scratch.fileName + "'", WARNING)
     }
 
     fun failedToCreate(scratch: Scratch) {
-        notifyUser("", "Failed to create scratch: '" + scratch.asFileName() + "'", WARNING)
+        notifyUser("", "Failed to create scratch: '" + scratch.fileName + "'", WARNING)
     }
 
     fun failedToDelete(scratch: Scratch) {
-        notifyUser("", "Failed to delete scratch: '" + scratch.asFileName() + "'", WARNING)
+        notifyUser("", "Failed to delete scratch: '" + scratch.fileName + "'", WARNING)
     }
 
     fun failedToFindVirtualFileFor(scratch: Scratch) {
-        log.warn("Failed to find virtual file for '" + scratch.asFileName() + "'")
+        log.warn("Failed to find virtual file for '" + scratch.fileName + "'")
     }
 
     companion object {

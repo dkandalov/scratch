@@ -30,24 +30,13 @@ object Util {
     val NO_ICON: Icon? = null
     private val PROJECT_KEY = Key.create<Project>("Project")
 
-    fun holdingOnTo(project: Project?): UserDataHolder {
-        val userDataHolder = UserDataHolderBase()
-        userDataHolder.putUserData(PROJECT_KEY, project)
-        return userDataHolder
+    fun holdingOnTo(project: Project?) = UserDataHolderBase().apply {
+        putUserData(PROJECT_KEY, project)
     }
 
     fun takeProjectFrom(userDataHolder: UserDataHolder): Project? {
         return userDataHolder.getUserData(PROJECT_KEY)
     }
-
-    val selectedEditor: Editor?
-        get() {
-            val frame = IdeFocusManager.findInstance().lastFocusedFrame ?: return null
-            val project = frame.project ?: return null
-
-            val instance = FileEditorManager.getInstance(project)
-            return instance.selectedTextEditor
-        }
 
     fun currentFileIn(project: Project?): VirtualFile? {
         if (project == null) return null
@@ -55,7 +44,13 @@ object Util {
     }
 
     fun hasFocusInEditor(document: Document): Boolean {
-        val selectedTextEditor = selectedEditor
+        val selectedTextEditor = selectedEditor()
         return selectedTextEditor != null && selectedTextEditor.document == document
+    }
+
+    private fun selectedEditor(): Editor? {
+        val frame = IdeFocusManager.findInstance().lastFocusedFrame ?: return null
+        val project = frame.project ?: return null
+        return FileEditorManager.getInstance(project).selectedTextEditor
     }
 }

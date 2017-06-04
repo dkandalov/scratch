@@ -31,11 +31,7 @@ import java.nio.charset.Charset
 class FileSystem(scratchesFolderPath: String?) {
 
     private val fileManager = VirtualFileManager.getInstance()
-    private val canBeScratch = { it: VirtualFile?  ->
-        it != null && it.exists() && !it.isDirectory && !isHidden(it.name)
-    }
     private val scratchesFolderPath: String
-
 
     init {
         if (scratchesFolderPath == null || scratchesFolderPath.isEmpty()) {
@@ -50,12 +46,11 @@ class FileSystem(scratchesFolderPath: String?) {
         if (virtualFile == null || !virtualFile.exists()) {
             return emptyList()
         }
-        return virtualFile.children.filter(canBeScratch).map { it.name }
+        return virtualFile.children.filter{ it.canBeScratch() }.map { it.name }
     }
 
     fun scratchFileExists(fileName: String): Boolean {
-        val virtualFile = virtualFileBy(fileName)
-        return canBeScratch(virtualFile)
+        return virtualFileBy(fileName).canBeScratch()
     }
 
     fun isValidScratchName(fileName: String): Answer {
@@ -72,8 +67,9 @@ class FileSystem(scratchesFolderPath: String?) {
 
     fun renameFile(oldFileName: String, newFileName: String): Boolean {
         val virtualFile = virtualFileBy(oldFileName) ?: return false
-
-        return ApplicationManager.getApplication().runWriteAction(Computable { doRenameFile(virtualFile, newFileName) })
+        return ApplicationManager.getApplication().runWriteAction(Computable {
+            doRenameFile(virtualFile, newFileName)
+        })
     }
 
     fun createEmptyFile(fileName: String): Boolean {
@@ -104,17 +100,14 @@ class FileSystem(scratchesFolderPath: String?) {
         return ApplicationManager.getApplication().runWriteAction(computable)
     }
 
-    @Throws(IOException::class)
     private fun doRemoveFile(fileName: String): Boolean {
         val virtualFile = virtualFileBy(fileName) ?: return false
-        virtualFile.delete(this@FileSystem)
+        virtualFile.delete(this)
         return true
     }
 
-    @Throws(IOException::class)
     private fun doCreateFile(fileName: String, text: String): Boolean {
         ensureExists(File(scratchesFolderPath))
-
         val scratchesFolder = virtualFileBy(scratchFolder) ?: return false
 
         val scratchFile = scratchesFolder.createChildData(this@FileSystem, fileName)
@@ -141,6 +134,9 @@ class FileSystem(scratchesFolderPath: String?) {
         return scratchFolder != null && scratchFolder.children.any { it == virtualFile }
     }
 
+    private fun VirtualFile?.canBeScratch() =
+        this != null && exists() && !isDirectory && !isHidden(name)
+
     companion object {
         private val log = Logger.getInstance(FileSystem::class.java)
 
@@ -150,11 +146,8 @@ class FileSystem(scratchesFolderPath: String?) {
         private val charset = Charset.forName("UTF8")
         private val scratchFolder = ""
 
-        private fun isHidden(fileName: String): Boolean {
-            return fileName.startsWith(".")
-        }
+        private fun isHidden(fileName: String) = fileName.startsWith(".")
 
-        @Throws(IOException::class)
         private fun ensureExists(dir: File) {
             if (!dir.exists() && !dir.mkdirs()) {
                 throw IOException(CommonBundle.message("exception.directory.can.not.create", dir.path))

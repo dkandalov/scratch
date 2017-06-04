@@ -18,22 +18,26 @@ import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Assert.assertThat
 import org.junit.Test
 
-class ScratchTest {
-    @Test fun creatingScratches() {
-        var scratch = Scratch.create("scratch.txt")
-        assertThat(scratch.name, equalTo("scratch"))
-        assertThat(scratch.extension, equalTo("txt"))
+class ScratchTests {
+    @Test fun `creating scratches`() {
+        Scratch.create("scratch.txt").apply {
+            assertThat(name, equalTo("scratch"))
+            assertThat(extension, equalTo("txt"))
+        }
 
-        scratch = Scratch.create("&scratch.txt")
-        assertThat(scratch.name, equalTo("scratch"))
-        assertThat(scratch.extension, equalTo("txt"))
+        Scratch.create("&scratch.txt").apply {
+            assertThat(name, equalTo("scratch"))
+            assertThat(extension, equalTo("txt"))
+        }
 
-        scratch = Scratch.create("scratch.t&xt")
-        assertThat(scratch.name, equalTo("scratch"))
-        assertThat(scratch.extension, equalTo("txt"))
+        Scratch.create("scratch.t&xt").apply {
+            assertThat(name, equalTo("scratch"))
+            assertThat(extension, equalTo("txt"))
+        }
 
-        scratch = Scratch.create("scratch")
-        assertThat(scratch.name, equalTo("scratch"))
-        assertThat(scratch.extension, equalTo(""))
+        Scratch.create("scratch").apply {
+            assertThat(name, equalTo("scratch"))
+            assertThat(extension, equalTo(""))
+        }
     }
 }

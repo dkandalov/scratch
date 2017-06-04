@@ -36,7 +36,7 @@ class MrScratchManager(
             log.willNotMigrateBecauseTargetFolderIsNotEmpty()
             return
         }
-        val allEmpty = !scratchTexts.any { s -> !s.isEmpty() }
+        val allEmpty = scratchTexts.none { it.isNotEmpty() }
         if (allEmpty) {
             val scratches = Arrays.asList<Scratch>(
                 Scratch.create("&scratch.txt"),
@@ -45,7 +45,7 @@ class MrScratchManager(
                 Scratch.create("scratch&4.xml")
             )
             for (scratch in scratches) {
-                fileSystem.createEmptyFile(scratch.asFileName())
+                fileSystem.createEmptyFile(scratch.fileName)
             }
             updateConfig(config.with(scratches).needsMigration(false))
             return
@@ -54,11 +54,11 @@ class MrScratchManager(
         val indexes = ArrayList<Int>()
         val scratches = ArrayList<Scratch>()
 
-        for (i in 1..scratchTexts.size) {
-            val scratchName = (if (i == 1) "&scratch" else "scratch&" + i)
+        (1..scratchTexts.size).forEach { i ->
+            val scratchName = if (i == 1) "&scratch" else "scratch&" + i
             val scratch = Scratch.create(scratchName + ".txt")
 
-            val wasCreated = fileSystem.createFile(scratch.asFileName(), scratchTexts[i - 1])
+            val wasCreated = fileSystem.createFile(scratch.fileName, scratchTexts[i - 1])
             if (wasCreated) {
                 scratches.add(scratch)
             } else {
@@ -81,7 +81,7 @@ class MrScratchManager(
     }
 
     fun userWantsToOpenScratch(scratch: Scratch, userDataHolder: UserDataHolder) {
-        if (fileSystem.scratchFileExists(scratch.asFileName())) {
+        if (fileSystem.scratchFileExists(scratch.fileName)) {
             ide.openScratch(scratch, userDataHolder)
         } else {
             log.failedToOpen(scratch)
@@ -96,16 +96,14 @@ class MrScratchManager(
             return
         }
 
-        ide.openScratch(defaultScratch, userDataHolder)
+        ide.openScratch(defaultScratch(), userDataHolder)
     }
 
     fun userWantsToChangeMeaningOfDefaultScratch(value: DefaultScratchMeaning) {
         updateConfig(config.withDefaultScratchMeaning(value))
     }
 
-    fun defaultScratchMeaning(): DefaultScratchMeaning {
-        return config.defaultScratchMeaning
-    }
+    fun defaultScratchMeaning() = config.defaultScratchMeaning
 
     fun userOpenedScratch(scratchFileName: String) {
         val scratch = findByFileName(scratchFileName)
@@ -130,7 +128,7 @@ class MrScratchManager(
         if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty")
 
         val renamedScratch = Scratch.create(fullNameWithMnemonics)
-        if (scratch.asFileName() == renamedScratch.asFileName()) return Answer.yes()
+        if (scratch.fileName == renamedScratch.fileName) return Answer.yes()
 
         val haveScratchWithSameName = config.scratches.any {
             it != scratch &&
@@ -139,14 +137,14 @@ class MrScratchManager(
         }
         if (haveScratchWithSameName) return Answer.no("There is already a scratch with this name")
 
-        return fileSystem.isValidScratchName(renamedScratch.asFileName())
+        return fileSystem.isValidScratchName(renamedScratch.fileName)
     }
 
     fun userWantsToRename(scratch: Scratch, fullNameWithMnemonics: String) {
         if (scratch.fullNameWithMnemonics == fullNameWithMnemonics) return
 
         val renamedScratch = Scratch.create(fullNameWithMnemonics)
-        val wasRenamed = fileSystem.renameFile(scratch.asFileName(), renamedScratch.asFileName())
+        val wasRenamed = fileSystem.renameFile(scratch.fileName, renamedScratch.fileName)
         if (wasRenamed) {
             updateConfig(config.replace(scratch, renamedScratch))
         } else {
@@ -169,8 +167,8 @@ class MrScratchManager(
         if (config.scratches.isEmpty()) {
             log.failedToOpenDefaultScratch()
         } else {
-            val scratch = defaultScratch
-            if (fileSystem.scratchFileExists(scratch.asFileName())) {
+            val scratch = defaultScratch()
+            if (fileSystem.scratchFileExists(scratch.fileName)) {
                 ide.addTextTo(scratch, clipboardText, config.clipboardAppendType)
             } else {
                 log.failedToOpenDefaultScratch()
@@ -205,12 +203,12 @@ class MrScratchManager(
         if (!isUniqueScratchName(scratch.name, scratch.extension))
             return Answer.no("There is already a scratch with this name")
 
-        return fileSystem.isValidScratchName(scratch.asFileName())
+        return fileSystem.isValidScratchName(scratch.fileName)
     }
 
     fun userWantsToAddNewScratch(fullNameWithMnemonics: String, userDataHolder: UserDataHolder) {
         val scratch = Scratch.create(fullNameWithMnemonics)
-        val wasCreated = fileSystem.createEmptyFile(scratch.asFileName())
+        val wasCreated = fileSystem.createEmptyFile(scratch.fileName)
         if (wasCreated) {
             updateConfig(config.add(scratch))
             ide.openScratch(scratch, userDataHolder)
@@ -222,8 +220,7 @@ class MrScratchManager(
 
     fun userAttemptedToDeleteScratch(scratchFileName: String, userDataHolder: UserDataHolder) {
         val scratch = findByFileName(scratchFileName)
-        if (scratch != null)
-            userAttemptedToDeleteScratch(scratch, userDataHolder)
+        if (scratch != null) userAttemptedToDeleteScratch(scratch, userDataHolder)
     }
 
     fun userAttemptedToDeleteScratch(scratch: Scratch, userDataHolder: UserDataHolder) {
@@ -231,7 +228,7 @@ class MrScratchManager(
     }
 
     fun userWantsToDeleteScratch(scratch: Scratch) {
-        val wasRemoved = fileSystem.removeFile(scratch.asFileName())
+        val wasRemoved = fileSystem.removeFile(scratch.fileName)
         if (wasRemoved) {
             updateConfig(config.without(scratch))
         } else {
@@ -243,8 +240,8 @@ class MrScratchManager(
     private fun syncScratchesWithFileSystem() {
         val fileNames = fileSystem.listScratchFiles()
 
-        val oldScratches = config.scratches.filter { fileNames.contains(it.asFileName()) }
-        val newFileNames = fileNames.filter { fileName -> !oldScratches.any { scratch -> fileName == scratch.asFileName() } }
+        val oldScratches = config.scratches.filter { fileNames.contains(it.fileName) }
+        val newFileNames = fileNames.filter { fileName -> !oldScratches.any { scratch -> fileName == scratch.fileName } }
         val newScratches = newFileNames.map { Scratch.create(it) }
 
         val scratches = oldScratches + newScratches
@@ -257,22 +254,17 @@ class MrScratchManager(
         }
     }
 
-    private val defaultScratch: Scratch
-        get() {
-            when (config.defaultScratchMeaning) {
-                TOPMOST -> return config.scratches[0]
-                LAST_OPENED -> return config.lastOpenedScratch ?: config.scratches[0]
-                else -> throw IllegalStateException()
-            }
+    private fun defaultScratch() =
+        when (config.defaultScratchMeaning) {
+            TOPMOST -> config.scratches[0]
+            LAST_OPENED -> config.lastOpenedScratch ?: config.scratches[0]
+            else -> throw IllegalStateException()
         }
 
-    private fun isUniqueScratchName(name: String): Boolean {
-        return config.scratches.none { it.name == name }
-    }
+    private fun isUniqueScratchName(name: String) = config.scratches.none { it.name == name }
 
-    private fun isUniqueScratchName(name: String, extension: String): Boolean {
-        return config.scratches.none { it.name == name && it.extension == extension }
-    }
+    private fun isUniqueScratchName(name: String, extension: String) =
+        config.scratches.none { it.name == name && it.extension == extension }
 
     private fun updateConfig(newConfig: ScratchConfig) {
         if (config == newConfig) return
@@ -280,7 +272,6 @@ class MrScratchManager(
         ide.persistConfig(config)
     }
 
-    private fun findByFileName(scratchFileName: String): Scratch? {
-        return config.scratches.find { it.asFileName() == scratchFileName }
-    }
+    private fun findByFileName(scratchFileName: String) =
+        config.scratches.find { it.fileName == scratchFileName }
 }

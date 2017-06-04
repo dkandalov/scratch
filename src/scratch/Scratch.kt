@@ -20,20 +20,16 @@ data class Scratch(
     val name: String,
     val extension: String
 ) {
-    fun asFileName(): String {
-        return name + "." + extension
-    }
+    val fileName: String get() = name + "." + extension
 
     override fun toString() = "{fullNameWithMnemonics='$fullNameWithMnemonics'}"
 
     companion object {
-        fun create(fullNameWithMnemonics: String): Scratch {
-            return Scratch(
-                fullNameWithMnemonics,
-                extractNameFrom(fullNameWithMnemonics),
-                extractExtensionFrom(fullNameWithMnemonics)
-            )
-        }
+        fun create(fullNameWithMnemonics: String) = Scratch(
+            fullNameWithMnemonics,
+            extractNameFrom(fullNameWithMnemonics),
+            extractExtensionFrom(fullNameWithMnemonics)
+        )
 
         private fun extractExtensionFrom(fileName: String): String {
             val index = fileName.lastIndexOf(".")

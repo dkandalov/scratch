@@ -21,22 +21,22 @@ import scratch.ScratchConfig.Companion.DEFAULT_CONFIG
 import scratch.ScratchConfig.Companion.DOWN
 import scratch.ScratchConfig.Companion.UP
 
-class ScratchConfigTest {
+class ScratchConfigTests {
 
     private val scratch1 = Scratch.create("scratch1.txt")
     private val scratch2 = Scratch.create("scratch2.txt")
     private val scratch3 = Scratch.create("scratch3.txt")
     private val config = DEFAULT_CONFIG.with(listOf(scratch1, scratch2, scratch3))
 
-    @Test fun movingTopScratchToBottom() {
+    @Test fun `moving top scratch to bottom`() {
         assertThat(config.move(scratch1, UP), equalTo(DEFAULT_CONFIG.with(listOf(scratch2, scratch3, scratch1))))
     }
 
-    @Test fun movingBottomScratchToTop() {
+    @Test fun `moving bottom scratch to top`() {
         assertThat(config.move(scratch3, DOWN), equalTo(DEFAULT_CONFIG.with(listOf(scratch3, scratch1, scratch2))))
     }
 
-    @Test fun movingScratchUp() {
+    @Test fun `moving scratch up`() {
         assertThat(config.move(scratch2, UP), equalTo(DEFAULT_CONFIG.with(listOf(scratch2, scratch1, scratch3))))
     }
 }

@@ -17,7 +17,6 @@ package scratch
 import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
-import java.util.*
 
 
 data class ScratchConfig(
@@ -38,15 +37,8 @@ data class ScratchConfig(
         TOPMOST, LAST_OPENED
     }
 
-    fun with(newScratches: List<Scratch>): ScratchConfig {
-        return ScratchConfig(
-            newScratches, lastOpenedScratch, listenToClipboard, needMigration,
-            clipboardAppendType, newScratchAppendType, defaultScratchMeaning
-        )
-    }
-
     fun add(scratch: Scratch): ScratchConfig {
-        val newScratches = ArrayList<Scratch>(scratches)
+        val newScratches = scratches.toMutableList()
         if (newScratchAppendType == APPEND) {
             newScratches.add(scratch)
         } else if (newScratchAppendType == PREPEND) {
@@ -57,16 +49,17 @@ data class ScratchConfig(
         return this.with(newScratches)
     }
 
+    fun with(newScratches: List<Scratch>) = copy(scratches = newScratches)
+
     fun without(scratch: Scratch): ScratchConfig {
-        val newScratches = ArrayList<Scratch>(scratches)
-        newScratches.remove(scratch)
-        return this.with(newScratches)
+        return copy(scratches = scratches.filter { it != scratch })
     }
 
     fun replace(scratch: Scratch, newScratch: Scratch): ScratchConfig {
-        val scratchList = scratches.map { it -> if (it == scratch) newScratch else it }
-        val lastOpened = (if (scratch == lastOpenedScratch) newScratch else lastOpenedScratch)
-        return ScratchConfig(scratchList, lastOpened, listenToClipboard, needMigration, clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
+        return copy(
+            scratches = scratches.map { if (it == scratch) newScratch else it },
+            lastOpenedScratch = if (scratch == lastOpenedScratch) newScratch else lastOpenedScratch
+        )
     }
 
     fun move(scratch: Scratch, shift: Int): ScratchConfig {
@@ -75,50 +68,32 @@ data class ScratchConfig(
         if (newIndex < 0) newIndex += scratches.size
         if (newIndex >= scratches.size) newIndex -= scratches.size
 
-        val newScratches = ArrayList<Scratch>(scratches)
+        val newScratches = scratches.toMutableList()
         newScratches.removeAt(oldIndex)
         newScratches.add(newIndex, scratch)
         return this.with(newScratches)
     }
 
-    fun listenToClipboard(value: Boolean): ScratchConfig {
-        return ScratchConfig(
-            scratches, lastOpenedScratch, value, needMigration,
-            clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
-    }
+    fun listenToClipboard(value: Boolean) = copy(listenToClipboard = value)
 
-    fun needsMigration(value: Boolean): ScratchConfig {
-        return ScratchConfig(
-            scratches, lastOpenedScratch, listenToClipboard, value,
-            clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
-    }
+    fun needsMigration(value: Boolean) = copy(needMigration = value)
 
     fun withClipboard(value: AppendType?): ScratchConfig {
         if (value == null) return this
-        return ScratchConfig(
-            scratches, lastOpenedScratch, listenToClipboard, needMigration,
-            value, newScratchAppendType, defaultScratchMeaning)
+        return copy(clipboardAppendType = value)
     }
 
     fun withNewScratch(value: AppendType?): ScratchConfig {
         if (value == null) return this
-        return ScratchConfig(
-            scratches, lastOpenedScratch, listenToClipboard, needMigration,
-            clipboardAppendType, value, defaultScratchMeaning)
+        return copy(newScratchAppendType = value)
     }
 
     fun withDefaultScratchMeaning(value: DefaultScratchMeaning?): ScratchConfig {
-        if (value == null) return this
-        return ScratchConfig(
-            scratches, lastOpenedScratch, listenToClipboard, needMigration,
-            clipboardAppendType, newScratchAppendType, value)
+        return if (value == null) this
+        else copy(defaultScratchMeaning = value)
     }
 
-    fun withLastOpenedScratch(value: Scratch?): ScratchConfig {
-        return ScratchConfig(
-            scratches, value, listenToClipboard, needMigration,
-            clipboardAppendType, newScratchAppendType, defaultScratchMeaning)
-    }
+    fun withLastOpenedScratch(value: Scratch?) = copy(lastOpenedScratch = value)
 
     companion object {
         val DEFAULT_CONFIG = ScratchConfig(

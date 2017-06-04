@@ -44,8 +44,7 @@ class ScratchComponent: ApplicationComponent {
         Ide.ClipboardListener(mrScratchManager).startListening()
         Ide.OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
 
-        if (config.listenToClipboard)
-            log.listeningToClipboard(true)
+        if (config.listenToClipboard) log.listeningToClipboard(true)
     }
 
     override fun getComponentName(): String {

@@ -30,6 +30,7 @@ fun <T> same(value: T): T {
     return value
 }
 
+@Suppress("UNCHECKED_CAST")
 fun <T : Any> some(type: KClass<T>): T {
     val matcher = InstanceOf.VarArgAware(type.java, "<any " + type.java.canonicalName + ">")
     ThreadSafeMockingProgress.mockingProgress().argumentMatcherStorage.reportMatcher(matcher)

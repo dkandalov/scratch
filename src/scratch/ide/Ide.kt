@@ -100,7 +100,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     fun openScratch(scratch: Scratch, userDataHolder: UserDataHolder) {
         val project = takeProjectFrom(userDataHolder)
 
-        val file = fileSystem.virtualFileBy(scratch.asFileName())
+        val file = fileSystem.virtualFileBy(scratch.fileName)
         if (file != null) {
             OpenFileDescriptor(project!!, file).navigate(true)
         } else {
@@ -129,7 +129,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     }
 
     fun addTextTo(scratch: Scratch, clipboardText: String, appendType: ScratchConfig.AppendType) {
-        val virtualFile = fileSystem.virtualFileBy(scratch.asFileName())
+        val virtualFile = fileSystem.virtualFileBy(scratch.fileName)
         if (virtualFile == null) {
             log.failedToFindVirtualFileFor(scratch)
             return
@@ -171,7 +171,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         // Message dialog is displayed inside invokeLater() because otherwise on OSX
         // "delete" event will be propagated to editor and will remove a character.
         ApplicationManager.getApplication().invokeLater {
-            val message = "Do you want to delete '" + scratch.asFileName() + "'?\n(This operation cannot be undone)"
+            val message = "Do you want to delete '" + scratch.fileName + "'?\n(This operation cannot be undone)"
             val userAnswer = Messages.showOkCancelDialog(takeProjectFrom(userDataHolder), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
             if (userAnswer == Messages.OK) {
                 mrScratchManager().userWantsToDeleteScratch(scratch)
