@@ -24,12 +24,11 @@ import com.intellij.openapi.ui.popup.ListPopup
 import com.intellij.openapi.ui.popup.ListPopupStep
 import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiElement
 import com.intellij.psi.statistics.StatisticsInfo
 import com.intellij.psi.statistics.StatisticsManager
-import com.intellij.ui.JBListWithHintProvider
 import com.intellij.ui.ScrollingUtil
 import com.intellij.ui.SeparatorWithText
+import com.intellij.ui.components.JBList
 import com.intellij.ui.popup.ClosableByLeftArrow
 import com.intellij.ui.popup.WizardPopup
 import com.intellij.ui.speedSearch.ElementFilter
@@ -269,7 +268,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         myMouseMotionListener = MyMouseMotionListener()
         myMouseListener = MyMouseListener()
 
-        listModel = PopupModelWithMovableItems<Scratch>(this as ElementFilter<Scratch>, speedSearch, listStep)
+        listModel = PopupModelWithMovableItems(this as ElementFilter<Scratch>, speedSearch, listStep)
         myList = MyList()
         if (myStep.title != null) {
             myList.accessibleContext.accessibleName = myStep.title
@@ -281,7 +280,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
 
         ScrollingUtil.installActions(myList)
 
-        myList.cellRenderer = listElementRenderer
+        myList.cellRenderer = ScratchListElementRenderer(this)
 
         myList.actionMap.get("selectNextColumn").isEnabled = false
         myList.actionMap.get("selectPreviousColumn").isEnabled = false
@@ -323,9 +322,6 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     override fun getInputMap(): InputMap {
         return myList.inputMap
     }
-
-    protected val listElementRenderer: ListCellRenderer<*>
-        get() = ScratchListElementRenderer(this)
 
     override fun getListStep(): ListPopupStep<Scratch> {
         return myStep as ListPopupStep<Scratch>
@@ -372,7 +368,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             return false
         }
 
-        val selectedValues = myList.selectedValuesList as List<Scratch>
+        val selectedValues = myList.selectedValuesList
         if (!listStep.isSelectable(selectedValues[0])) return false
 
         disposeChildren()
@@ -484,7 +480,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         override fun mouseReleased(e: MouseEvent) {
             if (!isActionClick(e)) return
             IdeEventQueue.getInstance().blockNextEvents(e) // sometimes, after popup close, MOUSE_RELEASE event delivers to other components
-            val selectedValue = myList.selectedValue as Scratch?
+            val selectedValue = myList.selectedValue
             val listStep = listStep
             handleSelect(handleFinalChoices(e, selectedValue, listStep), e)
             stopTimer()
@@ -506,11 +502,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         myList.processKeyEvent(event!!)
     }
 
-    private inner class MyList: JBListWithHintProvider(listModel), DataProvider {
-
-        override fun getPsiElementForHint(selectedValue: Any): PsiElement? {
-            return if (selectedValue is PsiElement) selectedValue else null
-        }
+    private inner class MyList: JBList<Scratch>(listModel), DataProvider {
 
         override fun getPreferredScrollableViewportSize(): Dimension {
             return Dimension(super.getPreferredScrollableViewportSize().width, preferredSize.height)
@@ -533,7 +525,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
                 return myList.selectedValue
             }
             if (PlatformDataKeys.SELECTED_ITEMS.`is`(dataId)) {
-                return myList.selectedValues
+                return myList.selectedValuesList
             }
             return null
         }
