@@ -52,6 +52,7 @@ import javax.swing.event.ListSelectionListener
  * The main reason for copying was to use [PopupModelWithMovableItems]
  * instead of [com.intellij.ui.popup.list.ListPopupModel].
  */
+@Suppress("UNCHECKED_CAST")
 abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aStep as PopupStep<Any>), ListPopup {
 
     private lateinit var myList: MyList
@@ -387,7 +388,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         valuesSelected(selectedValues)
 
         val nextStep = listStep.onChosen(selectedValues[0], handleFinalChoices)
-        return handleNextStep(nextStep as PopupStep<*>, if (selectedValues.size == 1) selectedValues[0] else null, e!!)
+        return handleNextStep(nextStep as PopupStep<*>?, if (selectedValues.size == 1) selectedValues[0] else null, e)
     }
 
     private fun valuesSelected(values: List<Scratch>) {
@@ -399,7 +400,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         }
     }
 
-    private fun handleNextStep(nextStep: PopupStep<*>, parentValue: Scratch?, e: InputEvent): Boolean {
+    private fun handleNextStep(nextStep: PopupStep<*>?, parentValue: Scratch?, e: InputEvent?): Boolean {
         if (nextStep !== PopupStep.FINAL_CHOICE) {
             val point = myList.indexToLocation(myList.selectedIndex)
             SwingUtilities.convertPointToScreen(point, myList)
