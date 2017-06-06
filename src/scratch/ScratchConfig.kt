@@ -39,12 +39,10 @@ data class ScratchConfig(
 
     fun add(scratch: Scratch): ScratchConfig {
         val newScratches = scratches.toMutableList()
-        if (newScratchAppendType == APPEND) {
-            newScratches.add(scratch)
-        } else if (newScratchAppendType == PREPEND) {
-            newScratches.add(0, scratch)
-        } else {
-            throw IllegalStateException()
+        when (newScratchAppendType) {
+            APPEND -> newScratches.add(scratch)
+            PREPEND -> newScratches.add(0, scratch)
+            else -> throw IllegalStateException()
         }
         return this.with(newScratches)
     }

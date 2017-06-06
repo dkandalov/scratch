@@ -23,9 +23,9 @@ import scratch.ScratchConfig.Companion.UP
 
 class ScratchConfigTests {
 
-    private val scratch1 = Scratch.create("scratch1.txt")
-    private val scratch2 = Scratch.create("scratch2.txt")
-    private val scratch3 = Scratch.create("scratch3.txt")
+    private val scratch1 = Scratch("scratch1.txt")
+    private val scratch2 = Scratch("scratch2.txt")
+    private val scratch3 = Scratch("scratch3.txt")
     private val config = DEFAULT_CONFIG.with(listOf(scratch1, scratch2, scratch3))
 
     @Test fun `moving top scratch to bottom`() {

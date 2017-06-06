@@ -77,17 +77,11 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
                 )
             }
 
-            override fun onScratchDelete(scratch: Scratch) {
-                mrScratchManager().userAttemptedToDeleteScratch(scratch, userDataHolder)
-            }
+            override fun onScratchDelete(scratch: Scratch) = mrScratchManager().userAttemptedToDeleteScratch(scratch, userDataHolder)
 
-            override fun onScratchDeleteWithoutPrompt(scratch: Scratch) {
-                mrScratchManager().userWantsToDeleteScratch(scratch)
-            }
+            override fun onScratchDeleteWithoutPrompt(scratch: Scratch) = mrScratchManager().userWantsToDeleteScratch(scratch)
 
-            override fun onScratchMoved(scratch: Scratch, shift: Int) {
-                mrScratchManager().userMovedScratch(scratch, shift)
-            }
+            override fun onScratchMoved(scratch: Scratch, shift: Int) = mrScratchManager().userMovedScratch(scratch, shift)
 
             override fun dispose() {
                 scratchListSelectedIndex = selectedIndex
@@ -111,18 +105,9 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     fun openNewScratchDialog(suggestedScratchName: String, userDataHolder: UserDataHolder) {
         val message = "Scratch name (you can use '&' for mnemonics):"
         val scratchName = Messages.showInputDialog(message, "New Scratch", NO_ICON, suggestedScratchName, object: InputValidatorEx {
-            override fun checkInput(scratchName: String): Boolean {
-                return ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes
-            }
-
-            override fun getErrorText(scratchName: String): String? {
-                val answer = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName)
-                return answer.explanation
-            }
-
-            override fun canClose(inputString: String): Boolean {
-                return true
-            }
+            override fun checkInput(scratchName: String) = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes
+            override fun getErrorText(scratchName: String) = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).explanation
+            override fun canClose(inputString: String) = true
         }) ?: return
 
         mrScratchManager().userWantsToAddNewScratch(scratchName, userDataHolder)

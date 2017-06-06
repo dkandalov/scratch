@@ -47,16 +47,12 @@ class ScratchComponent: ApplicationComponent {
         if (config.listenToClipboard) log.listeningToClipboard(true)
     }
 
-    override fun getComponentName(): String {
-        return ScratchComponent::class.java.simpleName
-    }
+    override fun getComponentName() = ScratchComponent::class.java.simpleName!!
 
     override fun disposeComponent() {}
 
     class FileWritingAccessExtension: NonProjectFileWritingAccessExtension {
-        override fun isWritable(virtualFile: VirtualFile): Boolean {
-            return fileSystem().isScratch(virtualFile)
-        }
+        override fun isWritable(virtualFile: VirtualFile) = fileSystem().isScratch(virtualFile)
     }
 
     companion object {

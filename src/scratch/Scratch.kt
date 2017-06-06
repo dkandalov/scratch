@@ -17,20 +17,14 @@ package scratch
 
 data class Scratch(
     val fullNameWithMnemonics: String,
-    val name: String,
-    val extension: String
+    val name: String = Scratch.extractNameFrom(fullNameWithMnemonics),
+    val extension: String = Scratch.extractExtensionFrom(fullNameWithMnemonics)
 ) {
     val fileName: String get() = name + "." + extension
 
     override fun toString() = "{fullNameWithMnemonics='$fullNameWithMnemonics'}"
 
     companion object {
-        fun create(fullNameWithMnemonics: String) = Scratch(
-            fullNameWithMnemonics,
-            extractNameFrom(fullNameWithMnemonics),
-            extractExtensionFrom(fullNameWithMnemonics)
-        )
-
         private fun extractExtensionFrom(fileName: String): String {
             val index = fileName.lastIndexOf(".")
             return if (index == -1) "" else fileName.substring(index + 1).replace("&", "")

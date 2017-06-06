@@ -32,17 +32,17 @@ class MrScratchManager(
 ) {
 
     fun migrate(scratchTexts: List<String>) {
-        if (!fileSystem.listScratchFiles().isEmpty()) {
+        if (fileSystem.listScratchFiles().isNotEmpty()) {
             log.willNotMigrateBecauseTargetFolderIsNotEmpty()
             return
         }
         val allEmpty = scratchTexts.none { it.isNotEmpty() }
         if (allEmpty) {
-            val scratches = Arrays.asList<Scratch>(
-                Scratch.create("&scratch.txt"),
-                Scratch.create("scratch&2.txt"),
-                Scratch.create("scratch&3.xml"),
-                Scratch.create("scratch&4.xml")
+            val scratches = listOf(
+                Scratch("&scratch.txt"),
+                Scratch("scratch&2.txt"),
+                Scratch("scratch&3.xml"),
+                Scratch("scratch&4.xml")
             )
             for (scratch in scratches) {
                 fileSystem.createEmptyFile(scratch.fileName)
@@ -56,7 +56,7 @@ class MrScratchManager(
 
         (1..scratchTexts.size).forEach { i ->
             val scratchName = if (i == 1) "&scratch" else "scratch&" + i
-            val scratch = Scratch.create(scratchName + ".txt")
+            val scratch = Scratch(scratchName + ".txt")
 
             val wasCreated = fileSystem.createFile(scratch.fileName, scratchTexts[i - 1])
             if (wasCreated) {
@@ -127,7 +127,7 @@ class MrScratchManager(
     fun checkIfUserCanRename(scratch: Scratch, fullNameWithMnemonics: String): Answer {
         if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty")
 
-        val renamedScratch = Scratch.create(fullNameWithMnemonics)
+        val renamedScratch = Scratch(fullNameWithMnemonics)
         if (scratch.fileName == renamedScratch.fileName) return Answer.yes()
 
         val haveScratchWithSameName = config.scratches.any {
@@ -143,7 +143,7 @@ class MrScratchManager(
     fun userWantsToRename(scratch: Scratch, fullNameWithMnemonics: String) {
         if (scratch.fullNameWithMnemonics == fullNameWithMnemonics) return
 
-        val renamedScratch = Scratch.create(fullNameWithMnemonics)
+        val renamedScratch = Scratch(fullNameWithMnemonics)
         val wasRenamed = fileSystem.renameFile(scratch.fileName, renamedScratch.fileName)
         if (wasRenamed) {
             updateConfig(config.replace(scratch, renamedScratch))
@@ -198,7 +198,7 @@ class MrScratchManager(
     fun checkIfUserCanCreateScratchWithName(fullNameWithMnemonics: String): Answer {
         if (fullNameWithMnemonics.isEmpty()) return Answer.no("Name cannot be empty")
 
-        val scratch = Scratch.create(fullNameWithMnemonics)
+        val scratch = Scratch(fullNameWithMnemonics)
 
         if (!isUniqueScratchName(scratch.name, scratch.extension))
             return Answer.no("There is already a scratch with this name")
@@ -207,7 +207,7 @@ class MrScratchManager(
     }
 
     fun userWantsToAddNewScratch(fullNameWithMnemonics: String, userDataHolder: UserDataHolder) {
-        val scratch = Scratch.create(fullNameWithMnemonics)
+        val scratch = Scratch(fullNameWithMnemonics)
         val wasCreated = fileSystem.createEmptyFile(scratch.fileName)
         if (wasCreated) {
             updateConfig(config.add(scratch))
@@ -241,11 +241,11 @@ class MrScratchManager(
         val fileNames = fileSystem.listScratchFiles()
 
         val oldScratches = config.scratches.filter { fileNames.contains(it.fileName) }
-        val newFileNames = fileNames.filter { fileName -> !oldScratches.any { scratch -> fileName == scratch.fileName } }
-        val newScratches = newFileNames.map { Scratch.create(it) }
+        val newFileNames = fileNames.filter { fileName -> oldScratches.none { scratch -> fileName == scratch.fileName } }
+        val newScratches = newFileNames.map { Scratch(it) }
 
         val scratches = oldScratches + newScratches
-        if (!newScratches.isEmpty() || oldScratches.size != config.scratches.size) {
+        if (newScratches.isNotEmpty() || oldScratches.size != config.scratches.size) {
             var newConfig = config.with(scratches)
             if (!scratches.contains(config.lastOpenedScratch)) {
                 newConfig = newConfig.withLastOpenedScratch(null)

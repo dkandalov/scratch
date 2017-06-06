@@ -110,7 +110,7 @@ class FileSystem(scratchesFolderPath: String?) {
         ensureExists(File(scratchesFolderPath))
         val scratchesFolder = virtualFileBy(scratchFolder) ?: return false
 
-        val scratchFile = scratchesFolder.createChildData(this@FileSystem, fileName)
+        val scratchFile = scratchesFolder.createChildData(this, fileName)
         scratchFile.setBinaryContent(text.toByteArray(charset))
         return true
     }

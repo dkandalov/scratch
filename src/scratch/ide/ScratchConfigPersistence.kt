@@ -40,8 +40,8 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
         return ScratchConfig.DEFAULT_CONFIG
             .needsMigration(isNeedMigration)
             .listenToClipboard(isListenToClipboard)
-            .with(fullScratchNamesOrdered.map { Scratch.create(it) })
-            .withLastOpenedScratch(if (lastOpenedScratch == null) null else Scratch.create(lastOpenedScratch!!))
+            .with(fullScratchNamesOrdered.map { Scratch(it) })
+            .withLastOpenedScratch(if (lastOpenedScratch == null) null else Scratch(lastOpenedScratch!!))
             .withDefaultScratchMeaning(defaultScratchMeaning)
             .withClipboard(clipboardAppendType)
             .withNewScratch(newScratchAppendType)

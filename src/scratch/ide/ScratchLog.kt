@@ -21,14 +21,13 @@ import com.intellij.notification.NotificationType.WARNING
 import com.intellij.notification.Notifications
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.util.text.StringUtil
 import scratch.Scratch
 
 
 class ScratchLog {
 
     fun failedToRename(scratch: Scratch) {
-        notifyUser("", "Failed to rename scratch: " + scratch.fileName, WARNING)
+        notifyUser("", "Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
     fun migratedScratchesToFiles() {
@@ -36,16 +35,16 @@ class ScratchLog {
     }
 
     fun listeningToClipboard(isListening: Boolean) {
-        if (isListening)
-            notifyUser(title, "Started listening to clipboard", INFORMATION)
-        else
-            notifyUser(title, "Stopped listening to clipboard", INFORMATION)
+        if (isListening) notifyUser(title, "Started listening to clipboard", INFORMATION)
+        else notifyUser(title, "Stopped listening to clipboard", INFORMATION)
     }
 
     fun failedToMigrateScratchesToFiles(scratchIndexes: List<Int>) {
-        val title = "Failed to migrated scratches to physical files. "
-        val message = "Failed scratches: " + join(scratchIndexes)
-        notifyUser(title, message, WARNING)
+        notifyUser(
+            "Failed to migrated scratches to physical files.",
+            "Failed scratches: ${scratchIndexes.joinToString(", ")}",
+            WARNING
+        )
     }
 
     fun willNotMigrateBecauseTargetFolderIsNotEmpty() {
@@ -57,19 +56,19 @@ class ScratchLog {
     }
 
     fun failedToOpen(scratch: Scratch) {
-        notifyUser("", "Failed to open scratch: '" + scratch.fileName + "'", WARNING)
+        notifyUser("", "Failed to open scratch: '${scratch.fileName}'", WARNING)
     }
 
     fun failedToCreate(scratch: Scratch) {
-        notifyUser("", "Failed to create scratch: '" + scratch.fileName + "'", WARNING)
+        notifyUser("", "Failed to create scratch: '${scratch.fileName}'", WARNING)
     }
 
     fun failedToDelete(scratch: Scratch) {
-        notifyUser("", "Failed to delete scratch: '" + scratch.fileName + "'", WARNING)
+        notifyUser("", "Failed to delete scratch: '${scratch.fileName}'", WARNING)
     }
 
     fun failedToFindVirtualFileFor(scratch: Scratch) {
-        log.warn("Failed to find virtual file for '" + scratch.fileName + "'")
+        log.warn("Failed to find virtual file for '${scratch.fileName}'")
     }
 
     companion object {
@@ -80,10 +79,6 @@ class ScratchLog {
             val groupDisplayId = ScratchLog.title
             val notification = Notification(groupDisplayId, title, message, notificationType)
             ApplicationManager.getApplication().messageBus.syncPublisher(Notifications.TOPIC).notify(notification)
-        }
-
-        private fun <T> join(values: List<T>): String {
-            return StringUtil.join(values, { it.toString() }, ", ")
         }
     }
 }

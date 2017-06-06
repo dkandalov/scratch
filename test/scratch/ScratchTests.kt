@@ -20,22 +20,22 @@ import org.junit.Test
 
 class ScratchTests {
     @Test fun `creating scratches`() {
-        Scratch.create("scratch.txt").apply {
+        Scratch("scratch.txt").apply {
             assertThat(name, equalTo("scratch"))
             assertThat(extension, equalTo("txt"))
         }
 
-        Scratch.create("&scratch.txt").apply {
+        Scratch("&scratch.txt").apply {
             assertThat(name, equalTo("scratch"))
             assertThat(extension, equalTo("txt"))
         }
 
-        Scratch.create("scratch.t&xt").apply {
+        Scratch("scratch.t&xt").apply {
             assertThat(name, equalTo("scratch"))
             assertThat(extension, equalTo("txt"))
         }
 
-        Scratch.create("scratch").apply {
+        Scratch("scratch").apply {
             assertThat(name, equalTo("scratch"))
             assertThat(extension, equalTo(""))
         }

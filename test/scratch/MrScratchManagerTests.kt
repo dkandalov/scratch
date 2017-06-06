@@ -76,11 +76,11 @@ class MrScratchManagerTests {
         mrScratchManager.migrate(scratches)
 
         verify(ide).persistConfig(eq(defaultConfig.with(listOf(
-            scratch("&scratch.txt"),
-            scratch("scratch&2.txt"),
-            scratch("scratch&3.txt"),
-            scratch("scratch&4.txt"),
-            scratch("scratch&5.txt")
+            Scratch("&scratch.txt"),
+            Scratch("scratch&2.txt"),
+            Scratch("scratch&3.txt"),
+            Scratch("scratch&4.txt"),
+            Scratch("scratch&5.txt")
         )).needsMigration(false)))
     }
 
@@ -111,18 +111,18 @@ class MrScratchManagerTests {
         mrScratchManager.migrate(scratches)
 
         verify(ide).persistConfig(eq(defaultConfig.with(listOf(
-            scratch("&scratch.txt"),
-            scratch("scratch&2.txt"),
-            scratch("scratch&5.txt")
+            Scratch("&scratch.txt"),
+            Scratch("scratch&2.txt"),
+            Scratch("scratch&5.txt")
         )).needsMigration(false)))
     }
 
 
     @Test fun `displaying scratches list when config and files  match exactly`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java"),
-            scratch("scratch3.html")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java"),
+            Scratch("scratch3.html")
         )))
         whenInvoked(fileSystem.listScratchFiles()).thenReturn(listOf("scratch.txt", "scratch2.java", "scratch3.html"))
 
@@ -130,18 +130,18 @@ class MrScratchManagerTests {
 
         verify(fileSystem).listScratchFiles()
         verify(ide).displayScratchesListPopup(eq(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java"),
-            scratch("scratch3.html")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java"),
+            Scratch("scratch3.html")
         )), same(someUserData))
         verifyNoMoreInteractions(fileSystem, ide)
     }
 
     @Test fun `displaying scratches list when config and files  match  but have different order`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java"),
-            scratch("scratch3.html")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java"),
+            Scratch("scratch3.html")
         )))
         whenInvoked(fileSystem.listScratchFiles()).thenReturn(listOf("scratch2.java", "scratch3.html", "scratch.txt"))
 
@@ -149,16 +149,16 @@ class MrScratchManagerTests {
 
         verify(fileSystem).listScratchFiles()
         verify(ide).displayScratchesListPopup(eq(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java"),
-            scratch("scratch3.html")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java"),
+            Scratch("scratch3.html")
         )), same(someUserData))
         verifyNoMoreInteractions(fileSystem, ide)
     }
 
     @Test fun `displaying scratches list when file system has new files`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch.txt")
+            Scratch("scratch.txt")
         )))
         whenInvoked(fileSystem.listScratchFiles()).thenReturn(listOf("scratch2.java", "scratch.txt"))
 
@@ -166,19 +166,19 @@ class MrScratchManagerTests {
 
         verify(fileSystem).listScratchFiles()
         verify(ide).persistConfig(eq(defaultConfig.with(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java")
         ))))
         verify(ide).displayScratchesListPopup(eq(listOf(
-            scratch("scratch.txt"),
-            scratch("scratch2.java")
+            Scratch("scratch.txt"),
+            Scratch("scratch2.java")
         )), same(someUserData))
         verifyNoMoreInteractions(fileSystem, ide)
     }
 
 
     @Test fun `opening scratch when scratch file exists`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         val config = defaultConfig.with(listOf(scratch))
         mrScratchManager = scratchManagerWith(config)
         whenInvoked(fileSystem.scratchFileExists("scratch.txt")).thenReturn(true)
@@ -190,7 +190,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `opening scratch when scratch file does not exist`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.scratchFileExists("scratch.txt")).thenReturn(false)
 
@@ -202,8 +202,8 @@ class MrScratchManagerTests {
     }
 
     @Test fun `opening default scratch when it can be opened and configured as topmost`() {
-        val scratch1 = scratch("scratch1.txt")
-        val scratch2 = scratch("scratch2.txt")
+        val scratch1 = Scratch("scratch1.txt")
+        val scratch2 = Scratch("scratch2.txt")
         val config = defaultConfig
             .with(listOf(scratch1, scratch2))
             .withDefaultScratchMeaning(TOPMOST)
@@ -218,8 +218,8 @@ class MrScratchManagerTests {
     }
 
     @Test fun `opening default scratch when it can be opened and configured as last opened`() {
-        val scratch1 = scratch("scratch1.txt")
-        val scratch2 = scratch("scratch2.txt")
+        val scratch1 = Scratch("scratch1.txt")
+        val scratch2 = Scratch("scratch2.txt")
         val config = defaultConfig
             .with(listOf(scratch1, scratch2))
             .withDefaultScratchMeaning(LAST_OPENED)
@@ -235,8 +235,8 @@ class MrScratchManagerTests {
     }
 
     @Test fun `opening default scratch when it is last opened but does not exist`() {
-        val scratch1 = scratch("scratch1.txt")
-        val scratch2 = scratch("scratch2.txt")
+        val scratch1 = Scratch("scratch1.txt")
+        val scratch2 = Scratch("scratch2.txt")
         val config = defaultConfig
             .with(listOf(scratch1, scratch2))
             .withDefaultScratchMeaning(LAST_OPENED)
@@ -251,7 +251,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `opening default scratch when scratch file does not exist`() {
-        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch("scratch.txt"))))
+        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(Scratch("scratch.txt"))))
         whenInvoked(fileSystem.listScratchFiles()).thenReturn(ArrayList<String>())
 
         mrScratchManager.userWantsToOpenDefaultScratch(someUserData)
@@ -272,18 +272,18 @@ class MrScratchManagerTests {
     }
 
     @Test fun `should update config when scratch is opened`() {
-        val config = defaultConfig.with(listOf(scratch("scratch&1.txt"), scratch("scratch&2.txt")))
+        val config = defaultConfig.with(listOf(Scratch("scratch&1.txt"), Scratch("scratch&2.txt")))
         mrScratchManager = scratchManagerWith(config)
 
         mrScratchManager.userOpenedScratch("scratch2.txt")
 
-        verify(ide).persistConfig(config.withLastOpenedScratch(scratch("scratch&2.txt")))
+        verify(ide).persistConfig(config.withLastOpenedScratch(Scratch("scratch&2.txt")))
     }
 
 
     @Test fun `appending clipboard text to  topmost scratch`() {
-        val scratch1 = scratch("scratch1.txt")
-        val scratch2 = scratch("scratch2.txt")
+        val scratch1 = Scratch("scratch1.txt")
+        val scratch2 = Scratch("scratch2.txt")
         mrScratchManager = scratchManagerWith(defaultConfig
                                                   .with(listOf(scratch1, scratch2))
                                                   .withDefaultScratchMeaning(TOPMOST))
@@ -295,8 +295,8 @@ class MrScratchManagerTests {
     }
 
     @Test fun `appending clipboard text to  last opened scratch`() {
-        val scratch1 = scratch("scratch1.txt")
-        val scratch2 = scratch("scratch2.txt")
+        val scratch1 = Scratch("scratch1.txt")
+        val scratch2 = Scratch("scratch2.txt")
         mrScratchManager = scratchManagerWith(
             defaultConfig.with(listOf(scratch1, scratch2))
                 .withDefaultScratchMeaning(LAST_OPENED)
@@ -328,10 +328,10 @@ class MrScratchManagerTests {
 
 
     @Test fun `can rename scratch when name is unique`() {
-        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch("scratch.txt"))))
+        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(Scratch("scratch.txt"))))
         whenInvoked(fileSystem.isValidScratchName(anyString())).thenReturn(yes())
 
-        val answer = mrScratchManager.checkIfUserCanRename(scratch("scratch.txt"), "renamed&Scratch.txt")
+        val answer = mrScratchManager.checkIfUserCanRename(Scratch("scratch.txt"), "renamed&Scratch.txt")
         assertTrue(answer.isYes)
 
         verify(fileSystem).isValidScratchName("renamedScratch.txt")
@@ -340,17 +340,17 @@ class MrScratchManagerTests {
 
     @Test fun `can rename scratch when there is scratch with same name`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch.txt"),
-            scratch("&renamedScratch.txt")
+            Scratch("scratch.txt"),
+            Scratch("&renamedScratch.txt")
         )))
 
-        val answer = mrScratchManager.checkIfUserCanRename(scratch("scratch.txt"), "renamed&Scratch.txt")
+        val answer = mrScratchManager.checkIfUserCanRename(Scratch("scratch.txt"), "renamed&Scratch.txt")
         assertTrue(answer.isNo)
         verifyZeroInteractions(ide, fileSystem)
     }
 
     @Test fun `can rename scratch when file name is incorrect`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.isValidScratchName(anyString())).thenReturn(no("for a reason"))
 
@@ -361,7 +361,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `renaming scratch when file rename is successful`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.renameFile(anyString(), anyString())).thenReturn(true)
 
@@ -369,13 +369,13 @@ class MrScratchManagerTests {
 
         verify(fileSystem).renameFile("scratch.txt", "renamedScratch.txt")
         verify(ide).persistConfig(defaultConfig.with(listOf(
-            scratch("&renamedScratch.txt")
+            Scratch("&renamedScratch.txt")
         )))
         verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `renaming scratch when file rename fails`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.renameFile(anyString(), anyString())).thenReturn(false)
 
@@ -387,7 +387,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `renaming scratch when new name is same as the old one`() {
-        val scratch = scratch("scratch.txt")
+        val scratch = Scratch("scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.renameFile(anyString(), anyString())).thenReturn(false)
 
@@ -407,8 +407,8 @@ class MrScratchManagerTests {
 
     @Test fun `entering new scratch name when there are existing scratches`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch1.txt"),
-            scratch("scratch.txt")
+            Scratch("scratch1.txt"),
+            Scratch("scratch.txt")
         )))
 
         mrScratchManager.userWantsToEnterNewScratchName(someUserData)
@@ -418,11 +418,11 @@ class MrScratchManagerTests {
 
     @Test fun `entering new scratch name when there are existing non txt scratches`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch3.js"),
-            scratch("scratch2.xml"),
-            scratch("scratch1.xml"),
-            scratch("scratch1.java"),
-            scratch("scratch.java")
+            Scratch("scratch3.js"),
+            Scratch("scratch2.xml"),
+            Scratch("scratch1.xml"),
+            Scratch("scratch1.java"),
+            Scratch("scratch.java")
         )))
 
         mrScratchManager.userWantsToEnterNewScratchName(someUserData)
@@ -442,7 +442,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `can create new scratch when there is scratch with same name and extension`() {
-        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch("scratch.txt"))))
+        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(Scratch("scratch.txt"))))
 
         val answer = mrScratchManager.checkIfUserCanCreateScratchWithName("&scratch.txt")
         assertTrue(answer.isNo)
@@ -451,7 +451,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `can create new scratch when there is scratch with same name but different extension`() {
-        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch("scratch.txt"))))
+        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(Scratch("scratch.txt"))))
         whenInvoked(fileSystem.isValidScratchName(anyString())).thenReturn(yes())
 
         val answer = mrScratchManager.checkIfUserCanCreateScratchWithName("&scratch.js")
@@ -474,7 +474,7 @@ class MrScratchManagerTests {
 
     @Test fun `creating new scratch when scratch is created successfully`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch0.txt")
+            Scratch("scratch0.txt")
         )))
         whenInvoked(fileSystem.createEmptyFile(anyString())).thenReturn(true)
 
@@ -482,16 +482,16 @@ class MrScratchManagerTests {
 
         verify(fileSystem).createEmptyFile("scratch.txt")
         verify(ide).persistConfig(eq(defaultConfig.with(listOf(
-            scratch("scratch0.txt"),
-            scratch("&scratch.txt")
+            Scratch("scratch0.txt"),
+            Scratch("&scratch.txt")
         ))))
-        verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(someUserData))
+        verify(ide).openScratch(eq(Scratch("&scratch.txt")), eq(someUserData))
         verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `creating new scratch when scratch is created successfully and should be prepended to list of scratches`() {
         val config = defaultConfig.with(listOf(
-            scratch("scratch0.txt")
+            Scratch("scratch0.txt")
         )).withNewScratch(AppendType.PREPEND)
         mrScratchManager = scratchManagerWith(config)
         whenInvoked(fileSystem.createEmptyFile(anyString())).thenReturn(true)
@@ -500,26 +500,26 @@ class MrScratchManagerTests {
 
         verify(fileSystem).createEmptyFile("scratch.txt")
         verify(ide).persistConfig(eq(config.with(listOf(
-            scratch("&scratch.txt"),
-            scratch("scratch0.txt")
+            Scratch("&scratch.txt"),
+            Scratch("scratch0.txt")
         ))))
-        verify(ide).openScratch(eq(scratch("&scratch.txt")), eq(someUserData))
+        verify(ide).openScratch(eq(Scratch("&scratch.txt")), eq(someUserData))
         verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `creating new scratch when file creation fails`() {
-        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch("&scratch.txt"))))
+        mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(Scratch("&scratch.txt"))))
         whenInvoked(fileSystem.createEmptyFile(anyString())).thenReturn(false)
 
         mrScratchManager.userWantsToAddNewScratch("&scratch.txt", someUserData)
 
         verify(fileSystem).createEmptyFile("scratch.txt")
-        verify(log).failedToCreate(scratch("&scratch.txt"))
+        verify(log).failedToCreate(Scratch("&scratch.txt"))
     }
 
 
     @Test fun `delete scratch when file can be removed`() {
-        val scratch = scratch("&scratch.txt")
+        val scratch = Scratch("&scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.removeFile(anyString())).thenReturn(true)
 
@@ -531,7 +531,7 @@ class MrScratchManagerTests {
     }
 
     @Test fun `delete scratch when file could not be removed`() {
-        val scratch = scratch("&scratch.txt")
+        val scratch = Scratch("&scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
         whenInvoked(fileSystem.removeFile(anyString())).thenReturn(false)
 
@@ -545,18 +545,18 @@ class MrScratchManagerTests {
 
     @Test fun `moving scratch up in scratches list`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
-            scratch("scratch1.txt"),
-            scratch("scratch2.txt"),
-            scratch("scratch3.txt")
+            Scratch("scratch1.txt"),
+            Scratch("scratch2.txt"),
+            Scratch("scratch3.txt")
         )))
 
         val shiftUp = -1
-        mrScratchManager.userMovedScratch(scratch("scratch2.txt"), shiftUp)
+        mrScratchManager.userMovedScratch(Scratch("scratch2.txt"), shiftUp)
 
         verify(ide).persistConfig(defaultConfig.with(listOf(
-            scratch("scratch2.txt"),
-            scratch("scratch1.txt"),
-            scratch("scratch3.txt")
+            Scratch("scratch2.txt"),
+            Scratch("scratch1.txt"),
+            Scratch("scratch3.txt")
         )))
     }
 
@@ -564,7 +564,5 @@ class MrScratchManagerTests {
 
     companion object {
         private val someUserData = UserDataHolderBase()
-
-        private fun scratch(fullNameWithMnemonics: String) = Scratch.create(fullNameWithMnemonics)
     }
 }

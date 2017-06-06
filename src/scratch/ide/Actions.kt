@@ -87,7 +87,6 @@ object Actions {
 
 
     class ListenToClipboard: ToggleAction(), DumbAware {
-
         override fun setSelected(event: AnActionEvent, enabled: Boolean) {
             mrScratchManager().userWantsToListenToClipboard(enabled)
             event.presentation.icon = if (enabled) IS_ON_ICON else IS_OFF_ICON
@@ -107,7 +106,6 @@ object Actions {
     }
 
     class MakeDefaultScratchBeTopmost: ToggleAction(), DumbAware {
-
         override fun setSelected(event: AnActionEvent, enabled: Boolean) {
             val meaning = if (enabled) TOPMOST else LAST_OPENED
             mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning)
@@ -117,7 +115,6 @@ object Actions {
     }
 
     class MakeDefaultScratchBeLastOpened: ToggleAction(), DumbAware {
-
         override fun setSelected(event: AnActionEvent, enabled: Boolean) {
             val meaning = if (enabled) LAST_OPENED else TOPMOST
             mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning)
