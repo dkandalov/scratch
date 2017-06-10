@@ -19,6 +19,7 @@ import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.util.xmlb.XmlSerializerUtil
+import com.intellij.util.xmlb.annotations.OptionTag
 import scratch.Scratch
 import scratch.ScratchConfig
 import scratch.ScratchConfig.AppendType
@@ -27,8 +28,8 @@ import scratch.ScratchConfig.DefaultScratchMeaning
 
 @State(name = "ScratchConfig", storages = arrayOf(Storage(id = "main", file = "\$APP_CONFIG$/scratch_config.xml")))
 class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistence> {
-    var isNeedMigration = true
-    var isListenToClipboard = false
+    var needMigrationToIJFolder = true
+    @OptionTag(nameAttribute = "isListenToClipboard") var listenToClipboard = false
     var fullScratchNamesOrdered: List<String> = emptyList()
     var lastOpenedScratch: String? = null
     var clipboardAppendType: AppendType? = null
@@ -37,9 +38,9 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
     var scratchesFolderPath: String? = null
 
     fun asConfig(): ScratchConfig {
-        return ScratchConfig.DEFAULT_CONFIG
-            .needsMigration(isNeedMigration)
-            .listenToClipboard(isListenToClipboard)
+        return ScratchConfig.defaultConfig
+            .needsMigration(needMigrationToIJFolder)
+            .listenToClipboard(listenToClipboard)
             .with(fullScratchNamesOrdered.map { Scratch(it) })
             .withLastOpenedScratch(if (lastOpenedScratch == null) null else Scratch(lastOpenedScratch!!))
             .withDefaultScratchMeaning(defaultScratchMeaning)
@@ -48,8 +49,8 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
     }
 
     fun updateFrom(config: ScratchConfig) {
-        isNeedMigration = config.needMigration
-        isListenToClipboard = config.listenToClipboard
+        needMigrationToIJFolder = config.needMigration
+        listenToClipboard = config.listenToClipboard
         fullScratchNamesOrdered = config.scratches.map { it.fullNameWithMnemonics }
         lastOpenedScratch = config.lastOpenedScratch?.fullNameWithMnemonics
         defaultScratchMeaning = config.defaultScratchMeaning

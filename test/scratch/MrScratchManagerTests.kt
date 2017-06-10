@@ -37,24 +37,24 @@ class MrScratchManagerTests {
     private val log = mock(ScratchLog::class.java)
     private val ide = mock(Ide::class.java)
     private val fileSystem = mock(FileSystem::class.java)
-    private val defaultConfig = ScratchConfig.DEFAULT_CONFIG
+    private val defaultConfig = ScratchConfig.defaultConfig
     private lateinit var mrScratchManager: MrScratchManager
 
 
-    @Test fun `should log when successfully migrated scratches to files`() {
+/*
+    TODO
+    @Test fun `successfully migrate to IDE scratches location`() {
         mrScratchManager = scratchManagerWith(defaultConfig.needsMigration(true))
         whenInvoked(fileSystem.createFile(anyString(), anyString())).thenReturn(true)
+        whenInvoked(fileSystem.listScratchFiles()).thenReturn(listOf("scratch.txt"))
+        whenInvoked(fileSystem.listIdeScratchFiles()).thenReturn(emptyList())
 
-        val scratchTexts = listOf("text1", "text2", "text3", "text4", "text5")
-        mrScratchManager.migrate(scratchTexts)
+        mrScratchManager.migrateToIdeScratches()
 
         verify(fileSystem).createFile("scratch.txt", "text1")
-        verify(fileSystem).createFile("scratch2.txt", "text2")
-        verify(fileSystem).createFile("scratch3.txt", "text3")
-        verify(fileSystem).createFile("scratch4.txt", "text4")
-        verify(fileSystem).createFile("scratch5.txt", "text5")
-        verify(log).migratedScratchesToFiles()
+        verify(log).migratedToIdeScratches()
     }
+*/
 
     @Test fun `should not migrate when there are files in scratch folder`() {
         mrScratchManager = scratchManagerWith(defaultConfig.needsMigration(true))

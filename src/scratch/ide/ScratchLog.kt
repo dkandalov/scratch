@@ -30,8 +30,9 @@ class ScratchLog {
         notifyUser("", "Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
-    fun migratedScratchesToFiles() {
-        log.info("Migrated scratches to physical files")
+    fun migratedToIdeScratches() {
+        log.info("Migrated to IDE scratches")
+        // TODO notifyUser ?
     }
 
     fun listeningToClipboard(isListening: Boolean) {

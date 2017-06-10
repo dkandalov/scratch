@@ -35,7 +35,8 @@ import com.intellij.ui.speedSearch.ElementFilter
 import com.intellij.util.ui.UIUtil
 import org.jetbrains.annotations.NonNls
 import scratch.Scratch
-import scratch.ScratchConfig
+import scratch.ScratchConfig.Companion.down
+import scratch.ScratchConfig.Companion.up
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
 import scratch.ide.popup.ScratchListElementRenderer.Companion.NextStep
 import java.awt.Cursor
@@ -70,7 +71,12 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     }
 
     private fun registerActions() {
-        var keyStrokes = copyKeyStrokesFromAction(GENERATE_ACTION_ID, KeyStroke.getKeyStroke("ctrl N"))
+        val generateActionId = "Generate"
+        val renameActionId = "RenameElement"
+        val deleteActionId = "\$Delete"
+        val deleteNoPromptActionId = "\$DeleteNoPrompt"
+
+        var keyStrokes = copyKeyStrokesFromAction(generateActionId, KeyStroke.getKeyStroke("ctrl N"))
 
         registerAction("addScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
@@ -79,7 +85,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(RENAME_ACTION_ID, KeyStroke.getKeyStroke("alt shift R"))
+        keyStrokes = copyKeyStrokesFromAction(renameActionId, KeyStroke.getKeyStroke("alt shift R"))
         registerAction("renameScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -90,7 +96,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(DELETE_ACTION_ID, KeyStroke.getKeyStroke("DELETE"))
+        keyStrokes = copyKeyStrokesFromAction(deleteActionId, KeyStroke.getKeyStroke("DELETE"))
         registerAction("deleteScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -101,7 +107,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(DELETE_NO_PROMPT_ACTION_ID, KeyStroke.getKeyStroke("ctrl DELETE"))
+        keyStrokes = copyKeyStrokesFromAction(deleteNoPromptActionId, KeyStroke.getKeyStroke("ctrl DELETE"))
         registerAction("deleteScratchWithoutPrompt", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -116,8 +122,8 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
                 if (scratch != null) {
-                    move(scratch, ScratchConfig.UP)
-                    onScratchMoved(scratch, ScratchConfig.UP)
+                    move(scratch, up)
+                    onScratchMoved(scratch, up)
                 }
             }
         })
@@ -125,8 +131,8 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
                 if (scratch != null) {
-                    move(scratch, ScratchConfig.DOWN)
-                    onScratchMoved(scratch, ScratchConfig.DOWN)
+                    move(scratch, down)
+                    onScratchMoved(scratch, down)
                 }
             }
         })
@@ -164,7 +170,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         myList.addMouseMotionListener(myMouseMotionListener)
         myList.addMouseListener(myMouseListener)
 
-        myList.visibleRowCount = Math.min(MY_MAX_ROW_COUNT, listModel.size)
+        myList.visibleRowCount = Math.min(myMaxRowCount, listModel.size)
 
         var shouldShow = super.beforeShow()
         if (myAutoHandleBeforeShow) {
@@ -574,11 +580,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     }
 
     companion object {
-        private val DELETE_ACTION_ID = "\$Delete"
-        private val DELETE_NO_PROMPT_ACTION_ID = "\$DeleteNoPrompt"
-        private val GENERATE_ACTION_ID = "Generate"
-        private val RENAME_ACTION_ID = "RenameElement"
-        private val MY_MAX_ROW_COUNT = 20
+        private val myMaxRowCount = 20
 
         private fun copyKeyStrokesFromAction(actionId: String, defaultKeyStroke: KeyStroke): List<KeyStroke> {
             val result = ArrayList<KeyStroke>()

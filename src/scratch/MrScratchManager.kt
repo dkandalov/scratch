@@ -67,7 +67,7 @@ class MrScratchManager(
         }
 
         if (indexes.isEmpty()) {
-            log.migratedScratchesToFiles()
+            log.migratedToIdeScratches()
         } else {
             log.failedToMigrateScratchesToFiles(indexes)
         }

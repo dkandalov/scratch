@@ -49,16 +49,12 @@ data class ScratchConfig(
 
     fun with(newScratches: List<Scratch>) = copy(scratches = newScratches)
 
-    fun without(scratch: Scratch): ScratchConfig {
-        return copy(scratches = scratches.filter { it != scratch })
-    }
+    fun without(scratch: Scratch) = copy(scratches = scratches.filter { it != scratch })
 
-    fun replace(scratch: Scratch, newScratch: Scratch): ScratchConfig {
-        return copy(
-            scratches = scratches.map { if (it == scratch) newScratch else it },
-            lastOpenedScratch = if (scratch == lastOpenedScratch) newScratch else lastOpenedScratch
-        )
-    }
+    fun replace(scratch: Scratch, newScratch: Scratch) = copy(
+        scratches = scratches.map { if (it == scratch) newScratch else it },
+        lastOpenedScratch = if (scratch == lastOpenedScratch) newScratch else lastOpenedScratch
+    )
 
     fun move(scratch: Scratch, shift: Int): ScratchConfig {
         val oldIndex = scratches.indexOf(scratch)
@@ -94,10 +90,10 @@ data class ScratchConfig(
     fun withLastOpenedScratch(value: Scratch?) = copy(lastOpenedScratch = value)
 
     companion object {
-        val DEFAULT_CONFIG = ScratchConfig(
+        val defaultConfig = ScratchConfig(
             emptyList<Scratch>(), null, false, true, APPEND, APPEND, TOPMOST
         )
-        val UP = -1
-        val DOWN = 1
+        val up = -1
+        val down = 1
     }
 }
