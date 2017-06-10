@@ -30,9 +30,17 @@ class ScratchLog {
         notifyUser("", "Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
+    fun pluginNeedsMigrationToIdeScratches(whenUserConfirmed: () -> Unit) {
+        TODO("not implemented")
+    }
+
     fun migratedToIdeScratches() {
         log.info("Migrated to IDE scratches")
         // TODO notifyUser ?
+    }
+
+    fun failedToMigrateScratchesToIdeLocation(reason: String) {
+        notifyUser("Failed to migrated scratches to IDE location.", reason, WARNING)
     }
 
     fun listeningToClipboard(isListening: Boolean) {
@@ -78,8 +86,9 @@ class ScratchLog {
 
         private fun notifyUser(title: String, message: String, notificationType: NotificationType) {
             val groupDisplayId = ScratchLog.title
-            val notification = Notification(groupDisplayId, title, message, notificationType)
-            ApplicationManager.getApplication().messageBus.syncPublisher(Notifications.TOPIC).notify(notification)
+            ApplicationManager.getApplication()
+                .messageBus.syncPublisher(Notifications.TOPIC)
+                .notify(Notification(groupDisplayId, title, message, notificationType))
         }
     }
 }

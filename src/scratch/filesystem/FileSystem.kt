@@ -24,44 +24,32 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.Answer
 import java.io.File
+import java.io.File.*
 import java.io.IOException
-import java.nio.charset.Charset
 
 
-class FileSystem(scratchesFolderPath: String?) {
+class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManager = VirtualFileManager.getInstance()) {
 
-    private val fileManager = VirtualFileManager.getInstance()
-    private val scratchesFolderPath: String
-
-    init {
+    val scratchesPath: String =
         if (scratchesFolderPath == null || scratchesFolderPath.isEmpty()) {
-            this.scratchesFolderPath = PathManager.getPluginsPath() + "/scratches/"
+            PathManager.getPluginsPath() + "/scratches/"
         } else {
-            this.scratchesFolderPath = scratchesFolderPath + "/" // add trailing "/" in case it's not specified in config
+            scratchesFolderPath + "/" // add trailing "/" in case it's not specified in config
         }
-    }
 
-    fun listScratchFiles(): List<String> {
-        val virtualFile = virtualFileBy(scratchFolder)
-        if (virtualFile == null || !virtualFile.exists()) {
-            return emptyList()
-        }
-        return virtualFile.children.filter{ it.canBeScratch() }.map { it.name }
-    }
+    fun listScratchFiles() = scratchFiles.map { it.name }
 
-    fun scratchFileExists(fileName: String): Boolean {
-        return virtualFileBy(fileName).canBeScratch()
-    }
+    fun scratchFileExists(fileName: String) = virtualFileBy(fileName).isValidScratch
 
     fun isValidScratchName(fileName: String): Answer {
         val hasPathChars = fileName.contains("/") || fileName.contains("\\")
         val hasWildcards = fileName.contains("*") || fileName.contains("?")
-        if (hasPathChars || hasWildcards || isHidden(fileName) || !LocalFileSystem.getInstance().isValidName(fileName)) {
-            return Answer.no("Not a valid file name")
-        } else if (File(scratchesFolderPath + fileName).exists()) {
-            return Answer.no("There is existing file with this name")
+        return if (hasPathChars || hasWildcards || isHidden(fileName) || !LocalFileSystem.getInstance().isValidName(fileName)) {
+            Answer.no("Not a valid file name")
+        } else if (File(scratchesPath + fileName).exists()) {
+            Answer.no("There is existing file with this name")
         } else {
-            return Answer.yes()
+            Answer.yes()
         }
     }
 
@@ -72,21 +60,17 @@ class FileSystem(scratchesFolderPath: String?) {
         })
     }
 
-    fun createEmptyFile(fileName: String): Boolean {
-        return createFile(fileName, "")
-    }
+    fun createEmptyFile(fileName: String): Boolean = createFile(fileName, "")
 
-    fun createFile(fileName: String, text: String): Boolean {
-        val computable = Computable<Boolean> {
+    fun createFile(fileName: String, text: String): Boolean =
+        ApplicationManager.getApplication().runWriteAction(Computable<Boolean> {
             try {
                 doCreateFile(fileName, text)
             } catch (e: IOException) {
                 log.warn(e)
                 false
             }
-        }
-        return ApplicationManager.getApplication().runWriteAction(computable)
-    }
+        })
 
     fun removeFile(fileName: String): Boolean {
         val computable = Computable<Boolean> {
@@ -107,8 +91,8 @@ class FileSystem(scratchesFolderPath: String?) {
     }
 
     private fun doCreateFile(fileName: String, text: String): Boolean {
-        ensureExists(File(scratchesFolderPath))
-        val scratchesFolder = virtualFileBy(scratchFolder) ?: return false
+        ensureExists(File(scratchesPath))
+        val scratchesFolder = virtualFileBy(scratchesPath) ?: return false
 
         val scratchFile = scratchesFolder.createChildData(this, fileName)
         scratchFile.setBinaryContent(text.toByteArray(charset))
@@ -125,16 +109,18 @@ class FileSystem(scratchesFolderPath: String?) {
         }
     }
 
-    fun virtualFileBy(fileName: String): VirtualFile? {
-        return fileManager.refreshAndFindFileByUrl("file://" + scratchesFolderPath + fileName)
+    fun virtualFileBy(fileName: String): VirtualFile? =
+        fileManager.refreshAndFindFileByUrl("file://" + scratchesPath + fileName)
+
+    fun isScratch(virtualFile: VirtualFile) = scratchFiles.contains(virtualFile)
+
+    private val scratchFiles: List<VirtualFile> get() {
+        val virtualFile = virtualFileBy(scratchesPath)
+        if (virtualFile == null || !virtualFile.exists()) return emptyList()
+        return virtualFile.children.filter{ it.isValidScratch }
     }
 
-    fun isScratch(virtualFile: VirtualFile): Boolean {
-        val scratchFolder = virtualFileBy(FileSystem.scratchFolder)
-        return scratchFolder != null && scratchFolder.children.any { it == virtualFile }
-    }
-
-    private fun VirtualFile?.canBeScratch() =
+    private val VirtualFile?.isValidScratch get() =
         this != null && exists() && !isDirectory && !isHidden(name)
 
     companion object {
@@ -143,8 +129,7 @@ class FileSystem(scratchesFolderPath: String?) {
         /**
          * Use UTF-8 to be compatible with old version of plugin.
          */
-        private val charset = Charset.forName("UTF8")
-        private val scratchFolder = ""
+        private val charset = Charsets.UTF_8
 
         private fun isHidden(fileName: String) = fileName.startsWith(".")
 
@@ -154,4 +139,34 @@ class FileSystem(scratchesFolderPath: String?) {
             }
         }
     }
+}
+
+
+fun moveScratches(scratchFilePaths: List<String>, fromFolder: String, toFolder: String): MoveResult {
+    fun File.renamedIfExists(prefix: String = "_"): File {
+        return if (!exists()) this
+        else File(parent + separator + prefix + name).renamedIfExists()
+    }
+
+    val folder = File(toFolder)
+    if (!folder.exists()) {
+        return MoveResult.Failure("Target folder doesn't exist: ${folder.path}")
+    }
+    return try {
+        val failedToMove = scratchFilePaths.map{ File(fromFolder + separator + it) }
+            .filter { file ->
+                val targetFile = File(folder.absolutePath + separator + file.name).renamedIfExists()
+                val wasRenamed = file.renameTo(targetFile)
+                !wasRenamed
+            }
+        if (failedToMove.isEmpty()) MoveResult.Success
+        else MoveResult.Failure("Failed to move files: ${failedToMove.joinToString { it.name }}")
+    } catch(e: Exception) {
+        MoveResult.Failure(e.message ?: "")
+    }
+}
+
+sealed class MoveResult {
+    object Success: MoveResult()
+    data class Failure(val reason: String): MoveResult()
 }

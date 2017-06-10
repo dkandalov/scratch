@@ -14,12 +14,16 @@
 
 package scratch.ide
 
+import com.intellij.ide.scratch.ScratchFileService
+import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.application.ApplicationManager.getApplication
 import com.intellij.openapi.components.ApplicationComponent
 import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension
 import com.intellij.openapi.vfs.VirtualFile
 import scratch.MrScratchManager
 import scratch.filesystem.FileSystem
+import scratch.filesystem.MoveResult
+import scratch.filesystem.moveScratches
 
 class ScratchComponent: ApplicationComponent {
 
@@ -35,10 +39,23 @@ class ScratchComponent: ApplicationComponent {
         val ide = Ide(fileSystem, log)
         mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
 
-        if (config.needMigration) {
-            getApplication().invokeLater {
-                // TODO mrScratchManager.migrateToIdeScratches()
-            }
+        val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
+        val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
+        if (needsMigration) {
+            log.pluginNeedsMigrationToIdeScratches(whenUserConfirmed = {
+                getApplication().invokeLater {
+                    val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
+                    when (moveResult) {
+                        is MoveResult.Success -> {
+                            fileSystem = FileSystem(ideScratchesPath)
+                            log.migratedToIdeScratches()
+                        }
+                        is MoveResult.Failure -> {
+                            log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
+                        }
+                    }
+                }
+            })
         }
 
         Ide.ClipboardListener(mrScratchManager).startListening()

@@ -91,7 +91,13 @@ data class ScratchConfig(
 
     companion object {
         val defaultConfig = ScratchConfig(
-            emptyList<Scratch>(), null, false, true, APPEND, APPEND, TOPMOST
+            scratches = emptyList<Scratch>(),
+            lastOpenedScratch = null,
+            listenToClipboard = false,
+            needMigration = true,
+            clipboardAppendType = APPEND,
+            newScratchAppendType = APPEND,
+            defaultScratchMeaning = TOPMOST
         )
         val up = -1
         val down = 1
