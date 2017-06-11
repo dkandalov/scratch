@@ -23,12 +23,10 @@ data class ScratchConfig(
     val scratches: List<Scratch>,
     val lastOpenedScratch: Scratch?,
     val listenToClipboard: Boolean,
-    val needMigration: Boolean,
     val clipboardAppendType: AppendType,
     private val newScratchAppendType: AppendType,
     val defaultScratchMeaning: DefaultScratchMeaning
 ) {
-
     enum class AppendType {
         APPEND, PREPEND
     }
@@ -70,8 +68,6 @@ data class ScratchConfig(
 
     fun listenToClipboard(value: Boolean) = copy(listenToClipboard = value)
 
-    fun needsMigration(value: Boolean) = copy(needMigration = value)
-
     fun withClipboard(value: AppendType?): ScratchConfig {
         if (value == null) return this
         return copy(clipboardAppendType = value)
@@ -94,7 +90,6 @@ data class ScratchConfig(
             scratches = emptyList<Scratch>(),
             lastOpenedScratch = null,
             listenToClipboard = false,
-            needMigration = true,
             clipboardAppendType = APPEND,
             newScratchAppendType = APPEND,
             defaultScratchMeaning = TOPMOST

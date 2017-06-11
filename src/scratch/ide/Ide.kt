@@ -185,16 +185,16 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
                         }
 
                     } catch (e: UnsupportedFlavorException) {
-                        LOG.info(e)
+                        log.info(e)
                     } catch (e: IOException) {
-                        LOG.info(e)
+                        log.info(e)
                     }
                 }
             }
         }
 
         companion object {
-            private val LOG = Logger.getInstance(ClipboardListener::class.java)
+            private val log = Logger.getInstance(ClipboardListener::class.java)
         }
     }
 

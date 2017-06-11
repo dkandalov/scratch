@@ -72,17 +72,15 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
             }
         })
 
-    fun removeFile(fileName: String): Boolean {
-        val computable = Computable<Boolean> {
+    fun removeFile(fileName: String): Boolean =
+        ApplicationManager.getApplication().runWriteAction(Computable<Boolean> {
             try {
                 doRemoveFile(fileName)
             } catch (e: IOException) {
                 log.warn(e)
                 false
             }
-        }
-        return ApplicationManager.getApplication().runWriteAction(computable)
-    }
+        })
 
     private fun doRemoveFile(fileName: String): Boolean {
         val virtualFile = virtualFileBy(fileName) ?: return false

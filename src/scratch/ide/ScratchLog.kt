@@ -27,64 +27,42 @@ import scratch.Scratch
 class ScratchLog {
 
     fun failedToRename(scratch: Scratch) {
-        notifyUser("", "Failed to rename scratch: ${scratch.fileName}", WARNING)
-    }
-
-    fun pluginNeedsMigrationToIdeScratches(whenUserConfirmed: () -> Unit) {
-        TODO("not implemented")
+        notifyUser("Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
     fun migratedToIdeScratches() {
-        log.info("Migrated to IDE scratches")
-        // TODO notifyUser ?
+        log.info("Migrated plugin scratches to IDE")
+        notifyUser("Migrated scratches to IDE, now you can find them in Project View -> Scratches tab.", INFORMATION)
     }
 
-    fun failedToMigrateScratchesToIdeLocation(reason: String) {
-        notifyUser("Failed to migrated scratches to IDE location.", reason, WARNING)
-    }
+    fun failedToMigrateScratchesToIdeLocation(reason: String) =
+        notifyUser("Failed to migrated plugin scratches to IDE: $reason", WARNING)
 
-    fun listeningToClipboard(isListening: Boolean) {
-        if (isListening) notifyUser(title, "Started listening to clipboard", INFORMATION)
-        else notifyUser(title, "Stopped listening to clipboard", INFORMATION)
-    }
+    fun listeningToClipboard(isListening: Boolean) =
+        if (isListening) notifyUser("Started listening to clipboard", INFORMATION)
+        else notifyUser("Stopped listening to clipboard", INFORMATION)
 
-    fun failedToMigrateScratchesToFiles(scratchIndexes: List<Int>) {
-        notifyUser(
-            "Failed to migrated scratches to physical files.",
-            "Failed scratches: ${scratchIndexes.joinToString(", ")}",
-            WARNING
-        )
-    }
+    fun failedToMigrateScratchesToFiles(scratchIndexes: List<Int>) =
+        notifyUser("Failed to migrated scratches to physical files: ${scratchIndexes.joinToString(", ")}", WARNING)
 
-    fun willNotMigrateBecauseTargetFolderIsNotEmpty() {
-        notifyUser(title, "Old scratches data won't be save because scratches folder is not empty", WARNING)
-    }
+    fun willNotMigrateBecauseTargetFolderIsNotEmpty() =
+        notifyUser("Old scratches data won't be save because scratches folder is not empty", WARNING)
 
-    fun failedToOpenDefaultScratch() {
-        notifyUser("", "Failed to open default scratch", WARNING)
-    }
+    fun failedToOpenDefaultScratch() = notifyUser("Failed to open default scratch", WARNING)
 
-    fun failedToOpen(scratch: Scratch) {
-        notifyUser("", "Failed to open scratch: '${scratch.fileName}'", WARNING)
-    }
+    fun failedToOpen(scratch: Scratch) = notifyUser("Failed to open scratch: '${scratch.fileName}'", WARNING)
 
-    fun failedToCreate(scratch: Scratch) {
-        notifyUser("", "Failed to create scratch: '${scratch.fileName}'", WARNING)
-    }
+    fun failedToCreate(scratch: Scratch) = notifyUser("Failed to create scratch: '${scratch.fileName}'", WARNING)
 
-    fun failedToDelete(scratch: Scratch) {
-        notifyUser("", "Failed to delete scratch: '${scratch.fileName}'", WARNING)
-    }
+    fun failedToDelete(scratch: Scratch) = notifyUser("Failed to delete scratch: '${scratch.fileName}'", WARNING)
 
-    fun failedToFindVirtualFileFor(scratch: Scratch) {
-        log.warn("Failed to find virtual file for '${scratch.fileName}'")
-    }
+    fun failedToFindVirtualFileFor(scratch: Scratch) = log.warn("Failed to find virtual file for '${scratch.fileName}'")
 
     companion object {
         private val log = Logger.getInstance(ScratchLog::class.java)
         private val title = "Scratch Plugin"
 
-        private fun notifyUser(title: String, message: String, notificationType: NotificationType) {
+        private fun notifyUser(message: String, notificationType: NotificationType) {
             val groupDisplayId = ScratchLog.title
             ApplicationManager.getApplication()
                 .messageBus.syncPublisher(Notifications.TOPIC)

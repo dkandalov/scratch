@@ -21,7 +21,6 @@ import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
 import scratch.filesystem.FileSystem
 import scratch.ide.Ide
 import scratch.ide.ScratchLog
-import java.util.*
 
 
 class MrScratchManager(
@@ -30,51 +29,6 @@ class MrScratchManager(
     private var config: ScratchConfig,
     private val log: ScratchLog
 ) {
-
-    fun migrate(scratchTexts: List<String>) {
-        if (fileSystem.listScratchFiles().isNotEmpty()) {
-            log.willNotMigrateBecauseTargetFolderIsNotEmpty()
-            return
-        }
-        val allEmpty = scratchTexts.none { it.isNotEmpty() }
-        if (allEmpty) {
-            val scratches = listOf(
-                Scratch("&scratch.txt"),
-                Scratch("scratch&2.txt"),
-                Scratch("scratch&3.xml"),
-                Scratch("scratch&4.xml")
-            )
-            for (scratch in scratches) {
-                fileSystem.createEmptyFile(scratch.fileName)
-            }
-            updateConfig(config.with(scratches).needsMigration(false))
-            return
-        }
-
-        val indexes = ArrayList<Int>()
-        val scratches = ArrayList<Scratch>()
-
-        (1..scratchTexts.size).forEach { i ->
-            val scratchName = if (i == 1) "&scratch" else "scratch&" + i
-            val scratch = Scratch(scratchName + ".txt")
-
-            val wasCreated = fileSystem.createFile(scratch.fileName, scratchTexts[i - 1])
-            if (wasCreated) {
-                scratches.add(scratch)
-            } else {
-                indexes.add(i)
-            }
-        }
-
-        if (indexes.isEmpty()) {
-            log.migratedToIdeScratches()
-        } else {
-            log.failedToMigrateScratchesToFiles(indexes)
-        }
-        updateConfig(config.with(scratches).needsMigration(false))
-    }
-
-
     fun userWantsToSeeScratchesList(userDataHolder: UserDataHolder) {
         syncScratchesWithFileSystem()
         ide.displayScratchesListPopup(config.scratches, userDataHolder)

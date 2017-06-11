@@ -19,11 +19,14 @@ import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.application.ApplicationManager.getApplication
 import com.intellij.openapi.components.ApplicationComponent
 import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.MrScratchManager
 import scratch.filesystem.FileSystem
 import scratch.filesystem.MoveResult
 import scratch.filesystem.moveScratches
+import java.io.File
 
 class ScratchComponent: ApplicationComponent {
 
@@ -40,22 +43,24 @@ class ScratchComponent: ApplicationComponent {
         mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
 
         val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
+        FileUtil.ensureExists(File(ideScratchesPath))
+
         val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
         if (needsMigration) {
-            log.pluginNeedsMigrationToIdeScratches(whenUserConfirmed = {
-                getApplication().invokeLater {
-                    val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
-                    when (moveResult) {
-                        is MoveResult.Success -> {
-                            fileSystem = FileSystem(ideScratchesPath)
-                            log.migratedToIdeScratches()
-                        }
-                        is MoveResult.Failure -> {
-                            log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
-                        }
+            getApplication().invokeLater {
+                val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
+                when (moveResult) {
+                    is MoveResult.Success -> {
+                        fileSystem = FileSystem(ideScratchesPath)
+                        configPersistence.scratchesFolderPath = ideScratchesPath
+                        VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
+                        log.migratedToIdeScratches()
+                    }
+                    is MoveResult.Failure -> {
+                        log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
                     }
                 }
-            })
+            }
         }
 
         Ide.ClipboardListener(mrScratchManager).startListening()

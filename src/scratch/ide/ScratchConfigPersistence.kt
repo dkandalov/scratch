@@ -28,7 +28,6 @@ import scratch.ScratchConfig.DefaultScratchMeaning
 
 @State(name = "ScratchConfig", storages = arrayOf(Storage(id = "main", file = "\$APP_CONFIG$/scratch_config.xml")))
 class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistence> {
-    var needMigrationToIJFolder = true
     @OptionTag(nameAttribute = "isListenToClipboard") var listenToClipboard = false
     var fullScratchNamesOrdered: List<String> = emptyList()
     var lastOpenedScratch: String? = null
@@ -39,7 +38,6 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
 
     fun asConfig(): ScratchConfig {
         return ScratchConfig.defaultConfig
-            .needsMigration(needMigrationToIJFolder)
             .listenToClipboard(listenToClipboard)
             .with(fullScratchNamesOrdered.map { Scratch(it) })
             .withLastOpenedScratch(if (lastOpenedScratch == null) null else Scratch(lastOpenedScratch!!))
@@ -49,7 +47,6 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
     }
 
     fun updateFrom(config: ScratchConfig) {
-        needMigrationToIJFolder = config.needMigration
         listenToClipboard = config.listenToClipboard
         fullScratchNamesOrdered = config.scratches.map { it.fullNameWithMnemonics }
         lastOpenedScratch = config.lastOpenedScratch?.fullNameWithMnemonics
