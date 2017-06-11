@@ -14,43 +14,19 @@
 
 package scratch.ide
 
-import com.intellij.openapi.editor.Document
-import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.util.UserDataHolderBase
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.wm.IdeFocusManager
-import javax.swing.Icon
 
 object Util {
-    val NO_ICON: Icon? = null
-    private val PROJECT_KEY = Key.create<Project>("Project")
+    private val projectKey = Key.create<Project>("Project")
 
-    fun holdingOnTo(project: Project?) = UserDataHolderBase().apply {
-        putUserData(PROJECT_KEY, project)
+    fun holdingOnTo(project: Project?): UserDataHolder = UserDataHolderBase().apply {
+        putUserData(projectKey, project)
     }
 
     fun takeProjectFrom(userDataHolder: UserDataHolder): Project? {
-        return userDataHolder.getUserData(PROJECT_KEY)
-    }
-
-    fun currentFileIn(project: Project?): VirtualFile? {
-        if (project == null) return null
-        return (FileEditorManagerEx.getInstance(project) as FileEditorManagerEx).currentFile
-    }
-
-    fun hasFocusInEditor(document: Document): Boolean {
-        val selectedTextEditor = selectedEditor()
-        return selectedTextEditor != null && selectedTextEditor.document == document
-    }
-
-    private fun selectedEditor(): Editor? {
-        val frame = IdeFocusManager.findInstance().lastFocusedFrame ?: return null
-        val project = frame.project ?: return null
-        return FileEditorManager.getInstance(project).selectedTextEditor
+        return userDataHolder.getUserData(projectKey)
     }
 }

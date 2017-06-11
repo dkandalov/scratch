@@ -17,11 +17,10 @@ package scratch.ide
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.fileEditor.FileDocumentManager
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent
-import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER
-import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -29,6 +28,7 @@ import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.ui.InputValidatorEx
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.UserDataHolder
+import com.intellij.openapi.wm.IdeFocusManager
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.ui.UIUtil
 import scratch.MrScratchManager
@@ -38,8 +38,6 @@ import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
 import scratch.filesystem.FileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.NO_ICON
-import scratch.ide.Util.hasFocusInEditor
 import scratch.ide.Util.takeProjectFrom
 import scratch.ide.popup.ScratchListPopup
 import scratch.ide.popup.ScratchListPopupStep
@@ -47,10 +45,11 @@ import java.awt.datatransfer.DataFlavor.stringFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.IOException
 import java.util.*
+import javax.swing.Icon
 
 
 class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
-
+    private val noIcon: Icon? = null
     private var scratchListSelectedIndex: Int = 0
 
     fun persistConfig(config: ScratchConfig) {
@@ -104,7 +103,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
 
     fun openNewScratchDialog(suggestedScratchName: String, userDataHolder: UserDataHolder) {
         val message = "Scratch name (you can use '&' for mnemonics):"
-        val scratchName = Messages.showInputDialog(message, "New Scratch", NO_ICON, suggestedScratchName, object: InputValidatorEx {
+        val scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, object: InputValidatorEx {
             override fun checkInput(scratchName: String) = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes
             override fun getErrorText(scratchName: String) = ScratchComponent.mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).explanation
             override fun canClose(inputString: String) = true
@@ -142,10 +141,20 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         }
     }
 
+    private fun hasFocusInEditor(document: Document): Boolean {
+        fun selectedEditor(): Editor? {
+            val frame = IdeFocusManager.findInstance().lastFocusedFrame ?: return null
+            val project = frame.project ?: return null
+            return FileEditorManager.getInstance(project).selectedTextEditor
+        }
+        val selectedTextEditor = selectedEditor() ?: return false
+        return selectedTextEditor.document == document
+    }
+
     fun showRenameDialogFor(scratch: Scratch) {
         val initialValue = scratch.fullNameWithMnemonics
         val message = "Scratch name (you can use '&' for mnemonics):"
-        val newScratchName = Messages.showInputDialog(message, "Scratch Rename", NO_ICON, initialValue, ScratchListPopup.ScratchNameValidator(scratch))
+        val newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, ScratchListPopup.ScratchNameValidator(scratch))
 
         if (newScratchName != null) {
             mrScratchManager().userWantsToRename(scratch, newScratchName)
@@ -167,12 +176,11 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
 
     /**
      * Note that it's possible to turn on clipboard listener and forget about it
-     * with it appending clipboard content to default scratch forever.
+     * and will keep appending clipboard content to default scratch forever.
      *
      * Assume that notification on plugin start is good enough to remind user about clipboard listener.
      */
     class ClipboardListener(private val mrScratchManager: MrScratchManager) {
-
         fun startListening() {
             CopyPasteManager.getInstance().addContentChangedListener { oldTransferable, newTransferable ->
                 if (mrScratchManager.shouldListenToClipboard()) {

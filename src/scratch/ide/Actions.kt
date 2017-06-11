@@ -16,27 +16,28 @@ package scratch.ide
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.ToggleAction
+import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbAwareAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VirtualFile
 import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
 import scratch.ide.ScratchComponent.Companion.fileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.currentFileIn
 import scratch.ide.Util.holdingOnTo
 
 object Actions {
 
     class DeleteScratch: DumbAwareAction() {
         override fun actionPerformed(event: AnActionEvent) {
-            val scratchFile = getCurrentScratchFile(event) ?: return
+            val scratchFile = event.currentScratchFile() ?: return
             mrScratchManager().userAttemptedToDeleteScratch(scratchFile.name, holdingOnTo(event.project))
         }
 
         override fun update(event: AnActionEvent?) {
-            event!!.presentation.isEnabled = getCurrentScratchFile(event) != null
+            event!!.presentation.isEnabled = event.currentScratchFile() != null
         }
     }
 
@@ -76,38 +77,38 @@ object Actions {
 
     class RenameScratch: DumbAwareAction() {
         override fun actionPerformed(event: AnActionEvent) {
-            val scratchFile = getCurrentScratchFile(event) ?: return
+            val scratchFile = event.currentScratchFile() ?: return
             mrScratchManager().userWantsToEditScratchName(scratchFile.name)
         }
 
         override fun update(event: AnActionEvent?) {
-            event!!.presentation.isEnabled = getCurrentScratchFile(event) != null
+            event!!.presentation.isEnabled = event.currentScratchFile() != null
         }
     }
 
 
     class ListenToClipboard: ToggleAction(), DumbAware {
-        override fun setSelected(event: AnActionEvent, enabled: Boolean) {
-            mrScratchManager().userWantsToListenToClipboard(enabled)
-            event.presentation.icon = if (enabled) IS_ON_ICON else IS_OFF_ICON
+        override fun setSelected(event: AnActionEvent, selected: Boolean) {
+            mrScratchManager().userWantsToListenToClipboard(selected)
+            event.presentation.icon = if (selected) isOnIcon else isOffIcon
         }
 
         override fun update(event: AnActionEvent) {
             super.update(event)
-            event.presentation.icon = if (isSelected(event)) IS_ON_ICON else IS_OFF_ICON
+            event.presentation.icon = if (isSelected(event)) isOnIcon else isOffIcon
         }
 
         override fun isSelected(event: AnActionEvent) = mrScratchManager().shouldListenToClipboard()
 
         companion object {
-            private val IS_ON_ICON = IconLoader.getIcon("/actions/menu-paste.png")
-            private val IS_OFF_ICON = IconLoader.getDisabledIcon(IS_ON_ICON)
+            private val isOnIcon = IconLoader.getIcon("/actions/menu-paste.png")
+            private val isOffIcon = IconLoader.getDisabledIcon(isOnIcon)
         }
     }
 
     class MakeDefaultScratchBeTopmost: ToggleAction(), DumbAware {
-        override fun setSelected(event: AnActionEvent, enabled: Boolean) {
-            val meaning = if (enabled) TOPMOST else LAST_OPENED
+        override fun setSelected(event: AnActionEvent, selected: Boolean) {
+            val meaning = if (selected) TOPMOST else LAST_OPENED
             mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning)
         }
 
@@ -115,8 +116,8 @@ object Actions {
     }
 
     class MakeDefaultScratchBeLastOpened: ToggleAction(), DumbAware {
-        override fun setSelected(event: AnActionEvent, enabled: Boolean) {
-            val meaning = if (enabled) LAST_OPENED else TOPMOST
+        override fun setSelected(event: AnActionEvent, selected: Boolean) {
+            val meaning = if (selected) LAST_OPENED else TOPMOST
             mrScratchManager().userWantsToChangeMeaningOfDefaultScratch(meaning)
         }
 
@@ -124,9 +125,13 @@ object Actions {
     }
 
 
-    private fun getCurrentScratchFile(event: AnActionEvent): VirtualFile? {
-        val currentFile = currentFileIn(event.project)
-        if (currentFile == null || !fileSystem().isScratch(currentFile)) return null
-        return currentFile
+    private fun AnActionEvent.currentScratchFile(): VirtualFile? {
+        val currentFile = project.currentFile() ?: return null
+        return if (fileSystem().isScratch(currentFile)) currentFile else null
+    }
+
+    private fun Project?.currentFile(): VirtualFile? {
+        return if (this == null) null
+        else (FileEditorManagerEx.getInstance(this) as FileEditorManagerEx).currentFile
     }
 }
