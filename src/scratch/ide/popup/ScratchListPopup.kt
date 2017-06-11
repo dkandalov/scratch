@@ -527,13 +527,13 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         }
 
         override fun getData(dataId: String): Any? {
-            if (PlatformDataKeys.SELECTED_ITEM.`is`(dataId)) {
-                return myList.selectedValue
+            return if (PlatformDataKeys.SELECTED_ITEM.`is`(dataId)) {
+                myList.selectedValue
+            } else if (PlatformDataKeys.SELECTED_ITEMS.`is`(dataId)) {
+                myList.selectedValuesList.toTypedArray()
+            } else {
+                null
             }
-            if (PlatformDataKeys.SELECTED_ITEMS.`is`(dataId)) {
-                return myList.selectedValuesList
-            }
-            return null
         }
     }
 
