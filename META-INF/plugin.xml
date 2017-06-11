@@ -1,7 +1,7 @@
 <idea-plugin>
 	<id>Scratch</id>
 	<name>Scratch</name>
-	<version>1.08</version>
+	<version>1.10</version>
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
@@ -34,6 +34,7 @@
 	<change-notes>
 		<![CDATA[<html><body>
         <ul>
+            <li>1.10 - migrated scratch files to the same location as IDE scratches</li>
             <li>1.08 - fix for exception in IJ 2016.3 when creating new scratch</li>
             <li>1.07 - allow creating scratches with the same name but different extensions</li>
             <li>1.03 - make scratches always editable (even if they are outside of project root)</li>
