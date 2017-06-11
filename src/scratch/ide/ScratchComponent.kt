@@ -39,29 +39,28 @@ class ScratchComponent: ApplicationComponent {
         val config = configPersistence.asConfig()
 
         fileSystem = FileSystem(configPersistence.scratchesFolderPath)
-        val ide = Ide(fileSystem, log)
-        mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
 
         val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
         FileUtil.ensureExists(File(ideScratchesPath))
 
         val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
         if (needsMigration) {
-            getApplication().invokeLater {
-                val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
-                when (moveResult) {
-                    is MoveResult.Success -> {
-                        fileSystem = FileSystem(ideScratchesPath)
-                        configPersistence.scratchesFolderPath = ideScratchesPath
-                        VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
-                        log.migratedToIdeScratches()
-                    }
-                    is MoveResult.Failure -> {
-                        log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
-                    }
+            val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
+            when (moveResult) {
+                is MoveResult.Success -> {
+                    fileSystem = FileSystem(ideScratchesPath)
+                    configPersistence.scratchesFolderPath = ideScratchesPath
+                    VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
+                    log.migratedToIdeScratches()
+                }
+                is MoveResult.Failure -> {
+                    log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
                 }
             }
         }
+
+        val ide = Ide(fileSystem, log)
+        mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
 
         Ide.ClipboardListener(mrScratchManager).startListening()
         Ide.OpenEditorTracker(mrScratchManager, fileSystem).startTracking()

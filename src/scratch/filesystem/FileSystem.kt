@@ -90,7 +90,7 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
 
     private fun doCreateFile(fileName: String, text: String): Boolean {
         ensureExists(File(scratchesPath))
-        val scratchesFolder = virtualFileBy(scratchesPath) ?: return false
+        val scratchesFolder = virtualFileBy("") ?: return false
 
         val scratchFile = scratchesFolder.createChildData(this, fileName)
         scratchFile.setBinaryContent(text.toByteArray(charset))
@@ -113,9 +113,9 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
     fun isScratch(virtualFile: VirtualFile) = scratchFiles.contains(virtualFile)
 
     private val scratchFiles: List<VirtualFile> get() {
-        val virtualFile = virtualFileBy(scratchesPath)
-        if (virtualFile == null || !virtualFile.exists()) return emptyList()
-        return virtualFile.children.filter{ it.isValidScratch }
+        val scratchesFolder = virtualFileBy("")
+        if (scratchesFolder == null || !scratchesFolder.exists()) return emptyList()
+        return scratchesFolder.children.filter{ it.isValidScratch }
     }
 
     private val VirtualFile?.isValidScratch get() =

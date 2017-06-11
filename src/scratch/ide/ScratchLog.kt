@@ -32,7 +32,7 @@ class ScratchLog {
 
     fun migratedToIdeScratches() {
         log.info("Migrated plugin scratches to IDE")
-        notifyUser("Migrated scratches to IDE, now you can find them in Project View -> Scratches tab.", INFORMATION)
+        notifyUser("Migrated scratches to IDE. Now you can execute scratches and see scratches list in Project View -> Scratches tab.", INFORMATION)
     }
 
     fun failedToMigrateScratchesToIdeLocation(reason: String) =
@@ -41,12 +41,6 @@ class ScratchLog {
     fun listeningToClipboard(isListening: Boolean) =
         if (isListening) notifyUser("Started listening to clipboard", INFORMATION)
         else notifyUser("Stopped listening to clipboard", INFORMATION)
-
-    fun failedToMigrateScratchesToFiles(scratchIndexes: List<Int>) =
-        notifyUser("Failed to migrated scratches to physical files: ${scratchIndexes.joinToString(", ")}", WARNING)
-
-    fun willNotMigrateBecauseTargetFolderIsNotEmpty() =
-        notifyUser("Old scratches data won't be save because scratches folder is not empty", WARNING)
 
     fun failedToOpenDefaultScratch() = notifyUser("Failed to open default scratch", WARNING)
 
