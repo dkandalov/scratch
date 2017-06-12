@@ -61,6 +61,7 @@ class ScratchComponent: ApplicationComponent {
 
         val ide = Ide(fileSystem, log)
         mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
+        mrScratchManager.syncScratchesWithFileSystem()
 
         Ide.ClipboardListener(mrScratchManager).startListening()
         Ide.OpenEditorTracker(mrScratchManager, fileSystem).startTracking()

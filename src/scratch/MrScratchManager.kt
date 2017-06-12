@@ -120,13 +120,13 @@ class MrScratchManager(
     fun clipboardListenerWantsToAddTextToScratch(clipboardText: String) {
         if (config.scratches.isEmpty()) {
             log.failedToOpenDefaultScratch()
+            return
+        }
+        val scratch = defaultScratch()
+        if (fileSystem.scratchFileExists(scratch.fileName)) {
+            ide.addTextTo(scratch, clipboardText, config.clipboardAppendType)
         } else {
-            val scratch = defaultScratch()
-            if (fileSystem.scratchFileExists(scratch.fileName)) {
-                ide.addTextTo(scratch, clipboardText, config.clipboardAppendType)
-            } else {
-                log.failedToOpenDefaultScratch()
-            }
+            log.failedToOpenDefaultScratch()
         }
     }
 
@@ -191,7 +191,7 @@ class MrScratchManager(
     }
 
 
-    private fun syncScratchesWithFileSystem() {
+    fun syncScratchesWithFileSystem() {
         val fileNames = fileSystem.listScratchFiles()
 
         val oldScratches = config.scratches.filter { fileNames.contains(it.fileName) }

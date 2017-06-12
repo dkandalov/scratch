@@ -16,6 +16,8 @@ package scratch.ide
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
@@ -121,24 +123,15 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         val document = FileDocumentManager.getInstance().getDocument(virtualFile) ?: return
         if (hasFocusInEditor(document)) return
 
-        ApplicationManager.getApplication().runWriteAction {
-            val text = document.text
-            val newText: String
-            if (appendType === APPEND) {
-                if (text.endsWith("\n")) {
-                    newText = text + clipboardText
-                } else {
-                    newText = text + "\n" + clipboardText
-                }
-            } else if (appendType === PREPEND) {
-                newText = clipboardText + "\n" + text
-            } else {
-                throw IllegalStateException()
+        when (appendType) {
+            APPEND -> {
+                val text = document.charsSequence
+                if (text.last() != '\n') document.insertString(text.length, "\n")
+                document.insertString(text.length, clipboardText)
             }
-
-            document.setText(newText)
-            FileDocumentManager.getInstance().saveDocument(document)
+            PREPEND -> document.insertString(0, clipboardText + "\n")
         }
+        FileDocumentManager.getInstance().saveDocument(document)
     }
 
     private fun hasFocusInEditor(document: Document): Boolean {
@@ -175,10 +168,9 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
 
 
     /**
-     * Note that it's possible to turn on clipboard listener and forget about it
-     * and will keep appending clipboard content to default scratch forever.
-     *
-     * Assume that notification on plugin start is good enough to remind user about clipboard listener.
+     * Note that it's possible to turn on clipboard listener and forget about it.
+     * So it will keep appending clipboard content to default scratch forever.
+     * To avoid the problem remind user on IDE startup that clipboard listener is on.
      */
     class ClipboardListener(private val mrScratchManager: MrScratchManager) {
         fun startListening() {
@@ -189,9 +181,17 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
                         val clipboard = newTransferable?.getTransferData(stringFlavor)?.toString()
 
                         if (clipboard != null && oldClipboard != clipboard) {
-                            mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
+                            // Invoke action later so that modification of document is not tracked by IDE as undoable "Copy" action
+                            // See https://github.com/dkandalov/scratch/issues/30
+                            val application = ApplicationManager.getApplication()
+                            application.invokeLater {
+                                application.runWriteAction {
+                                    CommandProcessor.getInstance().executeCommand(null, {
+                                        mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
+                                    }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
+                                }
+                            }
                         }
-
                     } catch (e: UnsupportedFlavorException) {
                         log.info(e)
                     } catch (e: IOException) {
