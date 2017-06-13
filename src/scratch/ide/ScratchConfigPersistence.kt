@@ -26,15 +26,17 @@ import scratch.ScratchConfig.AppendType
 import scratch.ScratchConfig.DefaultScratchMeaning
 
 
-@State(name = "ScratchConfig", storages = arrayOf(Storage(id = "main", file = "\$APP_CONFIG$/scratch_config.xml")))
-class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistence> {
-    @OptionTag(nameAttribute = "isListenToClipboard") var listenToClipboard = false
-    var fullScratchNamesOrdered: List<String> = emptyList()
-    var lastOpenedScratch: String? = null
-    var clipboardAppendType: AppendType? = null
-    var newScratchAppendType: AppendType? = null
-    var defaultScratchMeaning: DefaultScratchMeaning? = null
+@State(name = "ScratchConfig", storages = arrayOf(Storage(file = "scratch_config.xml")))
+data class ScratchConfigPersistence(
+    @OptionTag(valueAttribute = "isListenToClipboard")
+    var listenToClipboard: Boolean = false,
+    var fullScratchNamesOrdered: ArrayList<String> = ArrayList(), // This MUST BE an ArrayList for IJ serialization to work.
+    var lastOpenedScratch: String? = null,
+    var clipboardAppendType: AppendType? = null,
+    var newScratchAppendType: AppendType? = null,
+    var defaultScratchMeaning: DefaultScratchMeaning? = null,
     var scratchesFolderPath: String? = null
+): PersistentStateComponent<ScratchConfigPersistence> {
 
     fun asConfig(): ScratchConfig {
         return ScratchConfig.defaultConfig
@@ -48,7 +50,7 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
 
     fun updateFrom(config: ScratchConfig) {
         listenToClipboard = config.listenToClipboard
-        fullScratchNamesOrdered = config.scratches.map { it.fullNameWithMnemonics }
+        fullScratchNamesOrdered = ArrayList(config.scratches.map { it.fullNameWithMnemonics })
         lastOpenedScratch = config.lastOpenedScratch?.fullNameWithMnemonics
         defaultScratchMeaning = config.defaultScratchMeaning
     }
@@ -59,6 +61,6 @@ class ScratchConfigPersistence: PersistentStateComponent<ScratchConfigPersistenc
 
     companion object {
         val instance: ScratchConfigPersistence
-            get() = ServiceManager.getService<ScratchConfigPersistence>(ScratchConfigPersistence::class.java)
+            get() = ServiceManager.getService(ScratchConfigPersistence::class.java)
     }
 }
