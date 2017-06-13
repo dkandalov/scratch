@@ -15,20 +15,24 @@
 package scratch.filesystem
 
 import com.intellij.CommonBundle
+import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.Computable
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.Answer
 import java.io.File
-import java.io.File.*
+import java.io.File.separator
 import java.io.IOException
 
 
-class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManager = VirtualFileManager.getInstance()) {
+class FileSystem(
+    scratchesFolderPath: String?,
+    private val application: Application = ApplicationManager.getApplication(),
+    private val localFileSystem: LocalFileSystem = LocalFileSystem.getInstance()
+) {
 
     val scratchesPath: String =
         if (scratchesFolderPath == null || scratchesFolderPath.isEmpty()) {
@@ -44,7 +48,7 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
     fun isValidScratchName(fileName: String): Answer {
         val hasPathChars = fileName.contains("/") || fileName.contains("\\")
         val hasWildcards = fileName.contains("*") || fileName.contains("?")
-        return if (hasPathChars || hasWildcards || isHidden(fileName) || !LocalFileSystem.getInstance().isValidName(fileName)) {
+        return if (hasPathChars || hasWildcards || isHidden(fileName) || !localFileSystem.isValidName(fileName)) {
             Answer.no("Not a valid file name")
         } else if (File(scratchesPath + fileName).exists()) {
             Answer.no("There is existing file with this name")
@@ -55,15 +59,21 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
 
     fun renameFile(oldFileName: String, newFileName: String): Boolean {
         val virtualFile = virtualFileBy(oldFileName) ?: return false
-        return ApplicationManager.getApplication().runWriteAction(Computable {
-            doRenameFile(virtualFile, newFileName)
+        return application.runWriteAction(Computable {
+            try {
+                virtualFile.rename(this, newFileName)
+                true
+            } catch (e: IOException) {
+                log.warn(e)
+                false
+            }
         })
     }
 
-    fun createEmptyFile(fileName: String): Boolean = createFile(fileName, "")
+    fun createEmptyFile(fileName: String): Boolean = createFile(fileName, text = "")
 
     fun createFile(fileName: String, text: String): Boolean =
-        ApplicationManager.getApplication().runWriteAction(Computable<Boolean> {
+        application.runWriteAction(Computable {
             try {
                 doCreateFile(fileName, text)
             } catch (e: IOException) {
@@ -73,7 +83,7 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
         })
 
     fun removeFile(fileName: String): Boolean =
-        ApplicationManager.getApplication().runWriteAction(Computable<Boolean> {
+        application.runWriteAction(Computable {
             try {
                 doRemoveFile(fileName)
             } catch (e: IOException) {
@@ -97,18 +107,8 @@ class FileSystem(scratchesFolderPath: String?, val fileManager: VirtualFileManag
         return true
     }
 
-    private fun doRenameFile(virtualFile: VirtualFile, newFileName: String): Boolean {
-        return try {
-            virtualFile.rename(this, newFileName)
-            true
-        } catch (e: IOException) {
-            log.warn(e)
-            false
-        }
-    }
-
     fun virtualFileBy(fileName: String): VirtualFile? =
-        fileManager.refreshAndFindFileByUrl("file://" + scratchesPath + fileName)
+        localFileSystem.refreshAndFindFileByPath(scratchesPath + fileName)
 
     fun isScratch(virtualFile: VirtualFile) = scratchFiles.contains(virtualFile)
 

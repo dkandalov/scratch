@@ -14,6 +14,7 @@
 
 package scratch.ide
 
+import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.command.CommandProcessor
@@ -42,6 +43,7 @@ import scratch.filesystem.FileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
 import scratch.ide.Util.takeProjectFrom
 import scratch.ide.popup.ScratchListPopup
+import scratch.ide.popup.ScratchListPopup.ScratchNameValidator
 import scratch.ide.popup.ScratchListPopupStep
 import java.awt.datatransfer.DataFlavor.stringFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
@@ -50,7 +52,12 @@ import java.util.*
 import javax.swing.Icon
 
 
-class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
+class Ide(
+    private val fileSystem: FileSystem,
+    private val log: ScratchLog,
+    private val application: Application = ApplicationManager.getApplication(),
+    private val documentManager: FileDocumentManager = FileDocumentManager.getInstance()
+) {
     private val noIcon: Icon? = null
     private var scratchListSelectedIndex: Int = 0
 
@@ -62,7 +69,6 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         val popupStep = ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder)!!)
         popupStep.defaultOptionIndex = scratchListSelectedIndex
 
-        val application = ApplicationManager.getApplication()
         val popup = object: ScratchListPopup(popupStep) {
             override fun onNewScratch() {
                 application.invokeAndWait(
@@ -120,7 +126,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
             log.failedToFindVirtualFileFor(scratch)
             return
         }
-        val document = FileDocumentManager.getInstance().getDocument(virtualFile) ?: return
+        val document = documentManager.getDocument(virtualFile) ?: return
         if (hasFocusInEditor(document)) return
 
         when (appendType) {
@@ -131,7 +137,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
             }
             PREPEND -> document.insertString(0, clipboardText + "\n")
         }
-        FileDocumentManager.getInstance().saveDocument(document)
+        documentManager.saveDocument(document)
     }
 
     private fun hasFocusInEditor(document: Document): Boolean {
@@ -147,7 +153,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     fun showRenameDialogFor(scratch: Scratch) {
         val initialValue = scratch.fullNameWithMnemonics
         val message = "Scratch name (you can use '&' for mnemonics):"
-        val newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, ScratchListPopup.ScratchNameValidator(scratch))
+        val newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, ScratchNameValidator(scratch))
 
         if (newScratchName != null) {
             mrScratchManager().userWantsToRename(scratch, newScratchName)
@@ -157,7 +163,7 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
     fun showDeleteDialogFor(scratch: Scratch, userDataHolder: UserDataHolder) {
         // Message dialog is displayed inside invokeLater() because otherwise on OSX
         // "delete" event will be propagated to editor and will remove a character.
-        ApplicationManager.getApplication().invokeLater {
+        application.invokeLater {
             val message = "Do you want to delete '" + scratch.fileName + "'?\n(This operation cannot be undone)"
             val userAnswer = Messages.showOkCancelDialog(takeProjectFrom(userDataHolder), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
             if (userAnswer == Messages.OK) {
@@ -172,9 +178,14 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
      * So it will keep appending clipboard content to default scratch forever.
      * To avoid the problem remind user on IDE startup that clipboard listener is on.
      */
-    class ClipboardListener(private val mrScratchManager: MrScratchManager) {
+    class ClipboardListener(
+        private val mrScratchManager: MrScratchManager,
+        private val copyPasteManager: CopyPasteManager = CopyPasteManager.getInstance(),
+        private val application: Application = ApplicationManager.getApplication(),
+        private val commandProcessor: CommandProcessor = CommandProcessor.getInstance()
+    ) {
         fun startListening() {
-            CopyPasteManager.getInstance().addContentChangedListener { oldTransferable, newTransferable ->
+            copyPasteManager.addContentChangedListener { oldTransferable, newTransferable ->
                 if (mrScratchManager.shouldListenToClipboard()) {
                     try {
                         val oldClipboard = oldTransferable?.getTransferData(stringFlavor)?.toString()
@@ -183,10 +194,9 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
                         if (clipboard != null && oldClipboard != clipboard) {
                             // Invoke action later so that modification of document is not tracked by IDE as undoable "Copy" action
                             // See https://github.com/dkandalov/scratch/issues/30
-                            val application = ApplicationManager.getApplication()
                             application.invokeLater {
                                 application.runWriteAction {
-                                    CommandProcessor.getInstance().executeCommand(null, {
+                                    commandProcessor.executeCommand(null, {
                                         mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
                                     }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
                                 }
@@ -206,19 +216,21 @@ class Ide(private val fileSystem: FileSystem, private val log: ScratchLog) {
         }
     }
 
-    class OpenEditorTracker(private val mrScratchManager: MrScratchManager, private val fileSystem: FileSystem) {
+    class OpenEditorTracker(
+        private val mrScratchManager: MrScratchManager,
+        private val fileSystem: FileSystem,
+        private val application: Application = ApplicationManager.getApplication()
+    ) {
         // use WeakHashMap "just in case" to avoid keeping project references
         private val connectionsByProject = WeakHashMap<Project, MessageBusConnection>()
 
         fun startTracking(): OpenEditorTracker {
-            val messageBus = ApplicationManager.getApplication().messageBus
-            messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+            application.messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
                 override fun projectOpened(project: Project) {
                     val connection = project.messageBus.connect()
-                    connection.subscribe<FileEditorManagerListener>(FILE_EDITOR_MANAGER, object: FileEditorManagerListener {
+                    connection.subscribe(FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
                         override fun selectionChanged(event: FileEditorManagerEvent) {
                             val virtualFile = event.newFile ?: return
-
                             if (fileSystem.isScratch(virtualFile)) {
                                 mrScratchManager.userOpenedScratch(virtualFile.name)
                             }
