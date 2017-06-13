@@ -63,8 +63,8 @@ class ScratchComponent: ApplicationComponent {
         mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
         mrScratchManager.syncScratchesWithFileSystem()
 
-        Ide.ClipboardListener(mrScratchManager).startListening()
-        Ide.OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
+        ClipboardListener(mrScratchManager).startListening()
+        OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
 
         if (config.listenToClipboard) log.listeningToClipboard(true)
     }

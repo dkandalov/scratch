@@ -17,24 +17,16 @@ package scratch.ide
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.command.UndoConfirmationPolicy
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.fileEditor.*
-import com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MANAGER
-import com.intellij.openapi.ide.CopyPasteManager
-import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.fileEditor.FileDocumentManager
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.ui.InputValidatorEx
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.wm.IdeFocusManager
-import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.ui.UIUtil
-import scratch.MrScratchManager
 import scratch.Scratch
 import scratch.ScratchConfig
 import scratch.ScratchConfig.AppendType.APPEND
@@ -45,10 +37,6 @@ import scratch.ide.Util.takeProjectFrom
 import scratch.ide.popup.ScratchListPopup
 import scratch.ide.popup.ScratchListPopup.ScratchNameValidator
 import scratch.ide.popup.ScratchListPopupStep
-import java.awt.datatransfer.DataFlavor.stringFlavor
-import java.awt.datatransfer.UnsupportedFlavorException
-import java.io.IOException
-import java.util.*
 import javax.swing.Icon
 
 
@@ -69,7 +57,7 @@ class Ide(
         val popupStep = ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder))
         popupStep.defaultOptionIndex = scratchListSelectedIndex
 
-        val popup = object: ScratchListPopup(popupStep) {
+        val popup = object : ScratchListPopup(popupStep) {
             override fun onNewScratch() {
                 application.invokeAndWait(
                     { mrScratchManager().userWantsToEnterNewScratchName(userDataHolder) },
@@ -169,81 +157,6 @@ class Ide(
             if (userAnswer == Messages.OK) {
                 mrScratchManager().userWantsToDeleteScratch(scratch)
             }
-        }
-    }
-
-
-    /**
-     * Note that it's possible to turn on clipboard listener and forget about it.
-     * So it will keep appending clipboard content to default scratch forever.
-     * To avoid the problem remind user on IDE startup that clipboard listener is on.
-     */
-    class ClipboardListener(
-        private val mrScratchManager: MrScratchManager,
-        private val copyPasteManager: CopyPasteManager = CopyPasteManager.getInstance(),
-        private val application: Application = ApplicationManager.getApplication(),
-        private val commandProcessor: CommandProcessor = CommandProcessor.getInstance()
-    ) {
-        fun startListening() {
-            copyPasteManager.addContentChangedListener { oldTransferable, newTransferable ->
-                if (mrScratchManager.shouldListenToClipboard()) {
-                    try {
-                        val oldClipboard = oldTransferable?.getTransferData(stringFlavor)?.toString()
-                        val clipboard = newTransferable?.getTransferData(stringFlavor)?.toString()
-
-                        if (clipboard != null && oldClipboard != clipboard) {
-                            // Invoke action later so that modification of document is not tracked by IDE as undoable "Copy" action
-                            // See https://github.com/dkandalov/scratch/issues/30
-                            application.invokeLater {
-                                commandProcessor.executeCommand(null, {
-                                    application.runWriteAction {
-                                        mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
-                                    }
-                                }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
-                            }
-                        }
-                    } catch (e: UnsupportedFlavorException) {
-                        log.info(e)
-                    } catch (e: IOException) {
-                        log.info(e)
-                    }
-                }
-            }
-        }
-
-        companion object {
-            private val log = Logger.getInstance(ClipboardListener::class.java)
-        }
-    }
-
-    class OpenEditorTracker(
-        private val mrScratchManager: MrScratchManager,
-        private val fileSystem: FileSystem,
-        private val application: Application = ApplicationManager.getApplication()
-    ) {
-        // use WeakHashMap "just in case" to avoid keeping project references
-        private val connectionsByProject = WeakHashMap<Project, MessageBusConnection>()
-
-        fun startTracking(): OpenEditorTracker {
-            application.messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
-                override fun projectOpened(project: Project) {
-                    val connection = project.messageBus.connect()
-                    connection.subscribe(FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
-                        override fun selectionChanged(event: FileEditorManagerEvent) {
-                            val virtualFile = event.newFile ?: return
-                            if (fileSystem.isScratch(virtualFile)) {
-                                mrScratchManager.userOpenedScratch(virtualFile.name)
-                            }
-                        }
-                    })
-                    connectionsByProject.put(project, connection)
-                }
-
-                override fun projectClosed(project: Project) {
-                    connectionsByProject.remove(project)?.disconnect()
-                }
-            })
-            return this
         }
     }
 }
