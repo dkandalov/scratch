@@ -23,9 +23,9 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.MrScratchManager
-import scratch.filesystem.FileSystem
-import scratch.filesystem.MoveResult
-import scratch.filesystem.moveScratches
+import scratch.ide.FileSystem
+import scratch.ide.MoveResult
+import scratch.ide.moveScratches
 import java.io.File
 
 class ScratchComponent: ApplicationComponent {

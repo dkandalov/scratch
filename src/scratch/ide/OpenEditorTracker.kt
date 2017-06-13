@@ -24,7 +24,7 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.Disposer
 import scratch.MrScratchManager
-import scratch.filesystem.FileSystem
+import scratch.ide.FileSystem
 
 class OpenEditorTracker(
     private val mrScratchManager: MrScratchManager,

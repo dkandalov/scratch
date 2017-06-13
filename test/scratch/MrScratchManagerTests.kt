@@ -25,7 +25,7 @@ import scratch.Answer.Companion.yes
 import scratch.ScratchConfig.AppendType
 import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
-import scratch.filesystem.FileSystem
+import scratch.ide.FileSystem
 import scratch.ide.Ide
 import scratch.ide.ScratchLog
 import java.util.*

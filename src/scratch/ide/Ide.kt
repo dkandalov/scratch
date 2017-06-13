@@ -31,7 +31,7 @@ import scratch.Scratch
 import scratch.ScratchConfig
 import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
-import scratch.filesystem.FileSystem
+import scratch.ide.FileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
 import scratch.ide.Util.takeProjectFrom
 import scratch.ide.popup.ScratchListPopup

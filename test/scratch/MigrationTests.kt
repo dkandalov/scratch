@@ -15,9 +15,9 @@
 package scratch
 
 import org.junit.Test
-import scratch.filesystem.MoveResult.Failure
-import scratch.filesystem.MoveResult.Success
-import scratch.filesystem.moveScratches
+import scratch.ide.MoveResult.Failure
+import scratch.ide.MoveResult.Success
+import scratch.ide.moveScratches
 import java.io.File
 import java.nio.file.Files
 

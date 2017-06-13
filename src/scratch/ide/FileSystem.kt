@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package scratch.filesystem
+package scratch.ide
 
 import com.intellij.CommonBundle
 import com.intellij.openapi.application.Application
