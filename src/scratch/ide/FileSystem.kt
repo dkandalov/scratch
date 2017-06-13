@@ -72,7 +72,17 @@ class FileSystem(
 
     fun createEmptyFile(fileName: String): Boolean = createFile(fileName, text = "")
 
-    fun createFile(fileName: String, text: String): Boolean =
+    fun deleteFile(fileName: String): Boolean =
+        application.runWriteAction(Computable {
+            try {
+                doDeleteFile(fileName)
+            } catch (e: IOException) {
+                log.warn(e)
+                false
+            }
+        })
+
+    private fun createFile(fileName: String, text: String): Boolean =
         application.runWriteAction(Computable {
             try {
                 doCreateFile(fileName, text)
@@ -82,17 +92,7 @@ class FileSystem(
             }
         })
 
-    fun removeFile(fileName: String): Boolean =
-        application.runWriteAction(Computable {
-            try {
-                doRemoveFile(fileName)
-            } catch (e: IOException) {
-                log.warn(e)
-                false
-            }
-        })
-
-    private fun doRemoveFile(fileName: String): Boolean {
+    private fun doDeleteFile(fileName: String): Boolean {
         val virtualFile = virtualFileBy(fileName) ?: return false
         virtualFile.delete(this)
         return true

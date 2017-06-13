@@ -178,8 +178,8 @@ class MrScratchManager(
     }
 
     fun userWantsToDeleteScratch(scratch: Scratch) {
-        val wasRemoved = fileSystem.removeFile(scratch.fileName)
-        if (wasRemoved) {
+        val wasDeleted = fileSystem.deleteFile(scratch.fileName)
+        if (wasDeleted) {
             updateConfig(config.without(scratch))
         } else {
             log.failedToDelete(scratch)

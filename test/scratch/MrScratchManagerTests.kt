@@ -441,26 +441,26 @@ class MrScratchManagerTests {
     }
 
 
-    @Test fun `delete scratch when file can be removed`() {
+    @Test fun `delete scratch`() {
         val scratch = Scratch("&scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
-        whenInvoked(fileSystem.removeFile(anyString())).thenReturn(true)
+        whenInvoked(fileSystem.deleteFile(anyString())).thenReturn(true)
 
         mrScratchManager.userWantsToDeleteScratch(scratch)
 
-        verify(fileSystem).removeFile("scratch.txt")
+        verify(fileSystem).deleteFile("scratch.txt")
         verify(ide).persistConfig(defaultConfig)
         verifyNoMoreInteractions(ide, fileSystem)
     }
 
-    @Test fun `delete scratch when file could not be removed`() {
+    @Test fun `delete scratch when file could not be deleted`() {
         val scratch = Scratch("&scratch.txt")
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(scratch)))
-        whenInvoked(fileSystem.removeFile(anyString())).thenReturn(false)
+        whenInvoked(fileSystem.deleteFile(anyString())).thenReturn(false)
 
         mrScratchManager.userWantsToDeleteScratch(scratch)
 
-        verify(fileSystem).removeFile("scratch.txt")
+        verify(fileSystem).deleteFile("scratch.txt")
         verify(log).failedToDelete(scratch)
         verifyNoMoreInteractions(ide, fileSystem)
     }
