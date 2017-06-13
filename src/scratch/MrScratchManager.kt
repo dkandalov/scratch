@@ -60,18 +60,14 @@ class MrScratchManager(
     fun defaultScratchMeaning() = config.defaultScratchMeaning
 
     fun userOpenedScratch(scratchFileName: String) {
-        val scratch = findByFileName(scratchFileName)
-        if (scratch != null) {
-            updateConfig(config.withLastOpenedScratch(scratch))
-        }
+        val scratch = findByFileName(scratchFileName) ?: return
+        updateConfig(config.withLastOpenedScratch(scratch))
     }
 
 
     fun userWantsToEditScratchName(scratchFileName: String) {
-        val scratch = findByFileName(scratchFileName)
-        if (scratch != null) {
-            userWantsToEditScratchName(scratch)
-        }
+        val scratch = findByFileName(scratchFileName) ?: return
+        userWantsToEditScratchName(scratch)
     }
 
     fun userWantsToEditScratchName(scratch: Scratch) {
@@ -173,8 +169,8 @@ class MrScratchManager(
 
 
     fun userAttemptedToDeleteScratch(scratchFileName: String, userDataHolder: UserDataHolder) {
-        val scratch = findByFileName(scratchFileName)
-        if (scratch != null) userAttemptedToDeleteScratch(scratch, userDataHolder)
+        val scratch = findByFileName(scratchFileName) ?: return
+        userAttemptedToDeleteScratch(scratch, userDataHolder)
     }
 
     fun userAttemptedToDeleteScratch(scratch: Scratch, userDataHolder: UserDataHolder) {

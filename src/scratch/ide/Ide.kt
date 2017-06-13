@@ -66,7 +66,7 @@ class Ide(
     }
 
     fun displayScratchesListPopup(scratches: List<Scratch>, userDataHolder: UserDataHolder) {
-        val popupStep = ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder)!!)
+        val popupStep = ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder))
         popupStep.defaultOptionIndex = scratchListSelectedIndex
 
         val popup = object: ScratchListPopup(popupStep) {
@@ -95,7 +95,7 @@ class Ide(
                 super.dispose()
             }
         }
-        popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder)!!)
+        popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder))
     }
 
     fun openScratch(scratch: Scratch, userDataHolder: UserDataHolder) {
@@ -103,7 +103,7 @@ class Ide(
 
         val file = fileSystem.virtualFileBy(scratch.fileName)
         if (file != null) {
-            OpenFileDescriptor(project!!, file).navigate(true)
+            OpenFileDescriptor(project, file).navigate(true)
         } else {
             log.failedToFindVirtualFileFor(scratch)
         }
@@ -195,11 +195,11 @@ class Ide(
                             // Invoke action later so that modification of document is not tracked by IDE as undoable "Copy" action
                             // See https://github.com/dkandalov/scratch/issues/30
                             application.invokeLater {
-                                application.runWriteAction {
-                                    commandProcessor.executeCommand(null, {
+                                commandProcessor.executeCommand(null, {
+                                    application.runWriteAction {
                                         mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
-                                    }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
-                                }
+                                    }
+                                }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
                             }
                         }
                     } catch (e: UnsupportedFlavorException) {

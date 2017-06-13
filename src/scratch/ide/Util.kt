@@ -26,7 +26,7 @@ object Util {
         putUserData(projectKey, project)
     }
 
-    fun takeProjectFrom(userDataHolder: UserDataHolder): Project? {
-        return userDataHolder.getUserData(projectKey)
+    fun takeProjectFrom(userDataHolder: UserDataHolder): Project {
+        return userDataHolder.getUserData(projectKey)!!
     }
 }

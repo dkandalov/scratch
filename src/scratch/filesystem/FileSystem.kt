@@ -30,8 +30,8 @@ import java.io.IOException
 
 class FileSystem(
     scratchesFolderPath: String?,
-    private val application: Application = ApplicationManager.getApplication(),
-    private val localFileSystem: LocalFileSystem = LocalFileSystem.getInstance()
+    private val localFileSystem: LocalFileSystem = LocalFileSystem.getInstance(),
+    private val application: Application = ApplicationManager.getApplication()
 ) {
 
     val scratchesPath: String =
