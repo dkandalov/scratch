@@ -26,12 +26,12 @@ import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
 import scratch.ide.ScratchComponent.Companion.fileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.holdingOnTo
+import scratch.ide.Util.wrapAsDataHolder
 
 class DeleteScratch: DumbAwareAction() {
     override fun actionPerformed(event: AnActionEvent) {
         val scratchFile = event.currentScratchFile() ?: return
-        mrScratchManager().userAttemptedToDeleteScratch(scratchFile.name, holdingOnTo(event.project))
+        mrScratchManager().userAttemptedToDeleteScratch(scratchFile.name, event.project.wrapAsDataHolder())
     }
 
     override fun update(event: AnActionEvent?) {
@@ -42,7 +42,7 @@ class DeleteScratch: DumbAwareAction() {
 
 class NewScratch: DumbAwareAction() {
     override fun actionPerformed(event: AnActionEvent) {
-        mrScratchManager().userWantsToEnterNewScratchName(holdingOnTo(event.project))
+        mrScratchManager().userWantsToEnterNewScratchName(event.project.wrapAsDataHolder())
     }
 
     override fun update(event: AnActionEvent?) {
@@ -53,7 +53,7 @@ class NewScratch: DumbAwareAction() {
 
 class OpenDefaultScratch: DumbAwareAction() {
     override fun actionPerformed(event: AnActionEvent) {
-        mrScratchManager().userWantsToOpenDefaultScratch(holdingOnTo(event.project))
+        mrScratchManager().userWantsToOpenDefaultScratch(event.project.wrapAsDataHolder())
     }
 
     override fun update(event: AnActionEvent?) {
@@ -64,7 +64,7 @@ class OpenDefaultScratch: DumbAwareAction() {
 
 class OpenScratchList: DumbAwareAction() {
     override fun actionPerformed(event: AnActionEvent) {
-        mrScratchManager().userWantsToSeeScratchesList(holdingOnTo(event.project))
+        mrScratchManager().userWantsToSeeScratchesList(event.project.wrapAsDataHolder())
     }
 
     override fun update(event: AnActionEvent?) {

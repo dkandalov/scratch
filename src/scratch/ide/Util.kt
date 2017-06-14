@@ -24,13 +24,11 @@ import com.intellij.openapi.util.UserDataHolderBase
 object Util {
     private val projectKey = Key.create<Project>("Project")
 
-    fun holdingOnTo(project: Project?): UserDataHolder = UserDataHolderBase().apply {
-        putUserData(projectKey, project)
+    fun Project?.wrapAsDataHolder(): UserDataHolder = UserDataHolderBase().apply {
+        putUserData(projectKey, this@wrapAsDataHolder)
     }
 
-    fun takeProjectFrom(userDataHolder: UserDataHolder): Project {
-        return userDataHolder.getUserData(projectKey)!!
-    }
+    fun UserDataHolder.extractProject(): Project = getUserData(projectKey)!!
 
     fun CommandProcessor.execute(f: () -> Unit) {
         executeCommand(null, f, null, null, DO_NOT_REQUEST_CONFIRMATION)

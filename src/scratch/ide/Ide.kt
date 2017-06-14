@@ -34,7 +34,7 @@ import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
 import scratch.ide.Util.execute
-import scratch.ide.Util.takeProjectFrom
+import scratch.ide.Util.extractProject
 import scratch.ide.popup.ScratchListPopup
 import scratch.ide.popup.ScratchListPopup.ScratchNameValidator
 import scratch.ide.popup.ScratchListPopupStep
@@ -55,7 +55,7 @@ class Ide(
     }
 
     fun displayScratchesListPopup(scratches: List<Scratch>, userDataHolder: UserDataHolder) {
-        val popupStep = ScratchListPopupStep(scratches, takeProjectFrom(userDataHolder))
+        val popupStep = ScratchListPopupStep(scratches, userDataHolder.extractProject())
         popupStep.defaultOptionIndex = scratchListSelectedIndex
 
         val popup = object : ScratchListPopup(popupStep) {
@@ -84,15 +84,13 @@ class Ide(
                 super.dispose()
             }
         }
-        popup.showCenteredInCurrentWindow(takeProjectFrom(userDataHolder))
+        popup.showCenteredInCurrentWindow(userDataHolder.extractProject())
     }
 
     fun openScratch(scratch: Scratch, userDataHolder: UserDataHolder) {
-        val project = takeProjectFrom(userDataHolder)
-
         val file = fileSystem.virtualFileBy(scratch.fileName)
         if (file != null) {
-            OpenFileDescriptor(project, file).navigate(true)
+            OpenFileDescriptor(userDataHolder.extractProject(), file).navigate(true)
         } else {
             log.failedToFindVirtualFileFor(scratch)
         }
@@ -158,7 +156,7 @@ class Ide(
         // "delete" event will be propagated to editor and will remove a character.
         application.invokeLater {
             val message = "Do you want to delete '" + scratch.fileName + "'?\n(This operation cannot be undone)"
-            val userAnswer = Messages.showOkCancelDialog(takeProjectFrom(userDataHolder), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
+            val userAnswer = Messages.showOkCancelDialog(userDataHolder.extractProject(), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
             if (userAnswer == Messages.OK) {
                 commandProcessor.execute {
                     mrScratchManager().userWantsToDeleteScratch(scratch)
