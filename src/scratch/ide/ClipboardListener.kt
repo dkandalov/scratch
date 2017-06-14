@@ -17,10 +17,10 @@ package scratch.ide
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
-import com.intellij.openapi.command.UndoConfirmationPolicy
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ide.CopyPasteManager
 import scratch.MrScratchManager
+import scratch.ide.Util.execute
 import java.awt.datatransfer.DataFlavor.stringFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.IOException
@@ -33,8 +33,8 @@ import java.io.IOException
 class ClipboardListener(
     private val mrScratchManager: MrScratchManager,
     private val copyPasteManager: CopyPasteManager = CopyPasteManager.getInstance(),
-    private val application: Application = ApplicationManager.getApplication(),
-    private val commandProcessor: CommandProcessor = CommandProcessor.getInstance()
+    private val commandProcessor: CommandProcessor = CommandProcessor.getInstance(),
+    private val application: Application = ApplicationManager.getApplication()
 ) {
     fun startListening() {
         copyPasteManager.addContentChangedListener { oldTransferable, newTransferable ->
@@ -47,11 +47,11 @@ class ClipboardListener(
                         // Invoke action later so that modification of document is not tracked by IDE as undoable "Copy" action
                         // See https://github.com/dkandalov/scratch/issues/30
                         application.invokeLater {
-                            commandProcessor.executeCommand(null, {
+                            commandProcessor.execute {
                                 application.runWriteAction {
                                     mrScratchManager.clipboardListenerWantsToAddTextToScratch(clipboard)
                                 }
-                            }, null, null, UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION)
+                            }
                         }
                     }
                 } catch (e: UnsupportedFlavorException) {

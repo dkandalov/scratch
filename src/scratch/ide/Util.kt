@@ -14,6 +14,8 @@
 
 package scratch.ide
 
+import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.command.UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
@@ -28,5 +30,9 @@ object Util {
 
     fun takeProjectFrom(userDataHolder: UserDataHolder): Project {
         return userDataHolder.getUserData(projectKey)!!
+    }
+
+    fun CommandProcessor.execute(f: () -> Unit) {
+        executeCommand(null, f, null, null, DO_NOT_REQUEST_CONFIRMATION)
     }
 }

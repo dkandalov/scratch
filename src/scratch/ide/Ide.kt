@@ -17,6 +17,7 @@ package scratch.ide
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -31,20 +32,20 @@ import scratch.Scratch
 import scratch.ScratchConfig
 import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
-import scratch.ide.FileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
+import scratch.ide.Util.execute
 import scratch.ide.Util.takeProjectFrom
 import scratch.ide.popup.ScratchListPopup
 import scratch.ide.popup.ScratchListPopup.ScratchNameValidator
 import scratch.ide.popup.ScratchListPopupStep
 import javax.swing.Icon
 
-
 class Ide(
     private val fileSystem: FileSystem,
     private val log: ScratchLog,
-    private val application: Application = ApplicationManager.getApplication(),
-    private val documentManager: FileDocumentManager = FileDocumentManager.getInstance()
+    private val documentManager: FileDocumentManager = FileDocumentManager.getInstance(),
+    private val commandProcessor: CommandProcessor = CommandProcessor.getInstance(),
+    private val application: Application = ApplicationManager.getApplication()
 ) {
     private val noIcon: Icon? = null
     private var scratchListSelectedIndex: Int = 0
@@ -105,7 +106,9 @@ class Ide(
             override fun canClose(inputString: String) = true
         }) ?: return
 
-        mrScratchManager().userWantsToAddNewScratch(scratchName, userDataHolder)
+        commandProcessor.execute {
+            mrScratchManager().userWantsToAddNewScratch(scratchName, userDataHolder)
+        }
     }
 
     fun addTextTo(scratch: Scratch, clipboardText: String, appendType: ScratchConfig.AppendType) {
@@ -144,7 +147,9 @@ class Ide(
         val newScratchName = Messages.showInputDialog(message, "Scratch Rename", noIcon, initialValue, ScratchNameValidator(scratch))
 
         if (newScratchName != null) {
-            mrScratchManager().userWantsToRename(scratch, newScratchName)
+            commandProcessor.execute {
+                mrScratchManager().userWantsToRename(scratch, newScratchName)
+            }
         }
     }
 
@@ -155,7 +160,9 @@ class Ide(
             val message = "Do you want to delete '" + scratch.fileName + "'?\n(This operation cannot be undone)"
             val userAnswer = Messages.showOkCancelDialog(takeProjectFrom(userDataHolder), message, "Delete Scratch", "&Delete", "&Cancel", UIUtil.getQuestionIcon())
             if (userAnswer == Messages.OK) {
-                mrScratchManager().userWantsToDeleteScratch(scratch)
+                commandProcessor.execute {
+                    mrScratchManager().userWantsToDeleteScratch(scratch)
+                }
             }
         }
     }
