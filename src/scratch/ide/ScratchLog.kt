@@ -14,53 +14,44 @@
 
 package scratch.ide
 
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
 import com.intellij.notification.NotificationType.INFORMATION
 import com.intellij.notification.NotificationType.WARNING
-import com.intellij.notification.Notifications
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import scratch.Scratch
+import scratch.ide.Util.showNotification
 
 
 class ScratchLog {
 
     fun failedToRename(scratch: Scratch) {
-        notifyUser("Failed to rename scratch: ${scratch.fileName}", WARNING)
+        showNotification("Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
     fun migratedToIdeScratches() {
         log.info("Migrated plugin scratches to IDE")
-        notifyUser("Migrated scratches to IDE. Now you can execute scratches and see scratches list in Project View -> Scratches tab.", INFORMATION)
+        showNotification(
+            "Migrated scratches to IDE. Now you can execute scratches and see scratches list in " +
+            "\"Project View -> Scratches tab\".", INFORMATION)
     }
 
     fun failedToMigrateScratchesToIdeLocation(reason: String) =
-        notifyUser("Failed to migrated plugin scratches to IDE: $reason", WARNING)
+        showNotification("Failed to migrated plugin scratches to IDE: $reason", WARNING)
 
     fun listeningToClipboard(isListening: Boolean) =
-        if (isListening) notifyUser("Started listening to clipboard", INFORMATION)
-        else notifyUser("Stopped listening to clipboard", INFORMATION)
+        if (isListening) showNotification("Started listening to clipboard", INFORMATION)
+        else showNotification("Stopped listening to clipboard", INFORMATION)
 
-    fun failedToOpenDefaultScratch() = notifyUser("Failed to open default scratch", WARNING)
+    fun failedToOpenDefaultScratch() = showNotification("Failed to open default scratch", WARNING)
 
-    fun failedToOpen(scratch: Scratch) = notifyUser("Failed to open scratch: '${scratch.fileName}'", WARNING)
+    fun failedToOpen(scratch: Scratch) = showNotification("Failed to open scratch: '${scratch.fileName}'", WARNING)
 
-    fun failedToCreate(scratch: Scratch) = notifyUser("Failed to create scratch: '${scratch.fileName}'", WARNING)
+    fun failedToCreate(scratch: Scratch) = showNotification("Failed to create scratch: '${scratch.fileName}'", WARNING)
 
-    fun failedToDelete(scratch: Scratch) = notifyUser("Failed to delete scratch: '${scratch.fileName}'", WARNING)
+    fun failedToDelete(scratch: Scratch) = showNotification("Failed to delete scratch: '${scratch.fileName}'", WARNING)
 
     fun failedToFindVirtualFileFor(scratch: Scratch) = log.warn("Failed to find virtual file for '${scratch.fileName}'")
 
     companion object {
         private val log = Logger.getInstance(ScratchLog::class.java)
-        private val title = "Scratch Plugin"
-
-        private fun notifyUser(message: String, notificationType: NotificationType) {
-            val groupDisplayId = ScratchLog.title
-            ApplicationManager.getApplication()
-                .messageBus.syncPublisher(Notifications.TOPIC)
-                .notify(Notification(groupDisplayId, title, message, notificationType))
-        }
     }
 }

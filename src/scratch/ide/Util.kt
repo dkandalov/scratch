@@ -14,6 +14,11 @@
 
 package scratch.ide
 
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationListener
+import com.intellij.notification.NotificationType
+import com.intellij.notification.Notifications
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION
 import com.intellij.openapi.project.Project
@@ -32,5 +37,19 @@ object Util {
 
     fun CommandProcessor.execute(f: () -> Unit) {
         executeCommand(null, f, null, null, DO_NOT_REQUEST_CONFIRMATION)
+    }
+
+    fun showNotification(message: String, notificationType: NotificationType, listener: () -> Unit = {}) {
+        val title = "Scratch Plugin"
+        val groupDisplayId = title
+        val notificationListener = NotificationListener { notification, _ ->
+            listener.invoke()
+            notification.expire()
+        }
+        val notification = Notification(groupDisplayId, title, message, notificationType, notificationListener)
+
+        ApplicationManager.getApplication()
+            .messageBus.syncPublisher(Notifications.TOPIC)
+            .notify(notification)
     }
 }

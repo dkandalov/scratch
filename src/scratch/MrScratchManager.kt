@@ -113,7 +113,7 @@ class MrScratchManager(
         log.listeningToClipboard(value)
     }
 
-    fun clipboardListenerWantsToAddTextToScratch(clipboardText: String) {
+    fun clipboardListenerWantsToPasteTextToScratch(clipboardText: String) {
         if (config.scratches.isEmpty()) {
             log.failedToOpenDefaultScratch()
             return

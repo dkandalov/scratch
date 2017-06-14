@@ -16,57 +16,78 @@ package scratch.ide
 
 import com.intellij.ide.scratch.ScratchFileService
 import com.intellij.ide.scratch.ScratchRootType
+import com.intellij.notification.NotificationType.INFORMATION
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager.getApplication
 import com.intellij.openapi.components.ApplicationComponent
 import com.intellij.openapi.fileEditor.impl.NonProjectFileWritingAccessExtension
+import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Disposer.newDisposable
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.MrScratchManager
-import scratch.ide.FileSystem
-import scratch.ide.MoveResult
-import scratch.ide.moveScratches
+import scratch.ide.Util.showNotification
 import java.io.File
 
 class ScratchComponent: ApplicationComponent {
 
     private lateinit var mrScratchManager: MrScratchManager
     private lateinit var fileSystem: FileSystem
+    private lateinit var log: ScratchLog
+    private val configPersistence = ScratchConfigPersistence.instance
+    private lateinit var wiringDisposable: Disposable
 
     override fun initComponent() {
-        val log = ScratchLog()
-        val configPersistence = ScratchConfigPersistence.instance
+        wireComponents()
+        checkIfScratchesNeedMigration()
+    }
+
+    private fun wireComponents() {
+        wiringDisposable = newDisposable()
+        log = ScratchLog()
         val config = configPersistence.asConfig()
 
         fileSystem = FileSystem(configPersistence.scratchesFolderPath)
-
-        val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
-        FileUtil.ensureExists(File(ideScratchesPath))
-
-        val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
-        if (needsMigration) {
-            val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
-            when (moveResult) {
-                is MoveResult.Success -> {
-                    fileSystem = FileSystem(ideScratchesPath)
-                    configPersistence.scratchesFolderPath = ideScratchesPath
-                    VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
-                    log.migratedToIdeScratches()
-                }
-                is MoveResult.Failure -> {
-                    log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
-                }
-            }
-        }
 
         val ide = Ide(fileSystem, log)
         mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
         mrScratchManager.syncScratchesWithFileSystem()
 
-        ClipboardListener(mrScratchManager).startListening()
-        OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
+        OpenEditorTracker(mrScratchManager, fileSystem).startTracking(wiringDisposable)
+        ClipboardListener(mrScratchManager).startListening(wiringDisposable)
 
-        if (config.listenToClipboard) log.listeningToClipboard(true)
+        if (configPersistence.listenToClipboard) log.listeningToClipboard(true)
+    }
+
+    private fun checkIfScratchesNeedMigration() {
+        val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
+        FileUtil.ensureExists(File(ideScratchesPath))
+
+        val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
+        if (needsMigration) {
+            val message =
+                "<a href=''>Click here</a> to migrate scratches to folder with IDE built-in scratches. " +
+                "Both plugin and IDE scratches will be kept. In case of conflicting names, files will be prefixed with '_'."
+
+            showNotification(message, INFORMATION) {
+                val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
+                when (moveResult) {
+                    is MoveResult.Success -> {
+                        VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
+                        configPersistence.scratchesFolderPath = ideScratchesPath
+
+                        Disposer.dispose(wiringDisposable)
+                        wireComponents()
+
+                        log.migratedToIdeScratches()
+                    }
+                    is MoveResult.Failure -> {
+                        log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
+                    }
+                }
+            }
+        }
     }
 
     override fun getComponentName() = ScratchComponent::class.java.simpleName!!

@@ -14,6 +14,7 @@
 
 package scratch.ide
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent
@@ -24,28 +25,38 @@ import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import com.intellij.openapi.util.Disposer
 import scratch.MrScratchManager
-import scratch.ide.FileSystem
 
 class OpenEditorTracker(
     private val mrScratchManager: MrScratchManager,
     private val fileSystem: FileSystem,
     private val application: Application = ApplicationManager.getApplication()
 ) {
-    fun startTracking(): OpenEditorTracker {
-        application.messageBus.connect().subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+    fun startTracking(parentDisposable: Disposable) {
+        val fileEditorListener = object: FileEditorManagerListener {
+            override fun selectionChanged(event: FileEditorManagerEvent) {
+                val virtualFile = event.newFile ?: return
+                if (fileSystem.isScratch(virtualFile)) {
+                    mrScratchManager.userOpenedScratch(virtualFile.name)
+                }
+            }
+        }
+        val pmListener = object: ProjectManagerListener {
             override fun projectOpened(project: Project) {
                 val connection = project.messageBus.connect()
-                connection.subscribe(FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
-                    override fun selectionChanged(event: FileEditorManagerEvent) {
-                        val virtualFile = event.newFile ?: return
-                        if (fileSystem.isScratch(virtualFile)) {
-                            mrScratchManager.userOpenedScratch(virtualFile.name)
-                        }
-                    }
+                connection.subscribe(FILE_EDITOR_MANAGER, fileEditorListener)
+
+                Disposer.register(project, Disposable {
+                    connection.disconnect()
                 })
-                Disposer.register(project, connection)
+                Disposer.register(parentDisposable, Disposable {
+                    connection.disconnect()
+                })
             }
+        }
+        val connection = application.messageBus.connect()
+        connection.subscribe(ProjectManager.TOPIC, pmListener)
+        Disposer.register(parentDisposable, Disposable {
+            connection.disconnect()
         })
-        return this
     }
 }

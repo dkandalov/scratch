@@ -204,7 +204,7 @@ class MrScratchManagerTests {
     }
 
 
-    @Test fun `appending clipboard text to  topmost scratch`() {
+    @Test fun `appending clipboard text to topmost scratch`() {
         val scratch1 = Scratch("scratch1.txt")
         val scratch2 = Scratch("scratch2.txt")
         mrScratchManager = scratchManagerWith(defaultConfig
@@ -212,12 +212,12 @@ class MrScratchManagerTests {
                                                   .withDefaultScratchMeaning(TOPMOST))
         whenInvoked(fileSystem.scratchFileExists(anyString())).thenReturn(true)
 
-        mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text")
+        mrScratchManager.clipboardListenerWantsToPasteTextToScratch("clipboard text")
 
         verify(ide).addTextTo(eq(scratch1), eq("clipboard text"), some(AppendType::class))
     }
 
-    @Test fun `appending clipboard text to  last opened scratch`() {
+    @Test fun `appending clipboard text to last opened scratch`() {
         val scratch1 = Scratch("scratch1.txt")
         val scratch2 = Scratch("scratch2.txt")
         mrScratchManager = scratchManagerWith(
@@ -227,7 +227,7 @@ class MrScratchManagerTests {
         )
         whenInvoked(fileSystem.scratchFileExists(anyString())).thenReturn(true)
 
-        mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text")
+        mrScratchManager.clipboardListenerWantsToPasteTextToScratch("clipboard text")
 
         verify(ide).addTextTo(eq(scratch2), eq("clipboard text"), some(AppendType::class))
     }
@@ -235,7 +235,7 @@ class MrScratchManagerTests {
     @Test fun `appending clipboard text to default scratch when scratch list is empty`() {
         mrScratchManager = scratchManagerWith(defaultConfig)
 
-        mrScratchManager.clipboardListenerWantsToAddTextToScratch("clipboard text")
+        mrScratchManager.clipboardListenerWantsToPasteTextToScratch("clipboard text")
 
         verify(log).failedToOpenDefaultScratch()
     }
