@@ -73,12 +73,10 @@ class ScratchComponent: ApplicationComponent {
                 val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
                 when (moveResult) {
                     is MoveResult.Success -> {
-                        VirtualFileManager.getInstance().refreshAndFindFileByUrl("file://$ideScratchesPath")
                         configPersistence.scratchesFolderPath = ideScratchesPath
-
-                        Disposer.dispose(wiringDisposable)
+                        wiringDisposable.reallyDispose()
                         wireComponents()
-
+                        VirtualFileManager.getInstance().refreshWithoutFileWatcher(true)
                         log.migratedToIdeScratches()
                     }
                     is MoveResult.Failure -> {
