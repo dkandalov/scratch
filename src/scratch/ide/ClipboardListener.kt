@@ -22,9 +22,9 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.ide.CopyPasteManager.ContentChangedListener
 import com.intellij.openapi.ide.CopyPasteManager.getInstance
-import com.intellij.openapi.util.Disposer
 import scratch.MrScratchManager
 import scratch.ide.Util.execute
+import scratch.ide.Util.whenDisposed
 import java.awt.datatransfer.DataFlavor.stringFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
@@ -54,9 +54,9 @@ class ClipboardListener(
             }
         }
         copyPasteManager.addContentChangedListener(listener)
-        Disposer.register(parentDisposable, Disposable {
+        parentDisposable.whenDisposed {
             copyPasteManager.removeContentChangedListener(listener)
-        })
+        }
     }
 
     private fun pasteIntoDefaultScratch(newTransferable: Transferable?, oldTransferable: Transferable?) {

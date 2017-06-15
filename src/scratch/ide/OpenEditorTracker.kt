@@ -23,8 +23,8 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener.FILE_EDITOR_MAN
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
-import com.intellij.openapi.util.Disposer
 import scratch.MrScratchManager
+import scratch.ide.Util.whenDisposed
 
 class OpenEditorTracker(
     private val mrScratchManager: MrScratchManager,
@@ -45,18 +45,12 @@ class OpenEditorTracker(
                 val connection = project.messageBus.connect()
                 connection.subscribe(FILE_EDITOR_MANAGER, fileEditorListener)
 
-                Disposer.register(project, Disposable {
-                    connection.disconnect()
-                })
-                Disposer.register(parentDisposable, Disposable {
-                    connection.disconnect()
-                })
+                project.whenDisposed { connection.disconnect() }
+                parentDisposable.whenDisposed { connection.disconnect() }
             }
         }
         val connection = application.messageBus.connect()
         connection.subscribe(ProjectManager.TOPIC, pmListener)
-        Disposer.register(parentDisposable, Disposable {
-            connection.disconnect()
-        })
+        parentDisposable.whenDisposed { connection.disconnect() }
     }
 }

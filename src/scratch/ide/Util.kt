@@ -18,10 +18,12 @@ import com.intellij.notification.Notification
 import com.intellij.notification.NotificationListener
 import com.intellij.notification.NotificationType
 import com.intellij.notification.Notifications
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.command.UndoConfirmationPolicy.DO_NOT_REQUEST_CONFIRMATION
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.util.UserDataHolderBase
@@ -51,5 +53,12 @@ object Util {
         ApplicationManager.getApplication()
             .messageBus.syncPublisher(Notifications.TOPIC)
             .notify(notification)
+    }
+
+    /**
+     * Do this because there is one to one relationship between parent and child disposables.
+     */
+    fun Disposable.whenDisposed(f: () -> Unit) {
+        Disposer.register(this, Disposable { f() })
     }
 }
