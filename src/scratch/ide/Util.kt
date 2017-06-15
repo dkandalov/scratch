@@ -28,37 +28,33 @@ import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.UserDataHolder
 import com.intellij.openapi.util.UserDataHolderBase
 
-object Util {
-    private val projectKey = Key.create<Project>("Project")
+private val projectKey = Key.create<Project>("Project")
 
-    fun Project?.wrapAsDataHolder(): UserDataHolder = UserDataHolderBase().apply {
-        putUserData(projectKey, this@wrapAsDataHolder)
+fun Project?.wrapAsDataHolder(): UserDataHolder = UserDataHolderBase().apply {
+    putUserData(projectKey, this@wrapAsDataHolder)
+}
+
+fun UserDataHolder.extractProject(): Project = getUserData(projectKey)!!
+
+fun CommandProcessor.execute(f: () -> Unit) {
+    executeCommand(null, f, null, null, DO_NOT_REQUEST_CONFIRMATION)
+}
+
+fun showNotification(message: String, notificationType: NotificationType, listener: () -> Unit = {}) {
+    val title = "Scratch Plugin"
+    val groupDisplayId = title
+    val notificationListener = NotificationListener { notification, _ ->
+        listener.invoke()
+        notification.expire()
     }
+    val notification = Notification(groupDisplayId, title, message, notificationType, notificationListener)
 
-    fun UserDataHolder.extractProject(): Project = getUserData(projectKey)!!
+    ApplicationManager.getApplication()
+        .messageBus.syncPublisher(Notifications.TOPIC)
+        .notify(notification)
+}
 
-    fun CommandProcessor.execute(f: () -> Unit) {
-        executeCommand(null, f, null, null, DO_NOT_REQUEST_CONFIRMATION)
-    }
-
-    fun showNotification(message: String, notificationType: NotificationType, listener: () -> Unit = {}) {
-        val title = "Scratch Plugin"
-        val groupDisplayId = title
-        val notificationListener = NotificationListener { notification, _ ->
-            listener.invoke()
-            notification.expire()
-        }
-        val notification = Notification(groupDisplayId, title, message, notificationType, notificationListener)
-
-        ApplicationManager.getApplication()
-            .messageBus.syncPublisher(Notifications.TOPIC)
-            .notify(notification)
-    }
-
-    /**
-     * Do this because there is one to one relationship between parent and child disposables.
-     */
-    fun Disposable.whenDisposed(f: () -> Unit) {
-        Disposer.register(this, Disposable { f() })
-    }
+fun Disposable.whenDisposed(f: () -> Unit) {
+    // Always register new instance of Disposable because there is one-to-one relationship between parent and child disposables.
+    Disposer.register(this, Disposable { f() })
 }

@@ -26,7 +26,6 @@ import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
 import scratch.ide.ScratchComponent.Companion.fileSystem
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.wrapAsDataHolder
 
 class DeleteScratch: DumbAwareAction() {
     override fun actionPerformed(event: AnActionEvent) {

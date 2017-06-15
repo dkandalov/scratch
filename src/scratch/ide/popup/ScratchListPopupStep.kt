@@ -20,7 +20,7 @@ import com.intellij.openapi.ui.popup.PopupStep
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep
 import scratch.Scratch
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.wrapAsDataHolder
+import scratch.ide.wrapAsDataHolder
 
 
 class ScratchListPopupStep(scratches: List<Scratch>, private val project: Project): BaseListPopupStep<Scratch>("List of Scratches", scratches) {

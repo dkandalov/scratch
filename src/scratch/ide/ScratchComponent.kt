@@ -27,7 +27,6 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileManager
 import scratch.MrScratchManager
-import scratch.ide.Util.showNotification
 import java.io.File
 
 class ScratchComponent: ApplicationComponent {

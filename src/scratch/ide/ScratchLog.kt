@@ -18,7 +18,6 @@ import com.intellij.notification.NotificationType.INFORMATION
 import com.intellij.notification.NotificationType.WARNING
 import com.intellij.openapi.diagnostic.Logger
 import scratch.Scratch
-import scratch.ide.Util.showNotification
 
 
 class ScratchLog {

@@ -23,8 +23,6 @@ import com.intellij.openapi.ide.CopyPasteManager
 import com.intellij.openapi.ide.CopyPasteManager.ContentChangedListener
 import com.intellij.openapi.ide.CopyPasteManager.getInstance
 import scratch.MrScratchManager
-import scratch.ide.Util.execute
-import scratch.ide.Util.whenDisposed
 import java.awt.datatransfer.DataFlavor.stringFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException

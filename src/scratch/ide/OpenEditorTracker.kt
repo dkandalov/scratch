@@ -24,7 +24,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ProjectManagerListener
 import scratch.MrScratchManager
-import scratch.ide.Util.whenDisposed
 
 class OpenEditorTracker(
     private val mrScratchManager: MrScratchManager,

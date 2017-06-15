@@ -33,8 +33,6 @@ import scratch.ScratchConfig
 import scratch.ScratchConfig.AppendType.APPEND
 import scratch.ScratchConfig.AppendType.PREPEND
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.Util.execute
-import scratch.ide.Util.extractProject
 import scratch.ide.popup.ScratchListPopup
 import scratch.ide.popup.ScratchListPopup.ScratchNameValidator
 import scratch.ide.popup.ScratchListPopupStep
