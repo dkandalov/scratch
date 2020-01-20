@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dkandalov/scratch.svg?branch=master)](https://travis-ci.org/dkandalov/scratch)
+
 <img src="https://github.com/dkandalov/scratch/blob/master/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 
 ### Scratch Plugin
