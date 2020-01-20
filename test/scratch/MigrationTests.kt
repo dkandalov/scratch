@@ -1,17 +1,3 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scratch
 
 import org.junit.Test
@@ -20,7 +6,6 @@ import scratch.ide.MoveResult.Success
 import scratch.ide.moveScratches
 import java.io.File
 import java.nio.file.Files
-
 
 
 class MigrationTests {
@@ -33,7 +18,7 @@ class MigrationTests {
         }
         val toFolder = createTempFolder {}
 
-        val moveResult = moveScratches(fromFolder.list().toList(), fromFolder.absolutePath, toFolder.absolutePath)
+        val moveResult = moveScratches(fromFolder.list()!!.toList(), fromFolder.absolutePath, toFolder.absolutePath)
 
         moveResult shouldEqual Success
         toFolder.list() shouldEqual arrayOf(
@@ -55,7 +40,7 @@ class MigrationTests {
             createFile("scratch5.txt")
         }
 
-        val moveResult = moveScratches(fromFolder.list().toList(), fromFolder.absolutePath, toFolder.absolutePath)
+        val moveResult = moveScratches(fromFolder.list()!!.toList(), fromFolder.absolutePath, toFolder.absolutePath)
 
         moveResult shouldEqual Success
         toFolder.list() shouldEqual arrayOf(
@@ -76,7 +61,7 @@ class MigrationTests {
         }
         val toFolder = File("/non-existing-folder")
 
-        val moveResult = moveScratches(fromFolder.list().toList(), fromFolder.absolutePath, toFolder.absolutePath)
+        val moveResult = moveScratches(fromFolder.list()!!.toList(), fromFolder.absolutePath, toFolder.absolutePath)
 
         moveResult shouldEqual Failure(reason = "Target folder doesn't exist: /non-existing-folder")
     }

@@ -1,17 +1,3 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scratch.ide.popup
 
 import com.intellij.ide.IdeEventQueue
@@ -46,6 +32,7 @@ import java.util.*
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 import javax.swing.event.ListSelectionListener
+import kotlin.math.min
 
 /**
  * Originally was a copy of [com.intellij.ui.popup.list.ListPopupImpl].
@@ -170,7 +157,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         myList.addMouseMotionListener(myMouseMotionListener)
         myList.addMouseListener(myMouseListener)
 
-        myList.visibleRowCount = Math.min(myMaxRowCount, listModel.size)
+        myList.visibleRowCount = min(myMaxRowCount, listModel.size)
 
         var shouldShow = super.beforeShow()
         if (myAutoHandleBeforeShow) {
@@ -216,7 +203,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             var maxUseCount = -1
             var mostUsedValue = -1
             val elementsCount = listModel.size
-            for (i in 0..elementsCount - 1) {
+            for (i in 0 until elementsCount) {
                 val value = listModel.getElementAt(i)
                 val text = listStep.getTextFor(value)
                 val count = StatisticsManager.getInstance().getUseCount(StatisticsInfo("#list_popup:" + myStep.title + "#" + filter, text))
@@ -236,7 +223,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     }
 
     private fun selectFirstSelectableItem() {
-        for (i in 0..listModel.size - 1) {
+        for (i in 0 until listModel.size) {
             if (listStep.isSelectable(listModel.getElementAt(i))) {
                 myList.selectedIndex = i
                 break
@@ -247,7 +234,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     private fun hasSingleSelectableItemWithSubmenu(): Boolean {
         var oneSubmenuFound = false
         var countSelectables = 0
-        for (i in 0..listModel.size - 1) {
+        for (i in 0 until listModel.size) {
             val elementAt = listModel.getElementAt(i)
             if (listStep.isSelectable(elementAt)) {
                 countSelectables++
@@ -264,10 +251,9 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
 
     private val selectableCount: Int
         get() {
-            val count = (0..listModel.size - 1)
+            return (0 until listModel.size)
                 .map { listModel.getElementAt(it) }
                 .count { listStep.isSelectable(it) }
-            return count
         }
 
     override fun createContent(): JComponent {
@@ -390,7 +376,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         valuesSelected(selectedValues)
 
         val nextStep = listStep.onChosen(selectedValues[0], handleFinalChoices)
-        return handleNextStep(nextStep as PopupStep<*>?, if (selectedValues.size == 1) selectedValues[0] else null, e)
+        return handleNextStep(nextStep, if (selectedValues.size == 1) selectedValues[0] else null, e)
     }
 
     private fun valuesSelected(values: List<Scratch>) {
@@ -412,16 +398,16 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
                     (myChild as ScratchListPopup).addListSelectionListener(listener)
                 }
             }
-            val container = content ?: error("container == null")
+            val container = content
 
             var y = point.y
             if (parentValue != null && listModel.isSeparatorAboveOf(parentValue)) {
                 val swt = SeparatorWithText()
-                swt.setCaption(listModel.getCaptionAboveOf(parentValue))
+                swt.caption = listModel.getCaptionAboveOf(parentValue)
                 y += swt.preferredSize.height - 1
             }
 
-            myChild.show(container, point.x + container.width - WizardPopup.STEP_X_PADDING, y, true)
+            myChild.show(container, point.x + container.width - STEP_X_PADDING, y, true)
             indexForShowingChild = myList.selectedIndex
             return false
         } else {
@@ -527,12 +513,10 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         }
 
         override fun getData(dataId: String): Any? {
-            return if (PlatformDataKeys.SELECTED_ITEM.`is`(dataId)) {
-                myList.selectedValue
-            } else if (PlatformDataKeys.SELECTED_ITEMS.`is`(dataId)) {
-                myList.selectedValuesList.toTypedArray()
-            } else {
-                null
+            return when {
+                PlatformDataKeys.SELECTED_ITEM.`is`(dataId)  -> myList.selectedValue
+                PlatformDataKeys.SELECTED_ITEMS.`is`(dataId) -> myList.selectedValuesList.toTypedArray()
+                else                                         -> null
             }
         }
     }
@@ -580,7 +564,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     }
 
     companion object {
-        private val myMaxRowCount = 20
+        private const val myMaxRowCount = 20
 
         private fun copyKeyStrokesFromAction(actionId: String, defaultKeyStroke: KeyStroke): List<KeyStroke> {
             val result = ArrayList<KeyStroke>()
