@@ -5,8 +5,8 @@
 	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
-    <!-- 163.0 since 2016.3 (in which SwingUtilities.invokeLater throws exception with "any" modal mode) -->
-	<idea-version since-build="163.0"/>
+    <!-- Since this version because it's of the latest versions right now. -->
+	<idea-version since-build="193.5233.102"/>
 
     <description>
 		<![CDATA[<html lang="en"><body>
