@@ -21,7 +21,7 @@ class MigrationTests {
         val moveResult = moveScratches(fromFolder.list()!!.toList(), fromFolder.absolutePath, toFolder.absolutePath)
 
         moveResult shouldEqual Success
-        toFolder.list() shouldEqual arrayOf(
+        toFolder.list()!!.toSet() shouldEqual setOf(
             "scratch.txt",
             "scratch2.txt",
             "scratch3.txt"
@@ -43,7 +43,7 @@ class MigrationTests {
         val moveResult = moveScratches(fromFolder.list()!!.toList(), fromFolder.absolutePath, toFolder.absolutePath)
 
         moveResult shouldEqual Success
-        toFolder.list() shouldEqual arrayOf(
+        toFolder.list()!!.toSet() shouldEqual setOf(
             "__scratch.txt",
             "_scratch.txt",
             "scratch.txt",
