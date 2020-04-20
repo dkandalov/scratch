@@ -571,10 +571,8 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             val shortcuts = KeymapManager.getInstance().activeKeymap.getShortcuts(actionId)
             for (shortcut in shortcuts) {
                 if (shortcut !is KeyboardShortcut) continue
-
-                val keyboardShortcut = shortcut
-                if (keyboardShortcut.secondKeyStroke == null) {
-                    result.add(keyboardShortcut.firstKeyStroke)
+                if (shortcut.secondKeyStroke == null) {
+                    result.add(shortcut.firstKeyStroke)
                 }
             }
             if (result.isEmpty()) result.add(defaultKeyStroke)

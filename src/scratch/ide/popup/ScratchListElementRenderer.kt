@@ -11,7 +11,7 @@ import javax.swing.JList
 
 fun createListItemDescriptor(myPopup: ScratchListPopup) = object: ListItemDescriptor<Scratch> {
     override fun getTextFor(value: Scratch) = myPopup.listStep.getTextFor(value)
-    override fun getTooltipFor(value: Scratch) = null
+    override fun getTooltipFor(value: Scratch): String? = null
     override fun getIconFor(value: Scratch) = myPopup.listStep.getIconFor(value)
     override fun hasSeparatorAboveOf(value: Scratch) = myPopup.listModel.isSeparatorAboveOf(value)
     override fun getCaptionAboveOf(value: Scratch) = myPopup.listModel.getCaptionAboveOf(value)
@@ -42,7 +42,7 @@ internal class ScratchListElementRenderer(
         if (step.hasSubstep(value) && isSelectable) {
             myNextStepLabel.isVisible = true
             myNextStepLabel.icon = if (isSelected) {
-                val isDark = ColorUtil.isDark(UIUtil.getListSelectionBackground())
+                val isDark = ColorUtil.isDark(UIUtil.getListSelectionBackground(true))
                 if (isDark) NextStepInverted else NextStep
             } else {
                 NextStepGrayed
