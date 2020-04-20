@@ -1,38 +1,37 @@
 <idea-plugin>
-	<id>Scratch</id>
-	<name>Scratch</name>
-	<version>1.11</version>
-	<vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
+    <id>Scratch</id>
+    <name>Scratch</name>
+    <version>1.11</version>
+    <vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
     <!-- Since this version because it's of the latest versions right now. -->
-	<idea-version since-build="193.5233.102"/>
+    <idea-version since-build="193.5233.102"/>
 
     <description>
-		<![CDATA[<html lang="en"><body>
-				Quickly opens temporary IntelliJ text editor tab.
-				<br/>
-				<ul>
-					<li>Alt+C, Alt+C - open default scratch</li>
-					<li>Alt+C, Alt+S - open list with all scratches</li>
-					<li>Alt+C, Alt+A - add new scratch</li>
-				</ul>
-				In scratches list popup:
-				<ul>
-                    <li>Alt+Insert - add new scratch</li>
-                    <li>Alt+Up/Down - move scratch</li>
-                    <li>Shift+F6 - rename scratch</li>
-                    <li>Delete - delete scratch</li>
-                    <li>Ctrl+Delete - delete without prompt</li>
-				</ul>
-				(See also "Main menu -> Tools -> Scratch")
-				<br/><br/>
-				For more details see <a href="https://github.com/dkandalov/scratch">GitHub page</a>.
-				</body></html>
-		]]>
+		<![CDATA[
+        Quickly opens temporary IntelliJ text editor tab.
+        <br/>
+        <ul>
+            <li>Alt+C, Alt+C - open default scratch</li>
+            <li>Alt+C, Alt+S - open list with all scratches</li>
+            <li>Alt+C, Alt+A - add new scratch</li>
+        </ul>
+        In scratches list popup:
+        <ul>
+            <li>Alt+Insert - add new scratch</li>
+            <li>Alt+Up/Down - move scratch</li>
+            <li>Shift+F6 - rename scratch</li>
+            <li>Delete - delete scratch</li>
+            <li>Ctrl+Delete - delete without prompt</li>
+        </ul>
+        (See also "Main menu -> Tools -> Scratch")
+        <br/><br/>
+        For more details see <a href="https://github.com/dkandalov/scratch">GitHub page</a>.
+        ]]>
 	</description>
-	<change-notes>
-		<![CDATA[<html lang="en"><body>
+    <change-notes>
+		<![CDATA[
         <ul>
             <li>1.10 - migrated scratch files to the same location as IDE scratches</li>
             <li>1.08 - fix for exception in IJ 2016.3 when creating new scratch</li>
@@ -42,21 +41,20 @@
             <li>0.17 - fix for UTF-8</li>
             <li>0.16 - fixed reference to icon</li>
         </ul>
-        </body></html>
         ]]>
 	</change-notes>
 
-	<depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.platform</depends>
 
-	<application-components>
-		<component>
-			<implementation-class>scratch.ide.ScratchComponent</implementation-class>
-		</component>
-	</application-components>
+    <application-components>
+        <component>
+            <implementation-class>scratch.ide.ScratchComponent</implementation-class>
+        </component>
+    </application-components>
 
-	<actions>
-		<group id="Scratch.ScratchMenu" text="Scratch" popup="true">
-			<add-to-group anchor="last" group-id="ToolsMenu"/>
+    <actions>
+        <group id="Scratch.ScratchMenu" text="Scratch" popup="true">
+            <add-to-group anchor="last" group-id="ToolsMenu"/>
             <action id="Scratch.OpenDefaultScratch" class="scratch.ide.OpenDefaultScratch"
                     text="Open Default Scratch" description="Opens default scratch editor" icon="/fileTypes/text.png">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
@@ -85,14 +83,14 @@
                         text="Is Topmost" description="Topmost scratch in scratches list is 'default scratch'">
                 </action>
             </group>
-		</group>
+        </group>
         <action id="Scratch.ListenToClipboard" class="scratch.ide.ListenToClipboard"
-				text="Listen To Clipboard" description="Appends clipboard content to default scratch">
-		</action>
-	</actions>
+                text="Listen To Clipboard" description="Appends clipboard content to default scratch">
+        </action>
+    </actions>
 
-	<extensions defaultExtensionNs="com.intellij">
-		<applicationService serviceImplementation="scratch.ide.ScratchConfigPersistence"/>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService serviceImplementation="scratch.ide.ScratchConfigPersistence"/>
         <nonProjectFileWritingAccessExtension implementation="scratch.ide.FileWritingAccessExtension"/>
-	</extensions>
+    </extensions>
 </idea-plugin>
