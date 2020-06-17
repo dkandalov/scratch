@@ -22,17 +22,16 @@ data class ScratchConfigPersistence(
     var newScratchAppendType: AppendType? = null,
     var defaultScratchMeaning: DefaultScratchMeaning? = null,
     var scratchesFolderPath: String? = null
-): PersistentStateComponent<ScratchConfigPersistence> {
+) : PersistentStateComponent<ScratchConfigPersistence> {
 
-    fun asConfig(): ScratchConfig {
-        return ScratchConfig.defaultConfig
+    fun toScratchConfig() =
+        ScratchConfig.defaultConfig
             .listenToClipboard(listenToClipboard)
             .with(fullScratchNamesOrdered.map { Scratch(it) })
             .withLastOpenedScratch(if (lastOpenedScratch == null) null else Scratch(lastOpenedScratch!!))
             .withDefaultScratchMeaning(defaultScratchMeaning)
             .withClipboard(clipboardAppendType)
             .withNewScratch(newScratchAppendType)
-    }
 
     fun updateFrom(config: ScratchConfig) {
         listenToClipboard = config.listenToClipboard

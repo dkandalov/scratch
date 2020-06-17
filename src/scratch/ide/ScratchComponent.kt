@@ -14,10 +14,10 @@ import java.io.File
 
 class ScratchComponent: ApplicationComponent {
 
-    private lateinit var mrScratchManager: MrScratchManager
-    private lateinit var fileSystem: FileSystem
-    private lateinit var log: ScratchLog
+    private val log = ScratchLog()
     private val configPersistence = ScratchConfigPersistence.instance
+    private val fileSystem = FileSystem(configPersistence.scratchesFolderPath)
+    private val mrScratchManager = MrScratchManager(Ide(fileSystem, log), fileSystem, configPersistence.toScratchConfig(), log)
 
     override fun initComponent() {
         wireComponents()
@@ -25,13 +25,6 @@ class ScratchComponent: ApplicationComponent {
     }
 
     private fun wireComponents() {
-        log = ScratchLog()
-        val config = configPersistence.asConfig()
-
-        fileSystem = FileSystem(configPersistence.scratchesFolderPath)
-
-        val ide = Ide(fileSystem, log)
-        mrScratchManager = MrScratchManager(ide, fileSystem, config, log)
         mrScratchManager.syncScratchesWithFileSystem()
 
         OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
@@ -51,8 +44,7 @@ class ScratchComponent: ApplicationComponent {
                 "Both plugin and IDE scratches will be kept. In case of conflicting names, files will be prefixed with '_'."
 
             showNotification(message, INFORMATION) {
-                val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)
-                when (moveResult) {
+                when (val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)) {
                     is MoveResult.Success -> {
                         configPersistence.scratchesFolderPath = ideScratchesPath
                         wireComponents()
