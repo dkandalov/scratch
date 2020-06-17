@@ -20,17 +20,14 @@ class ScratchComponent: ApplicationComponent {
     private val mrScratchManager = MrScratchManager(Ide(fileSystem, log), fileSystem, configPersistence.toScratchConfig(), log)
 
     override fun initComponent() {
-        wireComponents()
-        checkIfScratchesNeedMigration()
-    }
-
-    private fun wireComponents() {
         mrScratchManager.syncScratchesWithFileSystem()
 
         OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
         ClipboardListener(mrScratchManager).startListening()
 
         if (configPersistence.listenToClipboard) log.listeningToClipboard(true)
+
+        checkIfScratchesNeedMigration()
     }
 
     private fun checkIfScratchesNeedMigration() {
@@ -47,7 +44,10 @@ class ScratchComponent: ApplicationComponent {
                 when (val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)) {
                     is MoveResult.Success -> {
                         configPersistence.scratchesFolderPath = ideScratchesPath
-                        wireComponents()
+                        mrScratchManager.syncScratchesWithFileSystem()
+                        OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
+                        ClipboardListener(mrScratchManager).startListening()
+                        if (configPersistence.listenToClipboard) log.listeningToClipboard(true)
                         VirtualFileManager.getInstance().refreshWithoutFileWatcher(true)
                         log.migratedToIdeScratches()
                     }

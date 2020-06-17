@@ -183,7 +183,7 @@ class MrScratchManager(
         val scratches = oldScratches + newScratches
         if (newScratches.isNotEmpty() || oldScratches.size != config.scratches.size) {
             var newConfig = config.with(scratches)
-            if (!scratches.contains(config.lastOpenedScratch)) {
+            if (config.lastOpenedScratch !in scratches) {
                 newConfig = newConfig.withLastOpenedScratch(null)
             }
             updateConfig(newConfig)
