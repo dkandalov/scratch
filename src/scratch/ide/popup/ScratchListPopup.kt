@@ -24,7 +24,7 @@ import scratch.Scratch
 import scratch.ScratchConfig.Companion.down
 import scratch.ScratchConfig.Companion.up
 import scratch.ide.ScratchComponent.Companion.mrScratchManager
-import scratch.ide.popup.ScratchListElementRenderer.Companion.NextStep
+import scratch.ide.popup.ScratchListElementRenderer.Companion.nextStep
 import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.event.*
@@ -52,18 +52,12 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     private var indexForShowingChild = -1
     private var myAutoHandleBeforeShow: Boolean = false
 
-
     init {
         registerActions()
     }
 
     private fun registerActions() {
-        val generateActionId = "Generate"
-        val renameActionId = "RenameElement"
-        val deleteActionId = "\$Delete"
-        val deleteNoPromptActionId = "\$DeleteNoPrompt"
-
-        var keyStrokes = copyKeyStrokesFromAction(generateActionId, KeyStroke.getKeyStroke("ctrl N"))
+        var keyStrokes = copyKeyStrokesFromAction("Generate", KeyStroke.getKeyStroke("ctrl N"))
 
         registerAction("addScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
@@ -72,7 +66,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(renameActionId, KeyStroke.getKeyStroke("alt shift R"))
+        keyStrokes = copyKeyStrokesFromAction("RenameElement", KeyStroke.getKeyStroke("alt shift R"))
         registerAction("renameScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -83,7 +77,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(deleteActionId, KeyStroke.getKeyStroke("DELETE"))
+        keyStrokes = copyKeyStrokesFromAction("\$Delete", KeyStroke.getKeyStroke("DELETE"))
         registerAction("deleteScratch", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -94,7 +88,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
             }
         })
 
-        keyStrokes = copyKeyStrokesFromAction(deleteNoPromptActionId, KeyStroke.getKeyStroke("ctrl DELETE"))
+        keyStrokes = copyKeyStrokesFromAction("\$DeleteNoPrompt", KeyStroke.getKeyStroke("ctrl DELETE"))
         registerAction("deleteScratchWithoutPrompt", keyStrokes, object: AbstractAction() {
             override fun actionPerformed(event: ActionEvent) {
                 val scratch = selectedScratch()
@@ -136,7 +130,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     protected open fun onScratchMoved(scratch: Scratch, shift: Int) {}
 
     private fun registerAction(@NonNls actionName: String, keyStrokes: List<KeyStroke>, action: Action) {
-        for (i in keyStrokes.indices) {
+        keyStrokes.indices.forEach { i ->
             val keyStroke = keyStrokes[i]
             registerAction(actionName + i, keyStroke, action)
         }
@@ -431,20 +425,13 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
     }
 
     class ScratchNameValidator(private val scratch: Scratch): InputValidatorEx {
+        override fun checkInput(inputString: String) =
+            mrScratchManager().checkIfUserCanRename(scratch, inputString).isYes
 
-        override fun checkInput(inputString: String): Boolean {
-            val (isYes) = mrScratchManager().checkIfUserCanRename(scratch, inputString)
-            return isYes
-        }
+        override fun getErrorText(inputString: String) =
+            mrScratchManager().checkIfUserCanRename(scratch, inputString).explanation
 
-        override fun getErrorText(inputString: String): String? {
-            val (_, explanation) = mrScratchManager().checkIfUserCanRename(scratch, inputString)
-            return explanation
-        }
-
-        override fun canClose(inputString: String): Boolean {
-            return true
-        }
+        override fun canClose(inputString: String) = true
     }
 
     private inner class MyMouseMotionListener: MouseMotionAdapter() {
@@ -487,7 +474,7 @@ abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aSte
         val index = myList.selectedIndex
         val bounds = myList.getCellBounds(index, index)
         val point = e.point
-        return bounds != null && point.getX() > bounds.width + bounds.getX() - NextStep!!.iconWidth
+        return bounds != null && point.getX() > bounds.width + bounds.getX() - nextStep!!.iconWidth
     }
 
     override fun process(event: KeyEvent?) {

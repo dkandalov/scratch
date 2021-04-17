@@ -121,13 +121,9 @@ class MrScratchManager(
         val defaultExtension = "txt"
         if (isUniqueScratchName(defaultName)) {
             ide.openNewScratchDialog("$defaultName.$defaultExtension", userDataHolder)
-            return
-        }
-        (1..99).forEach { index ->
-            if (isUniqueScratchName(defaultName + index)) {
-                ide.openNewScratchDialog("$defaultName$index.$defaultExtension", userDataHolder)
-                return
-            }
+        } else {
+            (1..99).find { index -> isUniqueScratchName(defaultName + index) }
+                ?.let { index -> ide.openNewScratchDialog("$defaultName$index.$defaultExtension", userDataHolder) }
         }
     }
 

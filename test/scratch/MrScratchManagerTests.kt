@@ -27,7 +27,7 @@ class MrScratchManagerTests {
     private lateinit var mrScratchManager: MrScratchManager
 
 
-    @Test fun `displaying scratches list when config and files  match exactly`() {
+    @Test fun `displaying scratches list when config and files match exactly`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
             Scratch("scratch.txt"),
             Scratch("scratch2.java"),
@@ -46,7 +46,7 @@ class MrScratchManagerTests {
         verifyNoMoreInteractions(fileSystem, ide)
     }
 
-    @Test fun `displaying scratches list when config and files  match  but have different order`() {
+    @Test fun `displaying scratches list when config and files match but have different order`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
             Scratch("scratch.txt"),
             Scratch("scratch2.java"),
@@ -244,7 +244,7 @@ class MrScratchManagerTests {
         assertTrue(answer.isYes)
 
         verify(fileSystem).isValidScratchName("renamedScratch.txt")
-        verifyZeroInteractions(ide, fileSystem)
+        verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `can rename scratch when there is scratch with same name`() {
@@ -255,7 +255,7 @@ class MrScratchManagerTests {
 
         val answer = mrScratchManager.checkIfUserCanRename(Scratch("scratch.txt"), "renamed&Scratch.txt")
         assertTrue(answer.isNo)
-        verifyZeroInteractions(ide, fileSystem)
+        verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `can rename scratch when file name is incorrect`() {
@@ -302,7 +302,7 @@ class MrScratchManagerTests {
 
         mrScratchManager.userWantsToRename(scratch, "scratch.txt")
 
-        verifyZeroInteractions(ide, log, fileSystem)
+        verifyNoMoreInteractions(ide, log, fileSystem)
     }
 
 
@@ -356,7 +356,7 @@ class MrScratchManagerTests {
         val answer = mrScratchManager.checkIfUserCanCreateScratchWithName("&scratch.txt")
         assertTrue(answer.isNo)
 
-        verifyZeroInteractions(ide, fileSystem)
+        verifyNoMoreInteractions(ide, fileSystem)
     }
 
     @Test fun `can create new scratch when there is scratch with same name but different extension`() {

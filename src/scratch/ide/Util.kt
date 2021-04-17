@@ -27,7 +27,7 @@ fun CommandProcessor.execute(f: () -> Unit) {
 }
 
 fun showNotification(message: String, notificationType: NotificationType, listener: () -> Unit = {}) {
-    val title = "Scratch Plugin"
+    val title = "Scratch plugin"
     val notificationListener = NotificationListener { notification, _ ->
         listener.invoke()
         notification.expire()
@@ -42,8 +42,4 @@ fun showNotification(message: String, notificationType: NotificationType, listen
 fun Disposable.whenDisposed(f: () -> Unit) {
     // Always register new instance of Disposable because there is one-to-one relationship between parent and child disposables.
     Disposer.register(this, Disposable { f() })
-}
-
-fun Disposable.reallyDispose() {
-    Disposer.dispose(this)
 }

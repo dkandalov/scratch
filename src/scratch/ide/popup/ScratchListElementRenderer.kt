@@ -43,9 +43,9 @@ internal class ScratchListElementRenderer(
             myNextStepLabel.isVisible = true
             myNextStepLabel.icon = if (isSelected) {
                 val isDark = ColorUtil.isDark(UIUtil.getListSelectionBackground(true))
-                if (isDark) NextStepInverted else NextStep
+                if (isDark) nextStepInverted else nextStep
             } else {
-                NextStepGrayed
+                nextStepGrayed
             }
         } else {
             myNextStepLabel.isVisible = false
@@ -60,8 +60,8 @@ internal class ScratchListElementRenderer(
     }
 
     companion object {
-        val NextStep: Icon? = IconLoader.findIcon("/icons/ide/nextStep.png")
-        val NextStepGrayed = IconLoader.getIcon("/icons/ide/nextStepGrayed.png") // 12x12
-        val NextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.png") // 12x12
+        val nextStep: Icon? = IconLoader.findIcon("/icons/ide/nextStep.png")
+        val nextStepGrayed = IconLoader.getIcon("/icons/ide/nextStepGrayed.png") // 12x12
+        val nextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.png") // 12x12
     }
 }

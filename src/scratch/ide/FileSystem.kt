@@ -34,7 +34,7 @@ class FileSystem(
     fun isValidScratchName(fileName: String): Answer {
         val hasPathChars = fileName.contains("/") || fileName.contains("\\")
         val hasWildcards = fileName.contains("*") || fileName.contains("?")
-        return if (hasPathChars || hasWildcards || isHidden(fileName) || !localFileSystem.isValidName(fileName)) {
+        return if (hasPathChars || hasWildcards || fileName.isHidden() || !localFileSystem.isValidName(fileName)) {
             Answer.no("Not a valid file name")
         } else if (File(scratchesPath + fileName).exists()) {
             Answer.no("There is existing file with this name")
@@ -105,7 +105,7 @@ class FileSystem(
     }
 
     private val VirtualFile?.isValidScratch get() =
-        this != null && exists() && !isDirectory && !isHidden(name)
+        this != null && exists() && !isDirectory && !name.isHidden()
 
     companion object {
         private val log = Logger.getInstance(FileSystem::class.java)
@@ -115,7 +115,7 @@ class FileSystem(
          */
         private val charset = Charsets.UTF_8
 
-        private fun isHidden(fileName: String) = fileName.startsWith(".")
+        private fun String.isHidden() = startsWith(".")
 
         private fun ensureExists(dir: File) {
             if (!dir.exists() && !dir.mkdirs()) {
@@ -137,7 +137,7 @@ fun moveScratches(scratchFilePaths: List<String>, fromFolder: String, toFolder: 
         return MoveResult.Failure("Target folder doesn't exist: ${folder.path}")
     }
     return try {
-        val failedToMove = scratchFilePaths.map{ File(fromFolder + separator + it) }
+        val failedToMove = scratchFilePaths.map { File(fromFolder + separator + it) }
             .filter { file ->
                 val targetFile = File(folder.absolutePath + separator + file.name).renamedIfExists()
                 val wasRenamed = file.renameTo(targetFile)
@@ -145,7 +145,7 @@ fun moveScratches(scratchFilePaths: List<String>, fromFolder: String, toFolder: 
             }
         if (failedToMove.isEmpty()) MoveResult.Success
         else MoveResult.Failure("Failed to move files: ${failedToMove.joinToString { it.name }}")
-    } catch(e: Exception) {
+    } catch (e: Exception) {
         MoveResult.Failure(e.message ?: "")
     }
 }

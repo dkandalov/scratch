@@ -12,7 +12,7 @@ import scratch.ScratchConfig.AppendType
 import scratch.ScratchConfig.DefaultScratchMeaning
 
 
-@State(name = "ScratchConfig", storages = [Storage(file = "scratch_config.xml")])
+@State(name = "ScratchConfig", storages = [Storage("scratch_config.xml")])
 data class ScratchConfigPersistence(
     @OptionTag(valueAttribute = "isListenToClipboard")
     var listenToClipboard: Boolean = false,
