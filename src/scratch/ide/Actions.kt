@@ -84,7 +84,7 @@ class ListenToClipboard: ToggleAction(), DumbAware {
     override fun isSelected(event: AnActionEvent) = mrScratchManager().shouldListenToClipboard()
 
     companion object {
-        private val isOnIcon = IconLoader.getIcon("/actions/menu-paste.png")
+        private val isOnIcon = IconLoader.getIcon("/actions/menu-paste.png", IconLoader::class.java)
         private val isOffIcon = IconLoader.getDisabledIcon(isOnIcon)
     }
 }

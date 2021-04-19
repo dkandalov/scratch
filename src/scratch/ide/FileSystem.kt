@@ -1,6 +1,5 @@
 package scratch.ide
 
-import com.intellij.CommonBundle
 import com.intellij.openapi.application.Application
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.PathManager
@@ -118,9 +117,7 @@ class FileSystem(
         private fun String.isHidden() = startsWith(".")
 
         private fun ensureExists(dir: File) {
-            if (!dir.exists() && !dir.mkdirs()) {
-                throw IOException(CommonBundle.message("exception.directory.can.not.create", dir.path))
-            }
+            if (!dir.exists() && !dir.mkdirs()) throw IOException("Cannot create directory ${dir.path}")
         }
     }
 }

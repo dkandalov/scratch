@@ -40,7 +40,7 @@ import kotlin.math.min
  * instead of [com.intellij.ui.popup.list.ListPopupModel].
  */
 @Suppress("UNCHECKED_CAST")
-abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(aStep as PopupStep<Any>), ListPopup {
+abstract class ScratchListPopup(aStep: ListPopupStep<Scratch>): WizardPopup(null, null, aStep as PopupStep<Any>), ListPopup {
 
     private lateinit var myList: MyList
 
