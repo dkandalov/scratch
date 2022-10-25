@@ -1,5 +1,7 @@
 package scratch.ide
 
+import com.intellij.ide.scratch.ScratchFileService
+import com.intellij.ide.scratch.ScratchRootType
 import com.intellij.openapi.components.PersistentStateComponent
 import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
@@ -21,7 +23,7 @@ data class ScratchConfigPersistence(
     var clipboardAppendType: AppendType? = null,
     var newScratchAppendType: AppendType? = null,
     var defaultScratchMeaning: DefaultScratchMeaning? = null,
-    var scratchesFolderPath: String? = null
+    var scratchesFolderPath: String? = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
 ) : PersistentStateComponent<ScratchConfigPersistence> {
 
     fun toScratchConfig() =

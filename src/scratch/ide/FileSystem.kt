@@ -20,7 +20,7 @@ class FileSystem(
 ) {
 
     val scratchesPath: String =
-        if (scratchesFolderPath == null || scratchesFolderPath.isEmpty()) {
+        if (scratchesFolderPath.isNullOrEmpty()) {
             PathManager.getPluginsPath() + "/scratches/"
         } else {
             "$scratchesFolderPath/" // add trailing "/" in case it's not specified in config

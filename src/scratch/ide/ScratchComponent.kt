@@ -24,37 +24,6 @@ class ScratchComponent {
         ClipboardListener(mrScratchManager).startListening()
 
         if (configPersistence.listenToClipboard) log.listeningToClipboard(true)
-
-        checkIfScratchesNeedMigration()
-    }
-
-    private fun checkIfScratchesNeedMigration() {
-        val ideScratchesPath = ScratchFileService.getInstance().getRootPath(ScratchRootType.getInstance())
-        FileUtil.ensureExists(File(ideScratchesPath))
-
-        val needsMigration = ideScratchesPath != configPersistence.scratchesFolderPath
-        if (needsMigration) {
-            val message =
-                "<a href=''>Click here</a> to migrate scratches to folder with IDE built-in scratches. " +
-                "Both plugin and IDE scratches will be kept. In case of conflicting names, files will be prefixed with '_'."
-
-            showNotification(message, INFORMATION) {
-                when (val moveResult = moveScratches(fileSystem.listScratchFiles(), fileSystem.scratchesPath, ideScratchesPath)) {
-                    is MoveResult.Success -> {
-                        configPersistence.scratchesFolderPath = ideScratchesPath
-                        mrScratchManager.syncScratchesWithFileSystem()
-                        OpenEditorTracker(mrScratchManager, fileSystem).startTracking()
-                        ClipboardListener(mrScratchManager).startListening()
-                        if (configPersistence.listenToClipboard) log.listeningToClipboard(true)
-                        VirtualFileManager.getInstance().refreshWithoutFileWatcher(true)
-                        log.migratedToIdeScratches()
-                    }
-                    is MoveResult.Failure -> {
-                        log.failedToMigrateScratchesToIdeLocation(moveResult.reason)
-                    }
-                }
-            }
-        }
     }
 
     companion object {
