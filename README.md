@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dkandalov/scratch.svg?branch=master)](https://travis-ci.org/dkandalov/scratch)
+[![Build Status](https://github.com/dkandalov/scratch/workflows/CI/badge.svg)](https://github.com/dkandalov/scratch/actions)
 
 <img src="https://github.com/dkandalov/scratch/blob/master/screenshot.png?raw=true" alt="screenshot" title="screenshot" align="right" width="480"/>
 

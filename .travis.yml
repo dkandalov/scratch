@@ -1,8 +1,0 @@
-language: java
-jdk: oraclejdk11
-
-env:
-  - IJ_VERSION=IC-193.5233.102
-  - IJ_VERSION=LATEST-EAP-SNAPSHOT
-
-script: ./gradlew check buildPlugin --info
