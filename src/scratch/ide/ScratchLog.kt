@@ -12,16 +12,6 @@ class ScratchLog {
         showNotification("Failed to rename scratch: ${scratch.fileName}", WARNING)
     }
 
-    fun migratedToIdeScratches() {
-        log.info("Migrated plugin scratches to IDE")
-        showNotification(
-            "Migrated scratches to IDE. Now you can execute scratches and see scratches list in " +
-            "\"Project View -> Scratches tab\".", INFORMATION)
-    }
-
-    fun failedToMigrateScratchesToIdeLocation(reason: String) =
-        showNotification("Failed to migrated plugin scratches to IDE: $reason", WARNING)
-
     fun listeningToClipboard(isListening: Boolean) =
         if (isListening) showNotification("Started listening to clipboard", INFORMATION)
         else showNotification("Stopped listening to clipboard", INFORMATION)
