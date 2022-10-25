@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VirtualFile
 import scratch.Answer
 import java.io.File
-import java.io.File.separator
 import java.io.IOException
 
 
@@ -19,7 +18,7 @@ class FileSystem(
     private val application: Application = ApplicationManager.getApplication()
 ) {
 
-    val scratchesPath: String =
+    private val scratchesPath: String =
         if (scratchesFolderPath.isNullOrEmpty()) {
             PathManager.getPluginsPath() + "/scratches/"
         } else {
@@ -120,34 +119,4 @@ class FileSystem(
             if (!dir.exists() && !dir.mkdirs()) throw IOException("Cannot create directory ${dir.path}")
         }
     }
-}
-
-
-fun moveScratches(scratchFilePaths: List<String>, fromFolder: String, toFolder: String): MoveResult {
-    fun File.renamedIfExists(prefix: String = "_"): File {
-        return if (!exists()) this
-        else File(parent + separator + prefix + name).renamedIfExists()
-    }
-
-    val folder = File(toFolder)
-    if (!folder.exists()) {
-        return MoveResult.Failure("Target folder doesn't exist: ${folder.path}")
-    }
-    return try {
-        val failedToMove = scratchFilePaths.map { File(fromFolder + separator + it) }
-            .filter { file ->
-                val targetFile = File(folder.absolutePath + separator + file.name).renamedIfExists()
-                val wasRenamed = file.renameTo(targetFile)
-                !wasRenamed
-            }
-        if (failedToMove.isEmpty()) MoveResult.Success
-        else MoveResult.Failure("Failed to move files: ${failedToMove.joinToString { it.name }}")
-    } catch (e: Exception) {
-        MoveResult.Failure(e.message ?: "")
-    }
-}
-
-sealed class MoveResult {
-    object Success: MoveResult()
-    data class Failure(val reason: String): MoveResult()
 }
