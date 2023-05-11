@@ -1,13 +1,13 @@
 import org.gradle.api.internal.HasConvention
 import org.jetbrains.intellij.IntelliJPluginExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     idea
     java
     kotlin("jvm").version("1.6.21")
-    id("org.jetbrains.intellij").version("1.9.0")
+    id("org.jetbrains.intellij").version("1.13.3")
 }
 repositories {
     mavenCentral()
