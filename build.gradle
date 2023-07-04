@@ -1,0 +1,41 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'org.jetbrains.intellij' version '1.13.3'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java.srcDirs 'src'
+        resources.srcDirs 'resources'
+    }
+    test {
+        java.srcDirs 'test'
+    }
+}
+
+dependencies {
+    testImplementation 'org.mockito:mockito-inline:4.8.0'
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = '17'
+        apiVersion = '1.6'
+        languageVersion = '1.6'
+        freeCompilerArgs = ['-Xskip-metadata-version-check']
+    }
+}
+
+intellij {
+    version = '222.3345.118'
+    pluginName = 'Scratch'
+    downloadSources = true
+    sameSinceUntilBuild = false
+    updateSinceUntilBuild = false
+}
