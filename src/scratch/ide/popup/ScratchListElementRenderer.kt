@@ -6,7 +6,6 @@ import com.intellij.ui.ColorUtil
 import com.intellij.ui.popup.list.GroupedItemsListRenderer
 import com.intellij.util.ui.UIUtil
 import scratch.Scratch
-import javax.swing.Icon
 import javax.swing.JList
 
 fun createListItemDescriptor(myPopup: ScratchListPopup) = object: ListItemDescriptor<Scratch> {
@@ -60,8 +59,8 @@ internal class ScratchListElementRenderer(
     }
 
     companion object {
-        val nextStep: Icon? = IconLoader.findIcon("/icons/ide/nextStep.png")
-        val nextStepGrayed = IconLoader.getIcon("/icons/ide/nextStepGrayed.png", IconLoader::class.java) // 12x12
-        val nextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.png", IconLoader::class.java) // 12x12
+        val nextStep = IconLoader.getIcon("/icons/ide/nextStep.svg", IconLoader::class.java)
+        val nextStepGrayed = IconLoader.getIcon("/icons/ide/nextStep_dark.png", IconLoader::class.java)
+        val nextStepInverted = IconLoader.getIcon("/icons/ide/nextStepInverted.svg", IconLoader::class.java)
     }
 }

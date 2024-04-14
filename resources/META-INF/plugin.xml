@@ -5,8 +5,7 @@
     <vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
-    <!-- Since this version because it's of the latest versions right now. -->
-    <idea-version since-build="222.3345.118"/>
+    <idea-version since-build="241.14494"/>
 
     <description>
 		<![CDATA[
@@ -56,11 +55,11 @@
         <group id="Scratch.ScratchMenu" text="Scratch" popup="true">
             <add-to-group anchor="last" group-id="ToolsMenu"/>
             <action id="Scratch.OpenDefaultScratch" class="scratch.ide.OpenDefaultScratch"
-                    text="Open Default Scratch" description="Opens default scratch editor" icon="/fileTypes/text.png">
+                    text="Open Default Scratch" description="Opens default scratch editor" icon="/fileTypes/text.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt c"/>
             </action>
             <action id="Scratch.OpenScratchList" class="scratch.ide.OpenScratchList"
-                    text="Open Scratch List" description="Opens list of all scratch editors" icon="/actions/copy.png">
+                    text="Open Scratch List" description="Opens list of all scratch editors" icon="/actions/copy.svg">
                 <keyboard-shortcut keymap="$default" first-keystroke="alt c" second-keystroke="alt s"/>
             </action>
             <separator/>

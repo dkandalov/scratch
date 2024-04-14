@@ -1,10 +1,16 @@
+import static org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9
+
 plugins {
     id 'org.jetbrains.intellij' version '1.16.0'
-    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
 }
 
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.mockito:mockito-inline:4.8.0'
 }
 
 sourceSets {
@@ -17,21 +23,23 @@ sourceSets {
     }
 }
 
-dependencies {
-    testImplementation 'org.mockito:mockito-inline:4.8.0'
+kotlin {
+    jvmToolchain(17)
 }
-
 compileKotlin {
-    kotlinOptions {
-        jvmTarget = '17'
-        apiVersion = '1.6'
-        languageVersion = '1.6'
-        freeCompilerArgs = ['-Xskip-metadata-version-check']
+    compilerOptions {
+        apiVersion.set(KOTLIN_1_9)
+        languageVersion.set(KOTLIN_1_9)
+        // Compiler flag to allow building against pre-released versions of Kotlin
+        // because IJ EAP can be built using pre-released Kotlin but it's still worth doing to check API compatibility
+        freeCompilerArgs = ["-Xskip-metadata-version-check"]
     }
 }
 
 intellij {
-    version = '222.3345.118'
+    // To find available IDE versions see https://www.jetbrains.com/intellij-repository/releases
+    // and https://www.jetbrains.com/intellij-repository/snapshots
+    version = '241.14494.240' // 2024.1 which shows errors for actions without getActionUpdateThread()
     pluginName = 'Scratch'
     downloadSources = true
     sameSinceUntilBuild = false
