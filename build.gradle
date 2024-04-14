@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.mockito:mockito-inline:4.8.0'
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
 }
 
 sourceSets {

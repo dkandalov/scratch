@@ -4,8 +4,6 @@ import org.mockito.internal.matchers.Equals
 import org.mockito.internal.matchers.InstanceOf
 import org.mockito.internal.matchers.Same
 import org.mockito.internal.progress.ThreadSafeMockingProgress
-import scratch.ScratchConfig.AppendType
-import scratch.ScratchConfig.AppendType.APPEND
 import kotlin.reflect.KClass
 
 fun <T> eq(value: T): T {
@@ -18,10 +16,11 @@ fun <T> same(value: T): T {
     return value
 }
 
-@Suppress("UNCHECKED_CAST")
-fun <T : Any> some(type: KClass<T>): T {
-    val matcher = InstanceOf.VarArgAware(type.java, "<any " + type.java.canonicalName + ">")
-    ThreadSafeMockingProgress.mockingProgress().argumentMatcherStorage.reportMatcher(matcher)
-    if (type == AppendType::class) return APPEND as T
-    return type.constructors.find { it.parameters.isEmpty() }!!.call()
+fun <T : Any> some(kClass: KClass<T>): T {
+    ThreadSafeMockingProgress.mockingProgress().argumentMatcherStorage
+        .reportMatcher(InstanceOf(kClass.java, "<any " + kClass.java.canonicalName + ">"))
+    return when {
+        kClass.java.isEnum -> kClass.java.enumConstants.first()
+        else -> kClass.constructors.find { it.parameters.isEmpty() }!!.call()
+    }
 }
