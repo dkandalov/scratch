@@ -1,31 +1,31 @@
 package scratch
 
 import com.intellij.openapi.util.UserDataHolderBase
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert.assertThat
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.mockito.Mockito.*
+import org.mockito.Mockito.anyString
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import scratch.Answer.Companion.no
 import scratch.Answer.Companion.yes
 import scratch.ScratchConfig.AppendType
+import scratch.ScratchConfig.AppendType.PREPEND
+import scratch.ScratchConfig.Companion.defaultConfig
 import scratch.ScratchConfig.DefaultScratchMeaning.LAST_OPENED
 import scratch.ScratchConfig.DefaultScratchMeaning.TOPMOST
 import scratch.ide.FileSystem
 import scratch.ide.Ide
 import scratch.ide.ScratchLog
-import java.util.*
 import org.mockito.Mockito.`when` as whenInvoked
 
-
 class MrScratchManagerTests {
-
     private val log = mock(ScratchLog::class.java)
     private val ide = mock(Ide::class.java)
     private val fileSystem = mock(FileSystem::class.java)
-    private val defaultConfig = ScratchConfig.defaultConfig
     private lateinit var mrScratchManager: MrScratchManager
-
 
     @Test fun `displaying scratches list when config and files match exactly`() {
         mrScratchManager = scratchManagerWith(defaultConfig.with(listOf(
@@ -194,8 +194,8 @@ class MrScratchManagerTests {
         val scratch1 = Scratch("scratch1.txt")
         val scratch2 = Scratch("scratch2.txt")
         mrScratchManager = scratchManagerWith(defaultConfig
-                                                  .with(listOf(scratch1, scratch2))
-                                                  .withDefaultScratchMeaning(TOPMOST))
+            .with(listOf(scratch1, scratch2))
+            .withDefaultScratchMeaning(TOPMOST))
         whenInvoked(fileSystem.scratchFileExists(anyString())).thenReturn(true)
 
         mrScratchManager.clipboardListenerWantsToPasteTextToScratch("clipboard text")
@@ -401,7 +401,7 @@ class MrScratchManagerTests {
     @Test fun `creating new scratch when scratch is created successfully and should be prepended to list of scratches`() {
         val config = defaultConfig.with(listOf(
             Scratch("scratch0.txt")
-        )).withNewScratch(AppendType.PREPEND)
+        )).withNewScratch(PREPEND)
         mrScratchManager = scratchManagerWith(config)
         whenInvoked(fileSystem.createEmptyFile(anyString())).thenReturn(true)
 

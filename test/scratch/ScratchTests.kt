@@ -1,7 +1,7 @@
 package scratch
 
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert.assertThat
 import org.junit.Test
 
 class ScratchTests {

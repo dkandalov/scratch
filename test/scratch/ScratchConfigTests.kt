@@ -1,14 +1,13 @@
 package scratch
 
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert.assertThat
 import org.junit.Test
 import scratch.ScratchConfig.Companion.defaultConfig
 import scratch.ScratchConfig.Companion.down
 import scratch.ScratchConfig.Companion.up
 
 class ScratchConfigTests {
-
     private val scratch1 = Scratch("scratch1.txt")
     private val scratch2 = Scratch("scratch2.txt")
     private val scratch3 = Scratch("scratch3.txt")
