@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>Scratch</id>
     <name>Scratch</name>
-    <version>1.12</version>
+    <version>1.13</version>
     <vendor url="https://github.com/dkandalov/scratch">Dmitry Kandalov, Vojtech Krasa</vendor>
 
     <!-- (see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html) -->
