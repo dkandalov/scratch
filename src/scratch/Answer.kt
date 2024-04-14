@@ -1,7 +1,7 @@
 package scratch
 
 
-data class Answer(val isYes: Boolean, val explanation: String = "") {
+data class Answer(val isYes: Boolean, val explanation: String? = null) {
     val isNo = !isYes
 
     override fun toString() = if (isYes) "Yes" else "No($explanation)"

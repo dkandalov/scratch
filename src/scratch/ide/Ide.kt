@@ -83,7 +83,6 @@ class Ide(
     fun openNewScratchDialog(suggestedScratchName: String, userDataHolder: UserDataHolder) {
         val message = "Scratch name (you can use '&' for mnemonics):"
         val scratchName = Messages.showInputDialog(message, "New Scratch", noIcon, suggestedScratchName, object: InputValidatorEx {
-            override fun checkInput(scratchName: String) = mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).isYes
             override fun getErrorText(scratchName: String) = mrScratchManager().checkIfUserCanCreateScratchWithName(scratchName).explanation
             override fun canClose(inputString: String) = true
         }) ?: return
